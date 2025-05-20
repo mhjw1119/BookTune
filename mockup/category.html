@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BookTune</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Indie Flower for hand-drawn look, plus Noto Sans KR for Korean -->
+  <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+  <style>
+    .handwriting {
+      font-family: 'Indie Flower', cursive;
+    }
+    .korean {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    body {
+      background-color: #f7f8fa;
+    }
+    .book-card {
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .book-card:hover {
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: 0 8px 24px 0 rgba(0,0,0,0.10);
+      border-color: #6366f1;
+    }
+    .underline-animate {
+      position: relative;
+      display: inline-block;
+    }
+    .underline-animate::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -2px;
+      width: 100%;
+      height: 2px;
+      background: #6366f1;
+      transform: scaleX(0);
+      transition: transform 0.2s;
+      transform-origin: left;
+    }
+    .underline-animate:hover::after {
+      transform: scaleX(1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+  <!-- Header -->
+  <header class="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
+    <div>
+      <a href="#" class="handwriting text-2xl underline-animate text-gray-800">HOME</a>
+    </div>
+    <nav class="space-x-6">
+      <a href="#" class="handwriting text-lg underline-animate text-gray-700">Sign Up</a>
+      <span class="text-xl text-gray-400">/</span>
+      <a href="#" class="handwriting text-lg underline-animate text-gray-700">Login</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center px-4 py-10">
+    <!-- Logo and Subtitle -->
+    <div class="mb-10 text-center">
+      <h1 class="handwriting text-6xl md:text-7xl text-gray-800 mb-2 tracking-wide">BookTune</h1>
+      <div class="korean text-2xl text-gray-600 font-medium mb-2">여기에 책장을 클릭</div>
+    </div>
+    <!-- Book Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 w-full max-w-5xl">
+      <!-- 12 Book Cards -->
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 1">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+1" alt="Book 1" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 2">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+2" alt="Book 2" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 3">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+3" alt="Book 3" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 4">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+4" alt="Book 4" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 5">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+5" alt="Book 5" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 6">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+6" alt="Book 6" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 7">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+7" alt="Book 7" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 8">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+8" alt="Book 8" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 9">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+9" alt="Book 9" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 10">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+10" alt="Book 10" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 11">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+11" alt="Book 11" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+      <button class="book-card bg-white border-2 border-gray-300 rounded-xl aspect-[3/4] flex items-center justify-center shadow-sm hover:shadow-lg transition" aria-label="Book 12">
+        <img src="https://placehold.co/160x220/EEE/AAA?text=Book+12" alt="Book 12" class="rounded-lg object-cover w-32 h-44" />
+      </button>
+    </div>
+  </main>
+</body>
+</html>
