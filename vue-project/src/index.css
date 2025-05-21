@@ -1,0 +1,5 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* 만약 다른 CSS 파일을 임포트한다면, @import '다른파일.css'; 이런 식으로. */
