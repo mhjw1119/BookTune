@@ -51,12 +51,49 @@ def logout(request):
     }, status=status.HTTP_200_OK)
     return response
 
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    if request.method == 'GET':
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     callback_url = "http://localhost:5173"  # Vite 기본 포트
     client_class = OAuth2Client
 
+    def get_response(self):
+        response = super().get_response()
+        if self.user:
+            # 필수 필드가 비어있는지 확인
+            required_fields = ['nickname']
+            empty_fields = [field for field in required_fields if not getattr(self.user, field)]
+            
+            if empty_fields:
+                response.data['requires_additional_info'] = True
+                response.data['empty_fields'] = empty_fields
+        return response
+
 class KakaoLogin(SocialLoginView):
     adapter_class = KakaoOAuth2Adapter
     callback_url = "http://localhost:5173"  # Vite 기본 포트
     client_class = OAuth2Client
+
+    def get_response(self):
+        response = super().get_response()
+        if self.user:
+            # 필수 필드가 비어있는지 확인
+            required_fields = ['nickname']
+            empty_fields = [field for field in required_fields if not getattr(self.user, field)]
+            
+            if empty_fields:
+                response.data['requires_additional_info'] = True
+                response.data['empty_fields'] = empty_fields
+        return response
