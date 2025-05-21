@@ -13,6 +13,9 @@ class Books(models.Model):
     pubdate = models.DateField()
     customer_review = models.IntegerField()
     recommended_song = models.URLField(blank=True, null=True)
+    category_name = models.CharField(max_length=30)
+    description = models.TextField()
+    best_rank = models.IntegerField()
 
 class Thread_song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
