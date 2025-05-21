@@ -47,9 +47,9 @@
         class="w-full py-3 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-blue-50 transition"
         type="button"
       >
-        회원가입
+        signup
       </button>
-      <button @click="closePopup" class="w-full py-3 mt-4 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-gray-100 transition">닫기</button>
+      <button @click="closePopup" class="w-full py-3 mt-4 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-gray-100 transition">close</button>
     </div>
   </div>
 </template>

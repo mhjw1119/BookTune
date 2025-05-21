@@ -1,162 +1,297 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>BookTune Registration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Indie Flower for playful handwritten look -->
-  <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Indie Flower', cursive, sans-serif;
-      background-color: #f7f7f7;
-    }
-    .handwritten {
-      font-family: 'Indie Flower', cursive, sans-serif;
-    }
-    .input-label {
-      font-size: 1.5rem;
-      letter-spacing: 0.02em;
-    }
-    .custom-checkbox:checked + span {
-      background-color: #6366f1;
-      border-color: #6366f1;
-    }
-    .custom-checkbox + span {
-      transition: background 0.2s, border 0.2s;
-    }
-    .custom-checkbox:focus + span {
-      outline: 2px solid #6366f1;
-      outline-offset: 2px;
-    }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col bg-gray-50">
-  <!-- Header -->
-   
-  <header>
-  </header>
+<template>
+  <div class="popup-overlay" @click.self="closePopup">
+    <div class="popup-content w-full max-w-md mx-auto">
+      <div v-if="currentView === 'login'">
+        <h1 class="logo-font text-6xl font-bold text-gray-800 mb-12 select-none">BookTune</h1>
 
-  <!-- Main Form -->
-<main class="flex flex-1 flex-col items-center justify-center">
-  <form class="w-full max-w-xl bg-white rounded-xl shadow-lg px-10 py-10 mt-4">
-    <h1 class="text-4xl handwritten font-bold text-gray-800 select-none text-center mb-8">BookTune</h1>
-    <div class="flex items-center mb-6">
-      <label for="name" class="w-32 input-label handwritten text-gray-800">name :</label>
-        <input id="name" name="name" type="text" required
-          class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" />
-      </div>
-      <!-- Age -->
-      <div class="flex items-center mb-6">
-        <label for="age" class="w-32 input-label handwritten text-gray-800">Age :</label>
-        <input id="age" name="age" type="number" min="0" required
-          class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" />
-      </div>
-      <!-- Email -->
-      <div class="flex items-center mb-6">
-        <label for="email" class="w-32 input-label handwritten text-gray-800">e-mail :</label>
-        <input id="email" name="email" type="email" required
-          class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" />
-      </div>
-      <!-- Number -->
-      <div class="flex items-center mb-8">
-        <label for="number" class="w-32 input-label handwritten text-gray-800">Number</label>
-        <input id="number" name="number" type="tel" required
-          class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" />
-      </div>
+        <form class="w-full flex flex-col gap-4" @submit.prevent="handleLogin">
+          <input
+            type="text"
+            placeholder="id"
+            class="handwriting w-full px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 transition placeholder:text-gray-400"
+            autocomplete="username"
+            v-model="loginId"
+          />
+          <input
+            type="password"
+            placeholder="password"
+            class="handwriting w-full px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 transition placeholder:text-gray-400"
+            autocomplete="current-password"
+            v-model="loginPw"
+          />
+          <button
+            type="submit"
+            class="handwriting w-full py-3 mt-2 border-2 border-gray-400 rounded-lg text-lg font-bold bg-gray-400 hover:bg-blue-50 transition"
+          >
+            login
+          </button>
+        </form>
 
-      <!-- Music Genres -->
-      <div class="mb-8">
-        <div class="flex items-center mb-2">
-          <span class="handwritten text-lg text-gray-700 mr-4">Music Genres:</span>
-          <div class="flex gap-4">
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Pop</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Rock</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Jazz</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Hip-Hop</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Classical</span>
-            </label>
-          </div>
+        <div class="flex items-center w-full mt-4 mb-2">
+          <input id="remember" type="checkbox" class="accent-blue-600 w-5 h-5 rounded border-gray-400 mr-2" v-model="rememberId">
+          <label for="remember" class="text-lg text-gray-700 select-none">아이디 저장</label>
         </div>
-        <div class="ml-2 mt-1 text-sm text-gray-500"></div>
-      </div>
 
-      <!-- Book Genres -->
-      <div class="mb-10">
-        <div class="flex items-center mb-2">
-          <span class="handwritten text-lg text-gray-700 mr-4">Book Genres:</span>
-          <div class="flex gap-4">
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Fiction</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Non-fiction</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Mystery</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Fantasy</span>
-            </label>
-            <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="custom-checkbox hidden" />
-              <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
-              <span class="ml-2 text-base text-gray-700">Biography</span>
-            </label>
+        <div class="w-full bg-white rounded-lg shadow-sm py-5 px-4 flex flex-col items-center mb-6">
+          <div class="flex gap-4 mb-2">
+            <button type="button" class="social-btn bg-yellow-300 hover:bg-yellow-400" aria-label="카카오 로그인">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Kakao_icon.png" alt="Kakao" class="w-8 h-8">
+            </button>
+            <button type="button" class="social-btn bg-white border border-gray-300 hover:bg-gray-100" aria-label="구글 로그인">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="w-8 h-8">
+            </button>
           </div>
+          <p class="text-xs text-gray-500 text-center leading-tight mt-2">
+            개인정보 보호를 위해 공용 PC에서 사용 시 SNS계정의 로그아웃<br>
+            상태를 꼭 확인해 주세요.
+          </p>
         </div>
-        <div class="ml-2 mt-1 text-sm text-gray-500"></div>
-      </div>
 
-      <!-- Done Button -->
-      <div class="flex justify-center">
-        <button type="submit"
-          class="handwritten text-2xl px-12 py-2 border-2 border-gray-700 rounded-lg bg-white hover:bg-indigo-50 hover:border-indigo-400 transition font-bold shadow-sm">
-          done
+        <button
+          class="w-full py-3 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-blue-50 transition"
+          type="button"
+          @click="switchToSignup"
+        >
+          signup
         </button>
       </div>
-    </form>
-  </main>
-  <script>
-    // Custom checkbox styling
-    document.querySelectorAll('.custom-checkbox').forEach(input => {
-      input.addEventListener('change', function() {
-        if (this.checked) {
-          this.nextElementSibling.classList.add('bg-indigo-500', 'border-indigo-500');
+
+      <div v-else-if="currentView === 'signup'">
+        <form class="w-full max-w-xl bg-white rounded-xl shadow-lg px-10 py-10 mt-4">
+          <h1 class="logo-font text-4xl handwritten font-bold text-gray-800 select-none text-center mb-8">BookTune</h1>
+          <div class="flex items-center mb-6">
+            <label for="name" class="w-32 input-label handwritten text-gray-800">name :</label>
+            <input id="name" name="name" type="text" required
+              class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+              v-model="signupForm.name" />
+          </div>
+          <div class="flex items-center mb-6">
+            <label for="age" class="w-32 input-label handwritten text-gray-800">Age :</label>
+            <input id="age" name="age" type="number" min="0" required
+              class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+              v-model="signupForm.age" />
+          </div>
+          <div class="flex items-center mb-6">
+            <label for="email" class="w-32 input-label handwritten text-gray-800">e-mail :</label>
+            <input id="email" name="email" type="email" required
+              class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+              v-model="signupForm.email" />
+          </div>
+          <div class="flex items-center mb-8">
+            <label for="number" class="w-32 input-label handwritten text-gray-800">Number</label>
+            <input id="number" name="number" type="tel" required
+              class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+              v-model="signupForm.number" />
+          </div>
+
+          <div class="mb-8">
+            <div class="flex items-center mb-2">
+              <span class="handwritten text-lg text-gray-700 mr-4">Music Genres:</span>
+              <div class="flex gap-4 flex-wrap"> <label class="inline-flex items-center cursor-pointer" v-for="genre in musicGenres" :key="genre">
+                  <input type="checkbox" class="custom-checkbox hidden" :value="genre" v-model="signupForm.selectedMusicGenres" @change="updateCustomCheckbox" />
+                  <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
+                  <span class="ml-2 text-base text-gray-700">{{ genre }}</span>
+                </label>
+              </div>
+            </div>
+            <div class="ml-2 mt-1 text-sm text-gray-500"></div>
+          </div>
+
+          <div class="mb-10">
+            <div class="flex items-center mb-2">
+              <span class="handwritten text-lg text-gray-700 mr-4">Book Genres:</span>
+              <div class="flex gap-4 flex-wrap"> <label class="inline-flex items-center cursor-pointer" v-for="genre in bookGenres" :key="genre">
+                  <input type="checkbox" class="custom-checkbox hidden" :value="genre" v-model="signupForm.selectedBookGenres" @change="updateCustomCheckbox" />
+                  <span class="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center"></span>
+                  <span class="ml-2 text-base text-gray-700">{{ genre }}</span>
+                </label>
+              </div>
+            </div>
+            <div class="ml-2 mt-1 text-sm text-gray-500"></div>
+          </div>
+
+          <div class="flex justify-center">
+            <button type="submit" @click.prevent="handleSignup"
+              class="handwritten text-2xl px-12 py-2 border-2 border-gray-700 rounded-lg bg-white hover:bg-indigo-50 hover:border-indigo-400 transition font-bold shadow-sm">
+              done
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <button @click="closePopup" class="w-full py-3 mt-4 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-gray-100 transition">close</button>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  emits: ['close-popup', 'login-success', 'signup-success'],
+  data() {
+    return {
+      currentView: 'login', // 'login' 또는 'signup'
+      // Login Form Data
+      loginId: '',
+      loginPw: '',
+      rememberId: false,
+      // Signup Form Data
+      signupForm: {
+        name: '',
+        age: null,
+        email: '',
+        number: '',
+        selectedMusicGenres: [],
+        selectedBookGenres: []
+      },
+      musicGenres: ['Pop', 'Rock', 'Jazz', 'Hip-Hop', 'Classical'],
+      bookGenres: ['Fiction', 'Non-fiction', 'Mystery', 'Fantasy', 'Biography']
+    };
+  },
+  methods: { // 여기에 모든 메서드를 한 번만 정의합니다.
+    closePopup() {
+      this.$emit('close-popup');
+      // 팝업 닫을 때 뷰 초기화 (선택 사항)
+      this.currentView = 'login';
+    },
+    handleLogin() {
+      console.log('Login attempt:', this.loginId, this.loginPw);
+      // 로그인 API 호출 등 실제 로직
+      // 성공 시: this.$emit('login-success', { token: '...' });
+      this.closePopup();
+    },
+    switchToSignup() {
+      this.currentView = 'signup';
+      // 회원가입 폼 데이터 초기화 (선택 사항)
+      this.signupForm = {
+        name: '',
+        age: null,
+        email: '',
+        number: '',
+        selectedMusicGenres: [],
+        selectedBookGenres: []
+      };
+      // 뷰가 전환된 후 체크박스 스타일 업데이트를 확실히 하기 위해 호출
+      this.$nextTick(() => {
+        this.updateAllCustomCheckboxes();
+      });
+    },
+    handleSignup() {
+      console.log('Signup attempt:', this.signupForm);
+      // 회원가입 API 호출 등 실제 로직
+      // 성공 시: this.$emit('signup-success');
+      this.closePopup();
+    },
+    updateCustomCheckbox(event) {
+      // Tailwind CSS의 기본 체크박스에 대한 커스텀 스타일링을 Vue 방식으로 적용
+      const checkbox = event.target;
+      const span = checkbox.nextElementSibling; // 바로 다음 span 태그를 찾음
+      if (checkbox.checked) {
+        span.classList.add('bg-indigo-500', 'border-indigo-500');
+        span.classList.remove('bg-white', 'border-gray-400'); // 기본값 제거
+      } else {
+        span.classList.remove('bg-indigo-500', 'border-indigo-500');
+        span.classList.add('bg-white', 'border-gray-400'); // 기본값으로 복구
+      }
+    },
+    updateAllCustomCheckboxes() {
+      // 컴포넌트 마운트 시 또는 데이터 변경 시 모든 체크박스 스타일 업데이트
+      this.$el.querySelectorAll('.custom-checkbox').forEach(input => {
+        const span = input.nextElementSibling;
+        if (input.checked) {
+          span.classList.add('bg-indigo-500', 'border-indigo-500');
+          span.classList.remove('bg-white', 'border-gray-400');
         } else {
-          this.nextElementSibling.classList.remove('bg-indigo-500', 'border-indigo-500');
+          span.classList.remove('bg-indigo-500', 'border-indigo-500');
+          span.classList.add('bg-white', 'border-gray-400');
         }
       });
+    }
+  },
+  mounted() {
+    // 팝업이 마운트될 때 모든 커스텀 체크박스 초기 상태 설정
+    this.$nextTick(() => {
+      this.updateAllCustomCheckboxes();
     });
-  </script>
-</body>
-</html>
+  },
+  watch: {
+    // 이 watch 속성은 이미 올바른 위치에 있습니다.
+    'signupForm.selectedMusicGenres': 'updateAllCustomCheckboxes',
+    'signupForm.selectedBookGenres': 'updateAllCustomCheckboxes'
+  }
+};
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Nunito:wght@400;700&display=swap');
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 448px; /* max-w-md와 동일한 28rem */
+}
+
+/* 추가된/수정된 스타일 */
+.logo-font {
+  font-family: 'Indie Flower', cursive;
+  letter-spacing: 0.02em;
+}
+.handwriting {
+  font-family: 'Indie Flower', cursive;
+}
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem; /* w-12 */
+  height: 3rem; /* h-12 */
+  border-radius: 9999px; /* rounded-full */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease-in-out;
+}
+.social-btn:hover {
+  transform: scale(1.05);
+}
+.social-btn:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.input-label { /* Signup 폼의 label 스타일 */
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* 커스텀 체크박스 스타일링 */
+.custom-checkbox:checked + span {
+  /* Vue에서 클래스를 토글하기 때문에 이 부분은 Tailwind의 bg-indigo-500, border-indigo-500로 대체 */
+  /* background-color: #6366f1; */
+  /* border-color: #6366f1; */
+}
+.custom-checkbox + span {
+  transition: background 0.2s, border 0.2s;
+  /* 기본 상태 배경색과 테두리색 */
+  background-color: white; /* bg-white */
+  border-color: #9ca3af; /* border-gray-400 */
+}
+.custom-checkbox:focus + span {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+</style>
