@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import BookListView from '@/views/BookListView.vue'
 import BookSearchView from '@/views/BookSearchView.vue'
+import BookDetailView from '@/views/BookDetailView.vue'
 
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/BookSearch',
       name: 'BookSearch',
       component: BookSearchView,
+    },
+                {
+      path: '/BookDetail',
+      name: 'BookDetail',
+      component: BookDetailView,
     },
 
   ],
