@@ -3,10 +3,21 @@
     <!-- Header -->
     <header class="w-full flex items-center justify-between px-8 py-6 bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
       <div class="flex items-center gap-8">
-        <a href="#" class="nav-link text-gray-800">Home</a>
+        <a  class="nav-link text-gray-800">
+          <RouterLink 
+          :to="{ name: 'home'}">
+          Home
+        </RouterLink>
+          </a>
+
       </div>
       <div class="flex items-center gap-8">
-        <a href="#" class="nav-link text-gray-800">Sign up / Login</a>
+        <a href="#" class="nav-link text-gray-800" @click.prevent="openPopup">
+        
+          Sign up / Login
+        
+      </a>
+      <LoginView v-if="isPopupVisible" @close-popup="closePopup" />
       </div>
     </header>
 
@@ -31,24 +42,6 @@
   </div>
     </div>
 
-    <!-- 검색색 바바
-  <div class="w-full flex justify-center mt-12">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="책, 저자, 음악 검색..."
-      class="flex-1 max-w-lg px-5 h-12 rounded-l-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-200 text-lg bg-white transition"
-    />
-    <button
-      @click="handleSearch"
-      class="flex items-center justify-center w-12 h-12 bg-gray-400 text-white shadow-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50 transition duration-150 ease-in-out rounded-r-lg -ml-px"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13m-12 3H2.25M9 19c0 1.096-.45 2-1.006 2S6 20.096 6 19s.45-2 1.006-2S9 17.904 9 19zm0 0c0 1.096-.45 2-1.006 2s-1.006-.904-1.006-2S7.994 17 9 17zm12-3c0 1.096-.45 2-1.006 2s-1.006-.904-1.006-2S19.994 12 21 12zm0 0V6.75V4.5H21"/>
-      </svg>
-    </button>
-  </div> -->
-
 
   </main>
   </div>
@@ -59,12 +52,27 @@
 
 
 
-<script>
-export default {
-  name: "App",
-};
-
+<script >
 import { RouterView } from 'vue-router'
+import LoginView from './views/LoginView.vue'
+export default {
+  components: {
+    LoginView
+  },
+  data() {
+    return {
+      isPopupVisible: false // 팝업창 표시 여부를 제어하는 데이터
+    };
+  },
+  methods: {
+    openPopup() {
+      this.isPopupVisible = true;
+    },
+    closePopup() {
+      this.isPopupVisible = false;
+    }
+  }
+};
 
 </script>
 
