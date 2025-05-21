@@ -12,5 +12,5 @@ from books.models import Books
 data = serialize('json', Books.objects.all())
 parsed = json.loads(data)
 
-with open("books_hangul.json", "w", encoding="utf-8") as f:
+with open("books.json", "w", encoding="utf-8") as f:
     json.dump(parsed, f, ensure_ascii=False, indent=4)
