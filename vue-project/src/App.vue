@@ -11,10 +11,16 @@
           </a>
       </div>
       <div class="flex items-center gap-8">
-        <a href="#" class="nav-link text-gray-800" @click.prevent="openPopup">
-          Sign up / Login
-      </a>
-      <LoginView v-if="isPopupVisible" @close-popup="closePopup" />
+        <div v-if="!isLoggedIn">
+          <a href="#" class="nav-link text-gray-800" @click.prevent="openLoginPopup">Login</a>
+          <span> | </span>
+          <a href="#" class="nav-link text-gray-800" @click.prevent="openSignupPopup">Sign up</a>
+        </div>
+        <div v-else>
+          <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
+        </div>
+        <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
+        <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
       </div>
     </header>
     <!-- 로고/검색바: 모든 페이지에서 항상 보이게 -->
@@ -41,34 +47,73 @@
   </div>
 </template>
 
-<script>
-import { RouterView } from 'vue-router'
-import LoginView from './views/LoginView.vue'
-export default {
-  components: {
-    LoginView
-  },
-  data() {
-    return {
-      isPopupVisible: false,
-      searchKeyword: ''
-    };
-  },
-  methods: {
-    openPopup() {
-      this.isPopupVisible = true;
-    },
-    closePopup() {
-      this.isPopupVisible = false;
-    },
-    onSearch() {
-      if (this.searchKeyword.trim()) {
-        this.$router.push({ name: 'BookSearch', query: { q: this.searchKeyword.trim() } })
-        this.searchKeyword = ''
+<script setup>
+import { ref, onMounted } from 'vue';
+import { RouterView, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
+import LoginView from './views/LoginView.vue';
+import SignupView from './views/SignUpView.vue';
+import axios from 'axios';
+
+const isLoginPopupVisible = ref(false);
+const isSignupPopupVisible = ref(false);
+const searchKeyword = ref('');
+const isLoggedIn = ref(false);
+const nickname = ref('');
+
+const router = useRouter();
+
+function openLoginPopup() {
+  isLoginPopupVisible.value = true;
+}
+function closeLoginPopup() {
+  isLoginPopupVisible.value = false;
+  checkLogin();
+}
+function openSignupPopup() {
+  isSignupPopupVisible.value = true;
+}
+function closeSignupPopup() {
+  isSignupPopupVisible.value = false;
+  checkLogin();
+}
+function onSearch() {
+  if (searchKeyword.value.trim()) {
+    router.push({ name: 'BookSearch', query: { q: searchKeyword.value.trim() } });
+    searchKeyword.value = '';
+  }
+}
+async function checkLogin() {
+  const access = localStorage.getItem('access');
+  if (access) {
+    isLoggedIn.value = true;
+    const storedNickname = localStorage.getItem('nickname');
+    if (storedNickname) {
+      nickname.value = storedNickname;
+    } else {
+      try {
+        const res = await axios.get('/api/accounts/profile/', {
+          headers: { Authorization: `Bearer ${access}` }
+        });
+        nickname.value = res.data.nickname;
+        localStorage.setItem('nickname', res.data.nickname);
+      } catch (e) {
+        isLoggedIn.value = false;
+        nickname.value = '';
       }
     }
+  } else {
+    isLoggedIn.value = false;
+    nickname.value = '';
   }
-};
+}
+function goProfile() {
+  router.push({ name: 'profile' });
+}
+
+onMounted(() => {
+  checkLogin();
+});
 </script>
 
 <style scoped>
