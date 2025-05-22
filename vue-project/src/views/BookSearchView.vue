@@ -9,13 +9,13 @@
     <BookList 
       v-else
       :keyword="keyword"
-      :books="searchResults"
+      :books="filteredResults"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import BookList from '@/components/search/BookList.vue'
@@ -26,6 +26,19 @@ const keyword = ref(route.query.q || '')
 const searchResults = ref([])
 const loading = ref(false)
 const error = ref(null)
+
+// API로 받아온 결과에서 검색어와 일치하는 항목만 필터링
+const filteredResults = computed(() => {
+  if (!keyword.value.trim()) return searchResults.value
+  
+  const lowerKeyword = keyword.value.toLowerCase()
+  return searchResults.value.filter(book => {
+    return (
+      (book.title && book.title.toLowerCase().includes(lowerKeyword)) ||
+      (book.author && book.author.toLowerCase().includes(lowerKeyword))
+    )
+  })
+})
 
 const performSearch = async () => {
   if (!keyword.value.trim()) {
@@ -38,7 +51,8 @@ const performSearch = async () => {
 
   try {
     // store의 searchBooks 메서드 사용하여 API 검색
-    searchResults.value = await store.searchBooks(keyword.value)
+    const results = await store.searchBooks(keyword.value)
+    searchResults.value = results
   } catch (err) {
     console.error('Search error:', err)
     error.value = '검색 중 오류가 발생했습니다.'
