@@ -239,23 +239,6 @@
     },
     {
         "model": "books.books",
-        "pk": 15,
-        "fields": {
-            "isbn": "K482039295",
-            "cover": "https://image.aladin.co.kr/product/36428/50/cover200/k482039295_1.jpg",
-            "title": "사카모토 홀리데이즈 1 (특별판) - 일러스트 포스트 카드(초판 부록) + 홀로그램 아크릴 영수증 + 일러스트 캔뱃지 3종 + 홀로그램 카드 4종 + 나구모의 순간포착 스티커 2종",
-            "author": "오오카와 테츠 (지은이), 스즈키 유우토 (원작)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-05-30",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=4k2mHk2hD0c",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 15
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 16,
         "fields": {
             "isbn": "K432039295",
@@ -320,23 +303,6 @@
             "category_name": "소설/시/희곡",
             "description": "『룬의 아이들 - 윈터러』에 이은 2부 『룬의 아이들 - 데모닉』이 완결된 지 11년 만의 신작이다. 1부 ‘룬의 아이들’ 시리즈 3부에 해당하는 이번 작품은 실종된 오빠에 얽힌 비밀과 맞서 분투하는 공녀를 중심으로 ‘블러디드’라는 힘에 관한 이야기를 다루고 있다.",
             "best_rank": 19
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 20,
-        "fields": {
-            "isbn": "8932925046",
-            "cover": "https://image.aladin.co.kr/product/36236/28/cover200/8932925046_2.jpg",
-            "title": "바움가트너",
-            "author": "폴 오스터 (지은이), 정영목 (옮긴이)",
-            "publisher": "열린책들",
-            "pubdate": "2025-04-30",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "소설/시/희곡",
-            "description": "",
-            "best_rank": 20
         }
     },
     {
@@ -749,23 +715,6 @@
     },
     {
         "model": "books.books",
-        "pk": 45,
-        "fields": {
-            "isbn": "K332039889",
-            "cover": "https://image.aladin.co.kr/product/36405/31/cover200/k332039889_1.jpg",
-            "title": "오가미 츠미키와 기일상 2 (트리플 특전판) - 학생증 + 일러스트 카드 + 클리어 북마크",
-            "author": "모리시타 미유 (지은이)",
-            "publisher": "학산문화사(만화)",
-            "pubdate": "2025-05-23",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=5qz4MZ6P4Ww",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 45
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 46,
         "fields": {
             "isbn": "K432038719",
@@ -966,23 +915,6 @@
             "category_name": "외국어",
             "description": "정기시험 최신 기출문제 10세트가 수록되어 있다. 시험에 나온 기출문제로 실전 감각을 키워 시험에 확실하게 대비하자! 수록된 10세트의 LC 음원은 모두 정기시험 성우의 음원이다. 시험장에서 듣게 될 음성으로 공부하면 까다로운 영국식, 호주식 발음도 걱정 없다.",
             "best_rank": 57
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 58,
-        "fields": {
-            "isbn": "K342039296",
-            "cover": "https://image.aladin.co.kr/product/36428/73/cover200/k342039296_1.jpg",
-            "title": "단다단 17",
-            "author": "타츠 유키노부 (지은이)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-05-19",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=1y4D6e3DQb0",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 58
         }
     },
     {
@@ -1191,23 +1123,6 @@
     },
     {
         "model": "books.books",
-        "pk": 71,
-        "fields": {
-            "isbn": "K842039575",
-            "cover": "https://image.aladin.co.kr/product/36380/71/cover200/k842039575_1.jpg",
-            "title": "2025 헝그리스포츠 스포츠지도사 보디빌딩 실기·구술 2급 - 5종 자격증 포함",
-            "author": "최대로 (지은이)",
-            "publisher": "직업상점",
-            "pubdate": "2025-05-15",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "수험서/자격증",
-            "description": "",
-            "best_rank": 71
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 72,
         "fields": {
             "isbn": "K012038787",
@@ -1221,23 +1136,6 @@
             "category_name": "사회과학",
             "description": "소년공에서 대선후보까지, 이재명을 샅샅이 톺아본 책이다.",
             "best_rank": 72
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 73,
-        "fields": {
-            "isbn": "K412038347",
-            "cover": "https://image.aladin.co.kr/product/36303/96/cover200/363039652_1.jpg",
-            "title": "원펀맨 One Punch Man 32 - 축복",
-            "author": "ONE (지은이), 무라타 유스케 (그림)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-04-28",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 73
         }
     },
     {
@@ -1854,23 +1752,6 @@
     },
     {
         "model": "books.books",
-        "pk": 110,
-        "fields": {
-            "isbn": "8988474910",
-            "cover": "https://image.aladin.co.kr/product/33258/31/cover200/8988474910_1.jpg",
-            "title": "SQL 자격검정 실전문제 - 국가공인 SQL전문가. 국가공인 SQL개발자, 개정판",
-            "author": "한국데이터산업진흥원 (지은이)",
-            "publisher": "한국데이터산업진흥원",
-            "pubdate": "2023-12-29",
-            "customer_review": 7,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "컴퓨터/모바일",
-            "description": "",
-            "best_rank": 110
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 111,
         "fields": {
             "isbn": "K352038062",
@@ -2428,23 +2309,6 @@
             "category_name": "과학",
             "description": "칼 세이건의 <코스모스> 특별판이 세이건의 서거 10주기를 기념하여 출간되었다. 이 특별판은 지난 2004년 12월에 출간된 <코스모스>(양장본)의 텍스트 전문과 도판 일부를 사용하고 판형을 휴대하기 쉬운 신국판으로 바꿔 출간한 책으로, 독자들이 좀 더 쉽게 칼 세이건의 메시지를 만날 수 있도록 배려한 책이다.",
             "best_rank": 143
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 144,
-        "fields": {
-            "isbn": "K232039882",
-            "cover": "https://image.aladin.co.kr/product/36407/74/cover200/k232039882_1.jpg",
-            "title": "운명의 사람을 만나는 이야기 6 (한정판) - 32p 소책자",
-            "author": "아나신 (지은이)",
-            "publisher": "학산문화사(만화)",
-            "pubdate": "2025-05-23",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=9XH8I4vA9aM",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 144
         }
     },
     {
@@ -3435,23 +3299,6 @@
     },
     {
         "model": "books.books",
-        "pk": 203,
-        "fields": {
-            "isbn": "K742038549",
-            "cover": "https://image.aladin.co.kr/product/36318/53/cover200/k742038549_1.jpg",
-            "title": "킹덤 Kingdom 73",
-            "author": "하라 야스히사 (지은이)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-04-29",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 203
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 204,
         "fields": {
             "isbn": "K012037942",
@@ -3771,23 +3618,6 @@
             "category_name": "경제경영",
             "description": "베스트셀러 《박태웅의 AI 강의》가 최신 AI 트렌드와 더 깊은 인사이트를 담아 돌아왔다. 인공지능 원리에 대한 쉬운 설명은 그대로 유지한 채 더욱 깊이 있는 기술 지식이 책 곳곳에 추가되었고, 우리가 반드시 알아야 할 AI 트렌드는 물론이요, AI로 인해 변화될 앞으로의 우리 모습까지 조망하고 있다.",
             "best_rank": 222
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 223,
-        "fields": {
-            "isbn": "K892930447",
-            "cover": "https://image.aladin.co.kr/product/33976/8/cover200/k892930447_1.jpg",
-            "title": "원페이지 교육학 기본서 상 - 제7판 2쇄",
-            "author": "Dave (지은이)",
-            "publisher": "새벽노을",
-            "pubdate": "2025-03-04",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "수험서/자격증",
-            "description": "",
-            "best_rank": 223
         }
     },
     {
@@ -5288,23 +5118,6 @@
     },
     {
         "model": "books.books",
-        "pk": 312,
-        "fields": {
-            "isbn": "K822930447",
-            "cover": "https://image.aladin.co.kr/product/33976/10/cover200/k822930447_1.jpg",
-            "title": "원페이지 교육학 기본서 하 - 제7판 2쇄",
-            "author": "Dave (지은이)",
-            "publisher": "새벽노을",
-            "pubdate": "2025-03-04",
-            "customer_review": 10,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "수험서/자격증",
-            "description": "",
-            "best_rank": 312
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 313,
         "fields": {
             "isbn": "K812636693",
@@ -6665,40 +6478,6 @@
     },
     {
         "model": "books.books",
-        "pk": 393,
-        "fields": {
-            "isbn": "K642039996",
-            "cover": "https://image.aladin.co.kr/product/36417/22/cover200/k642039996_1.jpg",
-            "title": "2025 오직 간호대생을 위한 간호사 면접 - 간호사/면접 분야 베스트셀러 1위, 2025년 간호사 채용 자료를 분석해 최신 정보 완벽 반영, 550개 이상의 간호사 면접 질문 및 모범 답변 제공",
-            "author": "주선희, 간호취업연구소 (지은이)",
-            "publisher": "홍지문",
-            "pubdate": "2025-05-02",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "수험서/자격증",
-            "description": "",
-            "best_rank": 393
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 394,
-        "fields": {
-            "isbn": "K082039577",
-            "cover": "https://image.aladin.co.kr/product/36381/66/cover200/k082039577_1.jpg",
-            "title": "2026 계획된우연 김진구 전문상담 기본개념 3",
-            "author": "김진구 (지은이)",
-            "publisher": "계획된우연",
-            "pubdate": "2025-04-30",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "수험서/자격증",
-            "description": "",
-            "best_rank": 394
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 395,
         "fields": {
             "isbn": "K182038304",
@@ -7362,23 +7141,6 @@
     },
     {
         "model": "books.books",
-        "pk": 434,
-        "fields": {
-            "isbn": "K502039882",
-            "cover": "https://image.aladin.co.kr/product/36407/78/cover200/k502039882_1.jpg",
-            "title": "절대 BL이 되는 세계 VS 절대 BL이 되고 싶지 않은 남자 5",
-            "author": "콘키치 (지은이)",
-            "publisher": "블랑코믹스(BLANC COMICS)",
-            "pubdate": "2025-05-23",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 434
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 435,
         "fields": {
             "isbn": "893747395X",
@@ -7719,23 +7481,6 @@
     },
     {
         "model": "books.books",
-        "pk": 455,
-        "fields": {
-            "isbn": "K612039395",
-            "cover": "https://image.aladin.co.kr/product/36442/75/cover200/k612039395_1.jpg",
-            "title": "참을 수 없는 건 사랑인 걸까 2",
-            "author": "소라하나 미아 (지은이)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-05-20",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=7zP0zV7jQwE",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 455
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 456,
         "fields": {
             "isbn": "K062039295",
@@ -7940,23 +7685,6 @@
     },
     {
         "model": "books.books",
-        "pk": 468,
-        "fields": {
-            "isbn": "K452036456",
-            "cover": "https://image.aladin.co.kr/product/35801/40/cover200/k452036456_1.jpg",
-            "title": "나츠메 우인장 30",
-            "author": "미도리카와 유키 (지은이), 서현아 (옮긴이)",
-            "publisher": "학산문화사(만화)",
-            "pubdate": "2025-02-28",
-            "customer_review": 9,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 468
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 469,
         "fields": {
             "isbn": "K112932504",
@@ -7970,23 +7698,6 @@
             "category_name": "인문학",
             "description": "《요즘 어른을 위한 최소한의 문해력》, 《요즘 어른을 위한 최소한의 맞춤법》 등 10만 독자가 선택한 작가 이주윤이 그만의 필사 글쓰기 노하우를 담은 《더 좋은 문장을 쓰고 싶은 당신을 위한 필사책》을 출간했다.",
             "best_rank": 469
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 470,
-        "fields": {
-            "isbn": "K092932166",
-            "cover": "https://image.aladin.co.kr/product/34276/32/cover200/k092932166_1.jpg",
-            "title": "토마토 컵라면 (스페셜 에디션)",
-            "author": "차정은 (지은이)",
-            "publisher": "부크크(bookk)",
-            "pubdate": "2024-04-08",
-            "customer_review": 8,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "소설/시/희곡",
-            "description": "",
-            "best_rank": 470
         }
     },
     {
@@ -8076,23 +7787,6 @@
     },
     {
         "model": "books.books",
-        "pk": 476,
-        "fields": {
-            "isbn": "K032039395",
-            "cover": "https://image.aladin.co.kr/product/36442/71/cover200/k032039395_1.jpg",
-            "title": "길티 이노센스 10",
-            "author": "윤한 (지은이)",
-            "publisher": "대원씨아이(만화)",
-            "pubdate": "2025-05-20",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 476
-        }
-    },
-    {
-        "model": "books.books",
         "pk": 477,
         "fields": {
             "isbn": "K582039293",
@@ -8123,23 +7817,6 @@
             "category_name": "소설/시/희곡",
             "description": "망명지로 추정되는 가누도스 항만국은 비협조적이라서 방문 구실이 보이지 않는다. 해적이라며 멸시당하는 바이더리언 일족이 노예로서 노동을 강요받고 있다는 소문도 있다. 그 상황을 타개하기 위해 미아는 가누도스의 왕녀 오우라니아와 친목 다지기 작전을 결행하는데….",
             "best_rank": 478
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 479,
-        "fields": {
-            "isbn": "K302039882",
-            "cover": "https://image.aladin.co.kr/product/36407/75/cover200/k302039882_1.jpg",
-            "title": "운명의 사람을 만나는 이야기 6",
-            "author": "아나신 (지은이)",
-            "publisher": "학산문화사(만화)",
-            "pubdate": "2025-05-23",
-            "customer_review": 0,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "만화",
-            "description": "",
-            "best_rank": 479
         }
     },
     {
@@ -8259,23 +7936,6 @@
             "category_name": "인문학",
             "description": "예민한 기질로 인해 누군가를 만나고 나면 금세 녹초가 되고, 일상에서 항상 기력이 부족한 사람들을 위해 예민함의 특성을 이해하고, 긴장과 불안, 스트레스에서 벗어나 삶의 균형을 찾을 수 있는 방법을 알려주는 책이다.",
             "best_rank": 486
-        }
-    },
-    {
-        "model": "books.books",
-        "pk": 487,
-        "fields": {
-            "isbn": "K012930648",
-            "cover": "https://image.aladin.co.kr/product/33990/42/cover200/k012930648_2.jpg",
-            "title": "행복의 기원 - 인간의 행복은 어디서 오는가",
-            "author": "서은국 (지은이)",
-            "publisher": "21세기북스",
-            "pubdate": "2024-05-22",
-            "customer_review": 9,
-            "recommended_song": "https://www.youtube.com/watch?v=oWbXyiwXFLc",
-            "category_name": "인문학",
-            "description": "",
-            "best_rank": 487
         }
     },
     {

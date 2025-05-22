@@ -7,6 +7,7 @@ import requests
 from pprint import pprint
 from .models import Books
 from openai import OpenAI
+from django.db.models import Q
 
 ALADIN_API_URL = config('ALADIN_API_URL')
 ALADIN_API_KEY = config('ALADIN_API_KEY')
@@ -32,20 +33,45 @@ def fetch_and_save_books(total_pages=20, results_per_page=50):
             category_parts = raw_category.split('>')
             category_main = category_parts[1] if len(category_parts) > 1 else ''  # 2번째 항목 추출
 
-            Books.objects.update_or_create(
-                isbn=item['isbn'],
-                defaults={
-                    'title': item['title'],
-                    'category_name': category_main,
-                    'pubdate': item['pubDate'],
-                    'publisher': item['publisher'],
-                    'author': item['author'],
-                    'description': item['description'],
-                    'cover': item['cover'],
-                    'customer_review': item['customerReviewRank'],
-                    'best_rank': item['bestRank'],
-                }
-            )
+            # description이 비어있지 않은 경우에만 저장
+            if item.get('description'):
+                Books.objects.update_or_create(
+                    isbn=item['isbn'],
+                    defaults={
+                        'title': item['title'],
+                        'category_name': category_main,
+                        'pubdate': item['pubDate'],
+                        'publisher': item['publisher'],
+                        'author': item['author'],
+                        'description': item['description'],
+                        'cover': item['cover'],
+                        'customer_review': item['customerReviewRank'],
+                        'best_rank': item['bestRank'],
+                    }
+                )
+
+def remove_books_without_description():
+    """
+    description이 비어있는 책들을 삭제하는 함수
+    비어있는 경우: None, '', 공백문자로만 이루어진 경우
+    """
+    # Q 객체를 사용하여 description이 None이거나 빈 문자열이거나 공백만 있는 경우를 모두 처리
+    empty_books = Books.objects.filter(
+        Q(description__isnull=True) |  # None인 경우
+        Q(description='') |            # 빈 문자열인 경우
+        Q(description__regex=r'^\s*$') # 공백만 있는 경우
+    )
+    
+    # 삭제될 책의 수를 저장
+    deleted_count = empty_books.count()
+    
+    # 책 삭제
+    empty_books.delete()
+    
+    return {
+        'deleted_count': deleted_count,
+        'message': f'{deleted_count}개의 description이 비어있는 책이 삭제되었습니다.'
+    }
 
 from openai import OpenAI
 

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     
     # DRF
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
     
     # CORS
@@ -159,6 +160,8 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -208,4 +211,12 @@ SOCIALACCOUNT_PROVIDERS = {
             'account_email',
         ],
     }
+}
+
+# dj-rest-auth 설정
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+    'JWT_AUTH_HTTPONLY': False,
 }
