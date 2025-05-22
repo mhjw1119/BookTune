@@ -12,12 +12,8 @@ class UserSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
-        fields = [
-            'isbn', 'cover', 'title', 'author', 'publisher',
-            'pubdate', 'customer_review', 'recommended_song',
-            'category_name', 'description', 'best_rank',
-            'main_category'
-        ]
+        fields = '__all__'
+        read_only_fields = ['isbn']
 
 class ThreadSongSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
