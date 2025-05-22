@@ -9,48 +9,37 @@
           Home
         </RouterLink>
           </a>
-
       </div>
       <div class="flex items-center gap-8">
         <a href="#" class="nav-link text-gray-800" @click.prevent="openPopup">
-        
           Sign up / Login
-        
       </a>
       <LoginView v-if="isPopupVisible" @close-popup="closePopup" />
       </div>
     </header>
-
-    <!-- Main: 로고를 화면 정중앙에 -->
-    <main class="flex flex-col justify-center items-center h-screen text-center">
-      <!-- 헤더 높이만큼 padding 줌 (py-6 = 약 24px) -->
-    <div class="flex-1 flex flex-col items-center">
+    <!-- 로고/검색바: 모든 페이지에서 항상 보이게 -->
+    <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">BookTune</span>
       <span class="text-gray-500 mt-1 text-base tracking-wide">음악과 함께 즐기는 독서</span>
-      <!-- Search Bar -->
-  <div class="w-full flex justify-center mt-12">
-    <input
-      type="text"
-      placeholder="책, 저자, 음악 검색..."
-      class="flex-1 max-w-lg px-5 h-12 rounded-l-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-200 text-lg bg-white transition"
-    />
-    <button class="flex items-center justify-center w-12 h-12 bg-gray-400 text-white shadow-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50 transition duration-150 ease-in-out rounded-r-lg -ml-px">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13m-12 3H2.25M9 19c0 1.096-.45 2-1.006 2S6 20.096 6 19s.45-2 1.006-2S9 17.904 9 19zm0 0c0 1.096-.45 2-1.006 2s-1.006-.904-1.006-2S7.994 17 9 17zm12-3c0 1.096-.45 2-1.006 2s-1.006-.904-1.006-2S19.994 12 21 12zm0 0V6.75V4.5H21"/>
-      </svg>
-    </button>
-  </div>
+      <form class="search-bar-container" @submit.prevent="onSearch">
+        <input
+          type="text"
+          placeholder="책, 저자, 음악 검색..."
+          class="search-input"
+          v-model="searchKeyword"
+        />
+        <button class="search-btn" type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
+            <circle cx="9" cy="19" r="3" fill="currentColor"/>
+            <circle cx="21" cy="17" r="3" fill="currentColor"/>
+          </svg>
+        </button>
+      </form>
     </div>
-
-
-  </main>
+    <RouterView />
   </div>
-
-  <RouterView />
-
 </template>
-
-
 
 <script >
 import { RouterView } from 'vue-router'
@@ -61,7 +50,8 @@ export default {
   },
   data() {
     return {
-      isPopupVisible: false // 팝업창 표시 여부를 제어하는 데이터
+      isPopupVisible: false,
+      searchKeyword: ''
     };
   },
   methods: {
@@ -70,10 +60,15 @@ export default {
     },
     closePopup() {
       this.isPopupVisible = false;
+    },
+    onSearch() {
+      if (this.searchKeyword.trim()) {
+        this.$router.push({ name: 'BookSearch', query: { q: this.searchKeyword.trim() } })
+        this.searchKeyword = ''
+      }
     }
   }
 };
-
 </script>
 
 <style scoped>
@@ -85,7 +80,7 @@ body {
 }
 .logo {
   font-family: 'Indie Flower', cursive;
-  font-size: 6rem; /* 헤더에 맞게 크기 조절을 고려해보세요. 현재 6rem은 매우 큽니다. */
+  font-size: 6rem;
   letter-spacing: 0.05em;
 }
 .section-title {
@@ -96,11 +91,62 @@ body {
 }
 .nav-link {
   font-family: 'Indie Flower', cursive;
-  font-size: 2rem; /* 헤더에 맞게 크기 조절을 고려해보세요. */
+  font-size: 2rem;
   transition: color 0.2s;
   font-weight: bold;
 }
 .nav-link:hover {
   color: #6366f1;
+}
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 3rem auto 0 auto;
+  background: #fff;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
+  padding: 0.25rem 0.5rem 0.25rem 1.2rem;
+}
+.search-input {
+  flex: 1;
+  border: 2.5px solid #ddd;
+  outline: none;
+  background: transparent;
+  font-size: 1.1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0;
+  text-align: center;
+  transition: border 0.2s;
+}
+.search-input:focus {
+  border: 2.5px solid #7bed9f;
+}
+.search-input::placeholder {
+  color: #bbb;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.search-btn {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: none;
+  box-shadow: none;
+}
+.search-btn svg {
+  color: #bbb;
+  transition: color 0.2s;
+}
+.search-btn:hover svg {
+  color: #7bed9f;
 }
 </style>

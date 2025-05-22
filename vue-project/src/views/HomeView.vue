@@ -1,12 +1,14 @@
 <template>
-  <div class="home-container">
-    <section class="best-books-section">
-      <h2 class="section-title">베스트셀러</h2>
+  <!-- 2단 그리드로 Best/Recommend 배치 -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl mx-auto mt-12 px-6 pb-16">
+    <!-- Best: 왼쪽 절반 -->
+    <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
+      <h2 class="section-title text-gray-800 mb-8 text-center">Best</h2>
       <BestBook />
     </section>
-    
-    <section class="recommend-books-section">
-      <h2 class="section-title">추천 도서</h2>
+    <!-- Recommend: 오른쪽 절반 -->
+    <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
+      <h2 class="section-title text-gray-800 mb-8 text-center">Recommend</h2>
       <RecommendBook />
     </section>
   </div>
@@ -15,26 +17,24 @@
 <script setup>
 import BestBook from '@/components/BestBook.vue'
 import RecommendBook from '@/components/RecommendBook.vue'
+import { useBookStore } from '@/stores/books'
+import { onMounted } from 'vue'
+
+const store = useBookStore()
+
+onMounted(async () => {
+  await store.getBooks()
+})
 </script>
 
 <style scoped>
-.home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
 .section-title {
-  font-size: 2rem;
+  font-family: 'Indie Flower', cursive;
+  font-size: 3rem;
+  letter-spacing: 0.03em;
   font-weight: bold;
-  margin-bottom: 1.5rem;
-  color: #333;
-  border-bottom: 2px solid #e74c3c;
-  padding-bottom: 0.5rem;
 }
-
-.best-books-section,
-.recommend-books-section {
-  margin-bottom: 3rem;
+.main-content-grid {
+  min-height: 500px;
 }
 </style>

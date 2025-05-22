@@ -1,13 +1,13 @@
 <template>
   <div class="best-books">
     <div class="books-grid">
-      <div v-for="book in bestBooks" :key="book.fields.isbn" class="book-card">
-        <div class="rank-badge">{{ book.fields.best_rank }}</div>
-        <img :src="book.fields.cover" :alt="book.fields.title" class="book-cover">
+      <div v-for="book in store.books.slice(0, 5)" :key="book.isbn" class="book-card">
+        <div class="rank-badge">{{ book.best_rank }}</div>
+        <img :src="book.cover" :alt="book.title" class="book-cover">
         <div class="book-info">
-          <h3 class="book-title">{{ book.fields.title }}</h3>
-          <p class="book-author">{{ book.fields.author }}</p>
-          <p class="book-publisher">{{ book.fields.publisher }}</p>
+          <h3 class="book-title">{{ book.title }}</h3>
+          <p class="book-author">{{ book.author }}</p>
+          <p class="book-publisher">{{ book.publisher }}</p>
         </div>
       </div>
     </div>
@@ -19,12 +19,18 @@ import { ref, onMounted } from 'vue'
 import { useBookStore } from '@/stores/books'
 
 const store = useBookStore()
-const bestBooks = ref([])
 
-onMounted(async () => {
-  await store.getBooks()
-  bestBooks.value = store.books.slice(0, 5) // 상위 5개 도서만 표시
-})
+
+// onMounted(async () => {
+//   await store.getBooks()
+//   bestBooks.value = store.books.value
+//     ? store.books.value.slice(0, 5)
+//     : []
+//   if (bestBooks != null) {
+//     console.log(bestBooks.value)
+//   }
+// })
+
 </script>
 
 <style scoped>
