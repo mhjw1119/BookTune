@@ -1,6 +1,6 @@
 <template>
   <div class="search-result-container">
-    {{ store.books[0].title }}
+    <!-- {{ store.books[0].title }} -->
     <h2 class="search-title">'{{ keyword }}' 검색 결과</h2>
     <div v-if="filteredBooks.length === 0" class="no-result">검색 결과가 없습니다.</div>
     <div v-else class="books-grid">
