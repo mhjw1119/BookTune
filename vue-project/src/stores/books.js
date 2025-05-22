@@ -11,10 +11,11 @@ export const useBookStore = defineStore('book', () => {
       method: 'get',
       url: `${API_URL}/api/books/`
     })
-    .then(res => {
+    .then( res => {
       books.value = res.data
+      console.log(books.value)
     })
-    .catch(err => console.log(err))
+    .catch( err => console.log(err))
   }
 
   const searchBooks = async function (query) {

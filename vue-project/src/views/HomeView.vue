@@ -17,6 +17,14 @@
 <script setup>
 import BestBook from '@/components/BestBook.vue'
 import RecommendBook from '@/components/RecommendBook.vue'
+import { useBookStore } from '@/stores/books'
+import { onMounted } from 'vue'
+
+const store = useBookStore()
+
+onMounted(async () => {
+  await store.getBooks()
+})
 </script>
 
 <style scoped>

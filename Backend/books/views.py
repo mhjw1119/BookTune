@@ -11,16 +11,8 @@ from .serializers import BookSerializer, ThreadSongSerializer
 
 @api_view(['GET'])
 def book_list(request):
-    queryset = Books.objects.all()
-    category = request.query_params.get('category', None)
-    search = request.query_params.get('search', None)
-    
-    if category:
-        queryset = queryset.filter(category_name=category)
-    if search:
-        queryset = queryset.filter(title__icontains=search)
-    
-    serializer = BookSerializer(queryset, many=True)
+    books = Books.objects.all()
+    serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

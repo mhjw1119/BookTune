@@ -24,13 +24,13 @@ import { useBookStore } from '@/stores/books'
 const store = useBookStore()
 const recommendBooks = ref([])
 
-onMounted(async () => {
-  await store.getBooks()
-  // customer_review가 높은 순으로 정렬하여 상위 4개 도서 표시
-  recommendBooks.value = [...store.books]
-    .sort((a, b) => b.fields.customer_review - a.fields.customer_review)
-    .slice(0, 4)
-})
+// onMounted(async () => {
+//   await store.getBooks()
+//   // customer_review가 높은 순으로 정렬하여 상위 4개 도서 표시
+//   recommendBooks.value = [...store.books]
+//     .sort((a, b) => b.fields.customer_review - a.fields.customer_review)
+//     .slice(0, 4)
+// })
 </script>
 
 <style scoped>
