@@ -16,6 +16,7 @@ class Books(models.Model):
     category_name = models.CharField(max_length=30)
     description = models.TextField()
     best_rank = models.IntegerField()
+    main_category = models.CharField(max_length=50, null=True, blank=True)  # 새 필드 추가
 
 class Thread_song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
