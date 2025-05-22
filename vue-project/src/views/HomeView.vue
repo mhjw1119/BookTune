@@ -4,7 +4,7 @@
     <!-- Best: 왼쪽 절반 -->
     <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
       <h2 class="section-title text-gray-800 mb-8 text-center">Best</h2>
-      <BestBook />
+      <bestBookView />
     </section>
     <!-- Recommend: 오른쪽 절반 -->
     <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import BestBook from '@/components/BestBook.vue'
+import BestBookView from '@/views/BestBookView.vue'
 import RecommendBook from '@/components/RecommendBook.vue'
 import { useBookStore } from '@/stores/books'
 import { onMounted } from 'vue'

@@ -14,27 +14,27 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-        {
+    {
       path: '/login',
       name: 'login',
       component: LoginView,
     },
-        {
-      path: '/BookList',
+    {
+      path: '/books',
       name: 'BookList',
       component: BookListView,
     },
-            {
-      path: '/BookSearch',
+    {
+      path: '/api/books',
       name: 'BookSearch',
       component: BookSearchView,
     },
-                {
-      path: '/BookDetail',
+    {
+      path: '/books/:isbn',
       name: 'BookDetail',
       component: BookDetailView,
+      props: true
     },
-
   ],
 })
 

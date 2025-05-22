@@ -2,86 +2,83 @@
   <div class="min-h-screen flex flex-col bg-gray-50">
     <!-- Main Content -->
     <main class="flex-1 flex flex-col items-center px-4 py-10">
-      <!-- Book Title -->
-      <h1 class="handwritten mb-10 text-5xl text-center tracking-wider">{{ book?.title || '책 제목' }}</h1>
-      <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Book Cover -->
-        <div class="rounded-box flex flex-col items-center justify-center p-6 min-h-[340px]">
-          <span class="section-title mb-2 text-lg">책 커버 이미지</span>
-          <img :src="book?.cover || 'https://placehold.co/220x300?text=Book+Cover'" :alt="book?.title" class="rounded-lg shadow-md border border-gray-200 mt-2">
-        </div>
-        <!-- Book Info & Description -->
-        <div class="flex flex-col gap-6 col-span-1 md:col-span-2">
-          <div class="rounded-box flex flex-row items-center justify-between px-6 py-4">
-            <div>
-              <span class="section-title">저자명 :</span>
-              <span class="ml-2 text-gray-700 font-medium">{{ book?.author }}</span>
-            </div>
-            <div>
-              <span class="section-title">출판사 :</span>
-              <span class="ml-2 text-gray-700 font-medium">{{ book?.publisher }}</span>
-            </div>
-          </div>
-          <div class="rounded-box px-6 py-6 min-h-[120px]">
-            <span class="section-title block mb-2">책 소개</span>
-            <p class="text-gray-700 leading-relaxed">
-              {{ book?.description || '책 소개가 없습니다.' }}
-            </p>
-          </div>
-          <div class="rounded-box px-6 py-6 flex flex-col items-center min-h-[120px]">
-            <span class="section-title mb-2">Youtube 로드 영상</span>
-            <!-- Youtube Embed Placeholder -->
-            <div class="w-full flex justify-center">
-              <iframe 
-                v-if="book?.recommended_song"
-                class="rounded-lg shadow border border-gray-200" 
-                width="320" 
-                height="180" 
-                :src="getYoutubeEmbedUrl(book.recommended_song)"
-                title="YouTube video" 
-                allowfullscreen
-              ></iframe>
-              <div v-else class="text-gray-500">
-                아직 연결된 영상이 없습니다.
-              </div>
-            </div>
+      <!-- Loading State -->
+      <div v-if="loading" class="flex items-center justify-center min-h-[50vh]">
+        <div class="text-gray-500">로딩 중...</div>
+      </div>
+      <!-- Error State -->
+      <div v-else-if="error" class="flex items-center justify-center min-h-[50vh]">
+        <div class="text-red-500">{{ error }}</div>
+      </div>
+      <!-- Content -->
+      <template v-else>
+        <!-- Book Title -->
+        <h1 class="handwritten mb-10 text-5xl text-center tracking-wider">{{ book?.title || '책 제목' }}</h1>
+        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Book Cover -->
+          <BookCover 
+            :cover="book?.cover"
+            :title="book?.title"
+          />
+          <!-- Book Info & Description -->
+          <div class="flex flex-col gap-6 col-span-1 md:col-span-2">
+            <BookInfo 
+              :author="book?.author"
+              :publisher="book?.publisher"
+            />
+            <BookDescription 
+              :description="book?.description"
+            />
+            <BookYoutubePlayer 
+              :video-url="book?.recommended_song"
+            />
           </div>
         </div>
-      </div>
-      <!-- AI Music Button -->
-      <div class="w-full max-w-5xl flex justify-start mt-10">
-        <button class="btn-ai-music px-10 py-5 shadow-lg" @click="generateAIMusic">make AI MUSIC</button>
-      </div>
+        <AIGenerateButton @generate="generateAIMusic" />
+      </template>
     </main>
   </div>
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/books'
+import BookCover from '@/components/bookdetail/BookCover.vue'
+import BookInfo from '@/components/bookdetail/BookInfo.vue'
+import BookDescription from '@/components/bookdetail/BookDescription.vue'
+import BookYoutubePlayer from '@/components/bookdetail/BookYoutubePlayer.vue'
+import AIGenerateButton from '@/components/bookdetail/AIGenerateButton.vue'
+
+const props = defineProps({
+  isbn: {
+    type: String,
+    required: true
+  }
+})
 
 const route = useRoute()
 const store = useBookStore()
 const book = ref(null)
+const loading = ref(true)
+const error = ref(null)
 
-const getYoutubeEmbedUrl = (url) => {
-  if (!url) return ''
-  // YouTube URL에서 비디오 ID 추출
-  const videoId = url.split('v=')[1]?.split('&')[0] || 
-                 url.split('youtu.be/')[1]?.split('?')[0] ||
-                 url.split('embed/')[1]?.split('?')[0]
-  
-  if (!videoId) return url // 유효한 YouTube URL이 아닌 경우 원래 URL 반환
-  return `https://www.youtube.com/embed/${videoId}`
-}
-
-onMounted(async () => {
-  const isbn = route.query.isbn
-  if (isbn) {
-    // 스토어에서 책 정보 가져오기
-    book.value = store.books.find(b => b.isbn === isbn)
-  }
+onMounted(() => {
+  axios({
+    method: 'get',
+    url: `${store.API_URL}/api/books/${props.isbn}/`,
+  })
+  .then((res) => {
+    console.log(res.data)
+    book.value = res.data
+    loading.value = false
+  })
+  .catch(err => {
+    console.log(err)
+    error.value = '책 정보를 불러오는데 실패했습니다.'
+    loading.value = false
+  })
 })
 
 const generateAIMusic = () => {

@@ -41,7 +41,7 @@
   </div>
 </template>
 
-<script >
+<script>
 import { RouterView } from 'vue-router'
 import LoginView from './views/LoginView.vue'
 export default {
