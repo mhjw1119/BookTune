@@ -107,3 +107,39 @@ def update_books_with_recommended_song():
             if url:
                 book.recommended_song = url
                 book.save()
+
+CATEGORY_MAPPING = {
+    '소설/시/희곡': '문학',
+    '에세이': '문학',
+    '고전': '문학',
+    '인문학': '인문/사회',
+    '사회과학': '인문/사회',
+    '역사': '인문/사회',
+    '종교/역학': '인문/사회',
+    '자기계발': '자기계발/실용',
+    '경제경영': '자기계발/실용',
+    '요리/살림': '자기계발/실용',
+    '건강/취미': '자기계발/실용',
+    '예술/대중문화': '예술/문화',
+    '여행': '예술/문화',
+    '수험서/자격증': '학습/교육',
+    '외국어': '학습/교육',
+    '컴퓨터/모바일': '학습/교육',
+    '과학': '학습/교육',
+    '만화': '아동/청소년',
+    '어린이': '아동/청소년',
+    '청소년': '아동/청소년',
+    '유아': '아동/청소년',
+    '좋은부모': '아동/청소년'
+}
+
+def update_main_category():
+    from .models import Books
+    updated = 0
+    for book in Books.objects.all():
+        mapped = CATEGORY_MAPPING.get(book.category_name, '기타')
+        if book.main_category != mapped:
+            book.main_category = mapped
+            book.save()
+            updated += 1
+    print(f"{updated}권의 main_category가 업데이트되었습니다.")
