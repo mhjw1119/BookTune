@@ -10,7 +10,6 @@ from .serializers import BookSerializer, ThreadSongSerializer
 # Create your views here.
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def book_list(request):
     queryset = Books.objects.all()
     category = request.query_params.get('category', None)
@@ -25,14 +24,12 @@ def book_list(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def book_detail(request, isbn):
     book = get_object_or_404(Books, isbn=isbn)
     serializer = BookSerializer(book)
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def book_categories(request):
     categories = Books.objects.values_list('category_name', flat=True).distinct()
     return Response(list(categories))
