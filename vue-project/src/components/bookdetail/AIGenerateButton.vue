@@ -1,11 +1,23 @@
 <template>
   <div class="w-full max-w-5xl flex justify-start mt-10">
-    <button class="btn-ai-music px-10 py-5 shadow-lg" @click="$emit('generate')">make AI MUSIC</button>
+    <button class="btn-ai-music px-10 py-5 shadow-lg" @click="showPopup">make AI MUSIC</button>
+    <CreateMusicView v-if="isPopupVisible" @close-popup="closePopup" />
   </div>
 </template>
 
 <script setup>
-defineEmits(['generate'])
+import { ref } from 'vue';
+import CreateMusicView from '@/views/CreateMusicView.vue';
+
+const isPopupVisible = ref(false);
+
+const showPopup = () => {
+  isPopupVisible.value = true;
+};
+
+const closePopup = () => {
+  isPopupVisible.value = false;
+};
 </script>
 
 <style scoped>
