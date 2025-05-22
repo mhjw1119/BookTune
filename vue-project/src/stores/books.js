@@ -1,0 +1,23 @@
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+import axios from 'axios'
+
+export const useBookStore = defineStore( 'book', ()=> {
+  const books = ref([])
+  const API_URL = 'http://127.0.0.1:8000'
+
+  const getBooks = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/books/`
+    })
+    .then(res => {
+      console.log(res)
+      console.log(reg.data)
+    })
+    .catch(err => console.log(err))
+
+  }
+  return { books, API_URL, getBooks}
+
+}, {persist: true})
