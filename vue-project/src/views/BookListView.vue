@@ -17,6 +17,7 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import BookList from '@/components/BookList.vue'
+import { onMounted } from 'vue'
 
 const route = useRoute()
 const store = useBookStore()
@@ -32,7 +33,11 @@ const fetchBooks = async () => {
   }
 }
 
-watch(() => route.query.genre, fetchBooks, { immediate: true })
+onMounted(() => {
+  fetchBooks()
+})
+
+watch(() => route.query.genre, fetchBooks)
 </script>
 
 <style scoped>
