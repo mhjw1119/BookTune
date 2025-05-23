@@ -25,6 +25,7 @@ const store = useBookStore()
 onMounted(async () => {
   await store.getBooks()
 })
+
 </script>
 
 <style scoped>

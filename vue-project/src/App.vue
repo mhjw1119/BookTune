@@ -18,6 +18,8 @@
         </div>
         <div v-else>
           <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
+          <span> | </span>
+          <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
         </div>
         <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
         <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
@@ -60,13 +62,14 @@ import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import SignupView from './views/SignUpView.vue';
 import axios from 'axios';
+import { useBookStore } from '@/stores/books'
 
 const isLoginPopupVisible = ref(false);
 const isSignupPopupVisible = ref(false);
 const searchKeyword = ref('');
 const isLoggedIn = ref(false);
-const nickname = ref('');
-
+const store = useBookStore()
+const nickname = ref('')
 const router = useRouter();
 
 function openLoginPopup() {
@@ -116,10 +119,37 @@ async function checkLogin() {
 function goProfile() {
   router.push({ name: 'profile' });
 }
+function logout() {
+  localStorage.removeItem('access');
+  localStorage.removeItem('nickname');
+  isLoggedIn.value = false;
+  nickname.value = '';
+  router.push({ name: 'home' });
+}
 
 onMounted(() => {
   checkLogin();
 });
+
+const getProfile = async function () {
+    try {
+      const access = localStorage.getItem('access');
+      const response = await axios({
+        method: 'get',
+        url: `${store.API_URL}/api/accounts/profile/`,
+        headers: { Authorization: `Bearer ${access}` } 
+      })
+      const result = response.data
+      return result
+    } catch (error) {
+      console.error('No profile', error)
+      throw error
+    }
+  }
+onMounted(async () => {
+  const profile = await getProfile()
+  nickname.value = profile.nickname
+})
 </script>
 
 <style scoped>
