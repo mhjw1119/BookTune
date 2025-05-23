@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Books, Thread_song
 from .serializers import BookSerializer, ThreadSongSerializer
-
+from .recommendation import recommend_books_word2vec
 # Create your views here.
 
 @api_view(['GET'])
@@ -55,3 +55,21 @@ def like_thread(request, thread_id):
     else:
         thread.like_users.add(request.user)
         return Response({'status': 'liked'})
+    
+@api_view(['GET'])
+def get_word2vec_recommendations(request):
+    user = request.user
+    recommended_books = recommend_books_word2vec(user)
+    serializer = BookSerializer(recommended_books, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_book(request, isbn):
+    book = Books.objects.get(isbn=isbn)
+    if request.user in book.like_users.all():
+        book.like_users.remove(request.user)
+        return Response({'status': 'unliked'}, status=status.HTTP_200_OK)
+    else:
+        book.like_users.add(request.user)
+        return Response({'status': 'liked'}, status=status.HTTP_200_OK)

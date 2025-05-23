@@ -2,23 +2,24 @@ from transformers import AutoProcessor, MusicgenForConditionalGeneration
 import scipy.io.wavfile as wavfile
 import torch
 
-def generate_music(prompt, output_path="generated_music.wav", duration=30):
+processor = AutoProcessor.from_pretrained("facebook/musicgen-medium")
+model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-medium")
+
+# GPU 사용 가능시 GPU 사용
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = model.to(device)
+
+def generate_music(prompt, output_path="generated_music.wav"):
     """
     주어진 프롬프트를 기반으로 음악을 생성합니다.
     
     Args:
         prompt (str): 음악 생성을 위한 텍스트 설명
         output_path (str): 생성된 음악을 저장할 경로
-        duration (int): 생성할 음악의 길이(초)
     """
     # 모델과 프로세서 로드
-    processor = AutoProcessor.from_pretrained("facebook/musicgen-large")
-    model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-large")
-    
-    # GPU 사용 가능시 GPU 사용
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = model.to(device)
-    model.set_generation_params(duration=duration)
+
+
     # 입력 텍스트 처리
     inputs = processor(
         text=[prompt],
@@ -29,7 +30,7 @@ def generate_music(prompt, output_path="generated_music.wav", duration=30):
     # 음악 생성
     audio_values = model.generate(
         **inputs,
-        max_new_tokens=256,
+        max_new_tokens=600,
         do_sample=True,
         guidance_scale=3.0,
     )
@@ -42,8 +43,4 @@ def generate_music(prompt, output_path="generated_music.wav", duration=30):
     
     return output_path
 
-if __name__ == "__main__":
-    # 테스트용 예제
-    prompt = "편안하고 차분한 스타일의 음악"
-    output_file = generate_music(prompt)
-    print(f"음악이 생성되어 {output_file}에 저장되었습니다.") 
+generate_music("편안하고 차분한 스타일의 음악을 만들어줘")
