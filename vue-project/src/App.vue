@@ -1,14 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div v-if="$route.meta.layout !== 'none'" class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="w-full flex items-center justify-between px-8 py-6 bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
       <div class="flex items-center gap-8">
-        <a  class="nav-link text-gray-800">
-          <RouterLink 
-          :to="{ name: 'home'}">
-          Home
-        </RouterLink>
-          </a>
+        <a href="#" class="nav-link text-gray-800">
+          <RouterLink :to="{ name: 'home'}">Home</RouterLink>
+        </a>
       </div>
       <div class="flex items-center gap-8">
         <div v-if="!isLoggedIn">
@@ -17,9 +14,11 @@
           <a href="#" class="nav-link text-gray-800" @click.prevent="openSignupPopup">Sign up</a>
         </div>
         <div v-else>
-          <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
-          <span> | </span>
-          <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
+          <template v-if="nickname">
+            <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
+            <span> | </span>
+            <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
+          </template>
         </div>
         <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
         <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
@@ -29,12 +28,9 @@
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">BookTune</span>
       <span class="text-gray-500 mt-1 text-base tracking-wide">음악과 함께 즐기는 독서</span>
-      <a  class="nav-link text-gray-800">
-          <RouterLink 
-          :to="{ name: 'BookList'}">
-          Book List
-        </RouterLink>
-          </a>
+      <a href="#" class="nav-link text-gray-800">
+        <RouterLink :to="{ name: 'BookList'}">Book List</RouterLink>
+      </a>
       <form class="search-bar-container" @submit.prevent="onSearch">
         <input
           type="text"
@@ -53,11 +49,14 @@
     </div>
     <RouterView />
   </div>
+  <div v-else>
+    <RouterView />
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, nextTick } from 'vue';
-import { RouterView, RouterLink } from 'vue-router';
+import { ref, onMounted, onUpdated, nextTick, watch } from 'vue';
+import { RouterView, RouterLink, useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import SignupView from './views/SignUpView.vue';
@@ -71,6 +70,7 @@ const isLoggedIn = ref(false);
 const store = useBookStore()
 const nickname = ref('')
 const router = useRouter();
+const route = useRoute();
 
 function openLoginPopup() {
   isLoginPopupVisible.value = true;
@@ -119,6 +119,13 @@ function logout() {
 onMounted(() => {
   checkLogin();
 });
+
+watch(
+  () => route.fullPath,
+  async () => {
+    await checkLogin();
+  }
+);
 
 const getProfile = async function () {
     try {

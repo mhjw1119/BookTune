@@ -42,6 +42,7 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+      meta: { layout: 'none' }
     },
     {
       path: '/create-music',

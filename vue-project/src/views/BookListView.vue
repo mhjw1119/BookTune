@@ -17,22 +17,33 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import BookList from '@/components/BookList.vue'
+import { onMounted } from 'vue'
 
 const route = useRoute()
 const store = useBookStore()
 const booklist = ref([])
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const fetchBooks = async () => {
   if (route.query.genre) {
     const result = await store.genreBooks(route.query.genre)
     booklist.value = result.filter(book => book.main_category === route.query.genre)
   } else {
+    await sleep(3)
+    
     await store.getBooks()
     booklist.value = store.books
   }
 }
 
-watch(() => route.query.genre, fetchBooks, { immediate: true })
+onMounted(() => {
+  fetchBooks()
+})
+
+watch(() => route.query.genre, fetchBooks)
 </script>
 
 <style scoped>
