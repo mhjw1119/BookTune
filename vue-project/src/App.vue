@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUpdated, nextTick } from 'vue';
 import { RouterView, RouterLink } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
@@ -96,22 +96,12 @@ async function checkLogin() {
   const access = localStorage.getItem('access');
   if (access) {
     isLoggedIn.value = true;
-    const storedNickname = localStorage.getItem('nickname');
-    if (storedNickname) {
-      nickname.value = storedNickname;
-    } else {
-      try {
-        const res = await axios.get('/api/accounts/profile/', {
-          headers: { Authorization: `Bearer ${access}` }
-        });
-        nickname.value = res.data.nickname;
-        localStorage.setItem('nickname', res.data.nickname);
-      } catch (e) {
-        isLoggedIn.value = false;
-        nickname.value = '';
-      }
+    await nextTick()
+    const profile = await getProfile()
+    nickname.value = profile.nickname
+
     }
-  } else {
+   else {
     isLoggedIn.value = false;
     nickname.value = '';
   }
@@ -121,7 +111,6 @@ function goProfile() {
 }
 function logout() {
   localStorage.removeItem('access');
-  localStorage.removeItem('nickname');
   isLoggedIn.value = false;
   nickname.value = '';
   router.push({ name: 'home' });

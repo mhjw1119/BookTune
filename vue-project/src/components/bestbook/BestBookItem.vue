@@ -85,4 +85,23 @@ const navigateToDetail = () => {
   font-size: 0.9rem;
   margin: 0.25rem 0;
 }
+
+.heart-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 1.7rem;
+  color: #ff6b81;
+  transition: transform 0.1s;
+  z-index: 2;
+}
+
+.heart-btn:hover {
+  transform: scale(1.2);
+  color: #ff3b5c;
+}
 </style> 
