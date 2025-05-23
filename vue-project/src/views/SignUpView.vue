@@ -60,7 +60,7 @@ export default {
         return;
       }
       try {
-        const res = await axios.post('http://localhost:8000/api/accounts/signup/', {
+        const res = await axios.post('http://localhost:8000/api/auth/signup/', {
           username: this.signupForm.ID,
           password: this.signupForm.password,
           password2: this.signupForm.confirmPassword,

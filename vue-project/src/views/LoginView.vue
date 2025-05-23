@@ -1,6 +1,7 @@
 <template>
   <div class="popup-overlay" @click.self="closePopup">
-    <div class="popup-content w-full max-w-md mx-auto"> <h1 class="logo-font text-6xl font-bold text-gray-800 mb-12 select-none">BookTune</h1>
+    <div class="popup-content w-full max-w-md mx-auto">
+      <h1 class="logo-font text-6xl font-bold text-gray-800 mb-12 select-none">BookTune</h1>
 
       <form class="w-full flex flex-col gap-4 mb-8" @submit.prevent="handleLogin">
         <input
@@ -26,15 +27,17 @@
       </form>
 
       <div class="w-full bg-white rounded-lg py-5 px-4 flex flex-col items-center mb-10">
-        <div class="flex gap-4 mb-2">
-          <button type="button" class="social-btn bg-yellow-300 hover:bg-yellow-400" aria-label="카카오 로그인" @click="socialLogin('kakao')">
-            <img src="/kakao_logo.png" alt="Kakao" class="social-icon">
+        <div class="social-login-buttons w-full">
+          <button type="button" class="social-button google" @click="handleGoogleLogin">
+            <img src="/google_logo.png" alt="google" />
+            <span>구글 계정으로 로그인</span>
           </button>
-          <button type="button" class="social-btn bg-white hover:bg-gray-100" aria-label="구글 로그인" @click="socialLogin('google')">
-            <img src="/google_logo.png" alt="Google" class="social-icon">
+          <button type="button" class="social-button kakao" @click="handleKakaoLogin">
+            <img src="/kakao_logo.png" alt="kakao" />
+            <span>카카오톡 계정으로 로그인</span>
           </button>
         </div>
-        <p class="text-xs text-gray-500 text-center leading-tight mt-2">
+        <p class="text-xs text-gray-500 text-center leading-tight mt-4">
           개인정보 보호를 위해 공용 PC에서 사용 시 SNS계정의 로그아웃<br>
           상태를 꼭 확인해 주세요.
         </p>
@@ -48,6 +51,9 @@
 <script>
 import axios from 'axios';
 
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const KAKAO_JS_KEY = import.meta.env.VITE_KAKAO_JS_KEY;
+
 export default {
   data() {
     return {
@@ -55,13 +61,28 @@ export default {
       loginPw: ''
     };
   },
+  mounted() {
+    // 카카오 SDK 스크립트 로드
+    if (!document.getElementById('kakao-sdk')) {
+      const script = document.createElement('script');
+      script.id = 'kakao-sdk';
+      script.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+      script.onload = () => {
+        if (window.Kakao && !window.Kakao.isInitialized()) {
+          window.Kakao.init(KAKAO_JS_KEY);
+          console.log('✅ Kakao SDK Initialized:', window.Kakao.isInitialized());
+        }
+      };
+      document.head.appendChild(script);
+    }
+  },
   methods: {
     closePopup() {
       this.$emit('close-popup');
     },
     async handleLogin() {
       try {
-        const response = await axios.post('http://localhost:8000/api/accounts/login/', {
+        const response = await axios.post('http://localhost:8000/api/auth/login/', {
           username: this.loginId,
           password: this.loginPw
         });
@@ -73,9 +94,20 @@ export default {
         alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.');
       }
     },
-    socialLogin(provider) {
-      window.location.href = `/api/accounts/${provider}/`;
-    }
+    handleGoogleLogin() {
+      const redirectUri = `${window.location.origin}/auth/google/callback`;
+      const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=email profile`;
+      window.location.href = oauthUrl;
+    },
+    handleKakaoLogin() {
+      if (window.Kakao) {
+        window.Kakao.Auth.authorize({
+          redirectUri: `${window.location.origin}/auth/kakao/callback`,
+        });
+      } else {
+        console.error('❌ Kakao SDK not available');
+      }
+    },
   }
 };
 </script>
@@ -119,41 +151,69 @@ export default {
 }
 
 /* 소셜 로그인 버튼 스타일 */
-.social-btn {
+.social-login-buttons {
   display: flex;
-  border: none;
-  outline: none;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 9999px;
-  overflow: hidden;
-  box-shadow: none;
-  transition: transform 0.15s ease-in-out;
-}
-.social-btn img {
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 9999px;
-}
-.social-btn:hover {
-  transform: scale(1.05);
 }
 
-/* ✅ 간격 조절용 추가 스타일 */
+.social-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.social-button img {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+.social-button span {
+  flex: 1;
+  text-align: center;
+}
+
+.social-button.google {
+  background-color: white;
+  color: #757575;
+  border: 1px solid #ddd;
+}
+
+.social-button.google:hover {
+  background-color: #f8f8f8;
+}
+
+.social-button.kakao {
+  background-color: #FEE500;
+  color: #000000;
+}
+
+.social-button.kakao:hover {
+  background-color: #FDD835;
+}
+
+/* 간격 조절용 추가 스타일 */
 form {
-  margin-bottom: 2rem; /* 로그인 폼과 소셜 로그인 영역 사이 */
+  margin-bottom: 2rem;
 }
 
 .popup-content > div {
-  margin-bottom: 2rem; /* 소셜 로그인 영역과 버튼 사이 */
+  margin-bottom: 2rem;
 }
 
 .popup-content > button:last-child {
-  margin-top: 1.5rem; /* 닫기 버튼 위 여백 */
+  margin-top: 1.5rem;
 }
+
 .handwriting {
   margin-bottom: 1rem;
 }

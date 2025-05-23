@@ -6,6 +6,8 @@ import BookSearchView from '@/views/BookSearchView.vue'
 import BookDetailView from '@/views/BookDetailView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import CreateMusicView from '@/views/CreateMusicView.vue'
+import GoogleCallback from '@/views/GoogleCallback.vue'
+import KakaoCallback from '@/views/KakaoCallback.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +47,16 @@ const router = createRouter({
       path: '/create-music',
       name: 'createMusic',
       component: CreateMusicView
+    },
+    {
+      path: '/auth/google/callback',
+      name: 'GoogleCallback',
+      component: GoogleCallback
+    },
+    {
+      path: '/auth/kakao/callback',
+      name: 'KakaoCallback',
+      component: KakaoCallback
     }
   ],
 })

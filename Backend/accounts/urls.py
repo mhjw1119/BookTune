@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -10,8 +10,8 @@ auth_patterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # 소셜 로그인
-    path('google/', views.GoogleLogin.as_view(), name='google_login'),
-    path('kakao/', views.KakaoLogin.as_view(), name='kakao_login'),
+    path('social/google/', views.GoogleLoginView.as_view(), name='google_login'),
+    path('social/kakao/', views.KakaoLoginView.as_view(), name='kakao_login'),
 ]
 
 # 사용자 관련 URL 패턴
