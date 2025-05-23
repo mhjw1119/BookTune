@@ -34,7 +34,7 @@ const getYoutubeEmbedUrl = (url) => {
                  url.split('embed/')[1]?.split('?')[0]
   
   if (!videoId) return url // 유효한 YouTube URL이 아닌 경우 원래 URL 반환
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`
+  return `https://www.youtube.com/embed/${videoId}`
 }
 </script>
 

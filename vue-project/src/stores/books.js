@@ -32,5 +32,19 @@ export const useBookStore = defineStore('book', () => {
     }
   }
 
-  return { books, API_URL, getBooks, searchBooks }
+  const genreBooks = async function (genre) {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${API_URL}/api/books/`,
+        params: { genre }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error filtering books by genre:', error)
+      throw error
+    }
+  }
+
+  return { books, API_URL, getBooks, searchBooks, genreBooks }
 }, { persist: true })

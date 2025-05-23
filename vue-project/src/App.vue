@@ -27,6 +27,12 @@
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">BookTune</span>
       <span class="text-gray-500 mt-1 text-base tracking-wide">음악과 함께 즐기는 독서</span>
+      <a  class="nav-link text-gray-800">
+          <RouterLink 
+          :to="{ name: 'BookList'}">
+          Book List
+        </RouterLink>
+          </a>
       <form class="search-bar-container" @submit.prevent="onSearch">
         <input
           type="text"
@@ -139,8 +145,12 @@ body {
   font-size: 2rem;
   transition: color 0.2s;
   font-weight: bold;
+  color: #000000;
 }
 .nav-link:hover {
+  color: #6366f1;
+}
+.nav-link:active {
   color: #6366f1;
 }
 .search-bar-container {
