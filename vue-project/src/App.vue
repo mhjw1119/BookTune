@@ -55,8 +55,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, nextTick } from 'vue';
-import { RouterView, RouterLink } from 'vue-router';
+import { ref, onMounted, onUpdated, nextTick, watch } from 'vue';
+import { RouterView, RouterLink, useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import SignupView from './views/SignUpView.vue';
@@ -70,6 +70,7 @@ const isLoggedIn = ref(false);
 const store = useBookStore()
 const nickname = ref('')
 const router = useRouter();
+const route = useRoute();
 
 function openLoginPopup() {
   isLoginPopupVisible.value = true;
@@ -118,6 +119,13 @@ function logout() {
 onMounted(() => {
   checkLogin();
 });
+
+watch(
+  () => route.fullPath,
+  async () => {
+    await checkLogin();
+  }
+);
 
 const getProfile = async function () {
     try {

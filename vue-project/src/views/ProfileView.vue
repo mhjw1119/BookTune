@@ -7,7 +7,6 @@
     </div>
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">PROFILE</span>
-
     </div>
     <div class="profile-content">
       <form @submit.prevent="updateProfile" class="profile-form">
@@ -26,6 +25,14 @@
         </div>
         <button type="submit" class="form-button">저장</button>
       </form>
+      <div class="profile-likes">
+        <h2>좋아요한 책</h2>
+        <BookList v-if="likedBooks.length" :books="likedBooks" />
+        <div v-else>좋아요한 책이 없습니다.</div>
+        <h2>좋아요한 스레드</h2>
+        <ThreadSongList v-if="likedThreads.length" :threads="likedThreads" />
+        <div v-else>좋아요한 스레드가 없습니다.</div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,12 +40,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import BookList from '@/components/BookList.vue'
+import ThreadSongList from '@/components/ThreadSongList.vue'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
 ]
 const nickname = ref('')
 const selectedGenres = ref([])
+const likedBooks = ref([])
+const likedThreads = ref([])
 
 onMounted(async () => {
   const access = localStorage.getItem('access')
@@ -47,6 +58,18 @@ onMounted(async () => {
   })
   nickname.value = res.data.nickname
   selectedGenres.value = res.data.favorite_genres || []
+
+  // 좋아요한 책
+  const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
+    headers: { Authorization: `Bearer ${access}` }
+  })
+  likedBooks.value = resBooks.data
+
+  // 좋아요한 ThreadSong
+  const resThreads = await axios.get('http://localhost:8000/api/threads/liked/', {
+    headers: { Authorization: `Bearer ${access}` }
+  })
+  likedThreads.value = resThreads.data
 })
 
 const updateProfile = async () => {

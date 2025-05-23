@@ -23,11 +23,17 @@ const route = useRoute()
 const store = useBookStore()
 const booklist = ref([])
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const fetchBooks = async () => {
   if (route.query.genre) {
     const result = await store.genreBooks(route.query.genre)
     booklist.value = result.filter(book => book.main_category === route.query.genre)
   } else {
+    await sleep(3)
+    
     await store.getBooks()
     booklist.value = store.books
   }

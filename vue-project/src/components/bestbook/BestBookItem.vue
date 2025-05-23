@@ -1,5 +1,8 @@
 <template>
   <div class="book-card" @click="navigateToDetail">
+    <button class="heart-btn" @click.stop="toggleLike">
+      <span :class="{ liked: isLiked }">♥</span>
+    </button>
     <div class="rank-badge">{{ book.best_rank }}</div>
     <img :src="book.cover" :alt="book.title" class="book-cover">
     <div class="book-info">
@@ -11,15 +14,30 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useBookStore } from '@/stores/books'
+import axios from 'axios'
 
 const router = useRouter()
+const store = useBookStore()
 const props = defineProps({
   book: {
     type: Object,
     required: true
   }
 })
+
+const isLiked = ref(props.book.is_liked ?? false)
+
+const toggleLike = async () => {
+  try {
+    const result = await store.toggleLike(props.book.isbn)
+    isLiked.value = result.status === 'liked'
+  } catch (e) {
+    alert('로그인이 필요합니다.')
+  }
+}
 
 const navigateToDetail = () => {
   router.push({
@@ -94,14 +112,20 @@ const navigateToDetail = () => {
   border: none;
   cursor: pointer;
   outline: none;
-  font-size: 1.7rem;
-  color: #ff6b81;
-  transition: transform 0.1s;
+  font-size: 2.3rem;
   z-index: 2;
 }
 
-.heart-btn:hover {
-  transform: scale(1.2);
+.heart-btn span {
+  color: #bbb;
+  transition: color 0.2s;
+}
+
+.heart-btn span.liked {
+  color: #ff6b81;
+}
+
+.heart-btn:hover span {
   color: #ff3b5c;
 }
 </style> 

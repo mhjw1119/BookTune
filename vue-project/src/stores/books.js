@@ -46,5 +46,15 @@ export const useBookStore = defineStore('book', () => {
     }
   }
 
-  return { books, API_URL, getBooks, searchBooks, genreBooks }
+  const toggleLike = async (isbn) => {
+    const access = localStorage.getItem('access')
+    const res = await axios.post(
+      `${API_URL}/api/books/${isbn}/likes/`,
+      {},
+      { headers: { Authorization: `Bearer ${access}` } }
+    )
+    return res.data // { status: 'liked' or 'unliked' }
+  }
+
+  return { books, API_URL, getBooks, searchBooks, genreBooks, toggleLike }
 }, { persist: true })
