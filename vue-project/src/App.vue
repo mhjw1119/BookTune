@@ -18,6 +18,8 @@
         </div>
         <div v-else>
           <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
+          <span> | </span>
+          <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
         </div>
         <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
         <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
@@ -27,6 +29,12 @@
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">BookTune</span>
       <span class="text-gray-500 mt-1 text-base tracking-wide">음악과 함께 즐기는 독서</span>
+      <a  class="nav-link text-gray-800">
+          <RouterLink 
+          :to="{ name: 'BookList'}">
+          Book List
+        </RouterLink>
+          </a>
       <form class="search-bar-container" @submit.prevent="onSearch">
         <input
           type="text"
@@ -48,19 +56,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUpdated, nextTick } from 'vue';
 import { RouterView, RouterLink } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import SignupView from './views/SignUpView.vue';
 import axios from 'axios';
+import { useBookStore } from '@/stores/books'
 
 const isLoginPopupVisible = ref(false);
 const isSignupPopupVisible = ref(false);
 const searchKeyword = ref('');
 const isLoggedIn = ref(false);
-const nickname = ref('');
-
+const store = useBookStore()
+const nickname = ref('')
 const router = useRouter();
 
 function openLoginPopup() {
@@ -87,22 +96,12 @@ async function checkLogin() {
   const access = localStorage.getItem('access');
   if (access) {
     isLoggedIn.value = true;
-    const storedNickname = localStorage.getItem('nickname');
-    if (storedNickname) {
-      nickname.value = storedNickname;
-    } else {
-      try {
-        const res = await axios.get('/api/accounts/profile/', {
-          headers: { Authorization: `Bearer ${access}` }
-        });
-        nickname.value = res.data.nickname;
-        localStorage.setItem('nickname', res.data.nickname);
-      } catch (e) {
-        isLoggedIn.value = false;
-        nickname.value = '';
-      }
+    await nextTick()
+    const profile = await getProfile()
+    nickname.value = profile.nickname
+
     }
-  } else {
+   else {
     isLoggedIn.value = false;
     nickname.value = '';
   }
@@ -110,14 +109,40 @@ async function checkLogin() {
 function goProfile() {
   router.push({ name: 'profile' });
 }
+function logout() {
+  localStorage.removeItem('access');
+  isLoggedIn.value = false;
+  nickname.value = '';
+  router.push({ name: 'home' });
+}
 
 onMounted(() => {
   checkLogin();
 });
+
+const getProfile = async function () {
+    try {
+      const access = localStorage.getItem('access');
+      const response = await axios({
+        method: 'get',
+        url: `${store.API_URL}/api/accounts/profile/`,
+        headers: { Authorization: `Bearer ${access}` } 
+      })
+      const result = response.data
+      return result
+    } catch (error) {
+      console.error('No profile', error)
+      throw error
+    }
+  }
+onMounted(async () => {
+  const profile = await getProfile()
+  nickname.value = profile.nickname
+})
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&display=swap');
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
@@ -139,8 +164,12 @@ body {
   font-size: 2rem;
   transition: color 0.2s;
   font-weight: bold;
+  color: #000000;
 }
 .nav-link:hover {
+  color: #6366f1;
+}
+.nav-link:active {
   color: #6366f1;
 }
 .search-bar-container {

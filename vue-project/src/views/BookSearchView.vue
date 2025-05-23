@@ -1,56 +1,88 @@
 <template>
-  <div class="search-result-container">
-    {{ store.books[0].title }}
-    <h2 class="search-title">'{{ keyword }}' 검색 결과</h2>
-    <div v-if="filteredBooks.length === 0" class="no-result">검색 결과가 없습니다.</div>
-    <div v-else class="books-grid">
-      <BookSearchItem v-for="book in filteredBooks" :key="book.isbn" :book="book" />
+  <div class="search-container">
+    <div v-if="loading" class="loading-state">
+      <p>검색 중...</p>
     </div>
+    <div v-else-if="error" class="error-state">
+      <p>{{ error }}</p>
+    </div>
+    <BookList 
+      v-else
+      :keyword="keyword"
+      :books="filteredResults"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/books'
-import BookSearchItem from '@/components/BookSearchItem.vue'
+import BookList from '@/components/search/BookList.vue'
 
 const route = useRoute()
 const store = useBookStore()
-const keyword = route.query.q || ''
+const keyword = ref(route.query.q || '')
+const searchResults = ref([])
+const loading = ref(false)
+const error = ref(null)
 
-const filteredBooks = computed(() => {
-  const bookList = Array.isArray(store.books) ? store.books : []
-  return bookList.filter(book => {
-    const lowerKeyword = keyword.toLowerCase()
+// API로 받아온 결과에서 검색어와 일치하는 항목만 필터링
+const filteredResults = computed(() => {
+  if (!keyword.value.trim()) return searchResults.value
+  
+  const lowerKeyword = keyword.value.toLowerCase()
+  return searchResults.value.filter(book => {
     return (
       (book.title && book.title.toLowerCase().includes(lowerKeyword)) ||
       (book.author && book.author.toLowerCase().includes(lowerKeyword))
     )
   })
 })
+
+const performSearch = async () => {
+  if (!keyword.value.trim()) {
+    searchResults.value = []
+    return
+  }
+
+  loading.value = true
+  error.value = null
+
+  try {
+    // store의 searchBooks 메서드 사용하여 API 검색
+    const results = await store.searchBooks(keyword.value)
+    searchResults.value = results
+  } catch (err) {
+    console.error('Search error:', err)
+    error.value = '검색 중 오류가 발생했습니다.'
+    searchResults.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+// 쿼리 파라미터가 변경될 때마다 검색 수행
+watch(() => route.query.q, (newQuery) => {
+  keyword.value = newQuery || ''
+  performSearch()
+}, { immediate: true })
 </script>
 
 <style scoped>
-.search-result-container {
+.search-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
-.search-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  color: #333;
-}
-.no-result {
+
+.loading-state, .error-state {
   text-align: center;
-  color: #bbb;
-  margin-top: 2rem;
+  padding: 2rem;
+  color: #666;
 }
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2rem;
+
+.error-state {
+  color: #dc2626;
 }
 </style>

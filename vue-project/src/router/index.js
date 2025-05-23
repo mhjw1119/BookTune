@@ -5,6 +5,7 @@ import BookListView from '@/views/BookListView.vue'
 import BookSearchView from '@/views/BookSearchView.vue'
 import BookDetailView from '@/views/BookDetailView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import CreateMusicView from '@/views/CreateMusicView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,32 +15,37 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-        {
+    {
       path: '/login',
       name: 'login',
       component: LoginView,
     },
-        {
-      path: '/BookList',
+    {
+      path: '/books',
       name: 'BookList',
       component: BookListView,
     },
-            {
-      path: '/BookSearch',
+    {
+      path: '/api/books',
       name: 'BookSearch',
       component: BookSearchView,
     },
-                {
-      path: '/BookDetail',
+    {
+      path: '/books/:isbn',
       name: 'BookDetail',
       component: BookDetailView,
+      props: true
     },
     {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+    },
+    {
+      path: '/create-music',
+      name: 'createMusic',
+      component: CreateMusicView
     }
-
   ],
 })
 
