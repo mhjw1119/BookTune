@@ -62,3 +62,14 @@ def get_word2vec_recommendations(request):
     recommended_books = recommend_books_word2vec(user)
     serializer = BookSerializer(recommended_books, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_book(request, isbn):
+    book = Books.objects.get(isbn=isbn)
+    if request.user in book.like_users.all():
+        book.like_users.remove(request.user)
+        return Response({'status': 'unliked'}, status=status.HTTP_200_OK)
+    else:
+        book.like_users.add(request.user)
+        return Response({'status': 'liked'}, status=status.HTTP_200_OK)
