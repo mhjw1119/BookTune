@@ -1,12 +1,15 @@
 <template>
   <div class="book-list-view">
-    <div class="category-links">
-      <RouterLink :to="{ name: 'BookList', query: { genre: '문학' }}" class="category-link">문학</RouterLink>
-      <RouterLink :to="{ name: 'BookList', query: { genre: '인문/사회' }}" class="category-link">인문/사회</RouterLink>
-      <RouterLink :to="{ name: 'BookList', query: { genre: '자기계발/실용' }}" class="category-link">자기계발/실용</RouterLink>
-      <RouterLink :to="{ name: 'BookList', query: { genre: '예술/문화' }}" class="category-link">예술/문화</RouterLink>
-      <RouterLink :to="{ name: 'BookList', query: { genre: '학습/교육' }}" class="category-link">학습/교육</RouterLink>
-      <RouterLink :to="{ name: 'BookList', query: { genre: '아동/청소년' }}" class="category-link">아동/청소년</RouterLink>
+    <div class="tab-bar">
+      <RouterLink
+        v-for="genre in genres"
+        :key="genre"
+        :to="{ name: 'BookList', query: { genre } }"
+        class="tab-btn"
+        :class="{ active: $route.query.genre === genre }"
+      >
+        {{ genre }}
+      </RouterLink>
     </div>
     <BookList :books="booklist" />
   </div>
@@ -23,6 +26,10 @@ const route = useRoute()
 const store = useBookStore()
 const booklist = ref([])
 
+const genres = [
+  '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
+]
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -33,7 +40,6 @@ const fetchBooks = async () => {
     booklist.value = result.filter(book => book.main_category === route.query.genre)
   } else {
     await sleep(3)
-    
     await store.getBooks()
     booklist.value = store.books
   }
@@ -47,27 +53,45 @@ watch(() => route.query.genre, fetchBooks)
 </script>
 
 <style scoped>
-.category-links {
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+.tab-bar {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  padding: 1rem 0;
-  margin-bottom: 2rem;
+  gap: 3rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  
 }
 
-.category-link {
-  font-family: 'Pretendard', sans-serif;
-  font-size: 1.1rem;
-  color: #333;
-  text-decoration: none;
+.tab-btn {
+  margin-top: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #bdbdbd;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0 1.5rem 0.5rem 1.5rem;
+  position: relative;
   transition: color 0.2s;
+  text-decoration: none;
 }
 
-.category-link:hover {
-  color: #6366f1;
+.tab-btn.active {
+  color: #222;
 }
 
-.category-link:active {
-  color: #6366f1;
+.tab-btn.active::after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  margin-top: 0.2rem;
+  width: 60%;
+  height: 2px;
+  background: #e5e7eb;
+  border-radius: 1px;
 }
 </style> 
