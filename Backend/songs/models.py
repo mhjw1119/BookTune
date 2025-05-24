@@ -1,14 +1,14 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from books.models import Book
+
 User = get_user_model()
 
 # Create your models here.
 
 class CreatedSong(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True, blank=True, help_text="음악이 생성된 책")
+    book = models.ForeignKey('books.Books', on_delete=models.CASCADE, null=True, blank=True, help_text="음악이 생성된 책")
     task_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
     prompt = models.TextField(help_text="음악 생성을 위한 프롬프트")
     audio_file = models.FileField(upload_to="aisong/", blank=True, null=True)
@@ -32,4 +32,3 @@ class CreatedSong(models.Model):
 
     def __str__(self):
         return f"{self.title or 'Untitled'} - {self.user.username}"
-

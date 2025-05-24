@@ -114,19 +114,7 @@ async function checkLogin() {
     } else {
       isLoggedIn.value = false;
       nickname.value = '';
-  try {
-    const access = localStorage.getItem('access');
-    if (access) {
-      isLoggedIn.value = true;
-      await nextTick()
-      const profile = await getProfile()
-      nickname.value = profile.nickname
-    } else {
-      isLoggedIn.value = false;
-      nickname.value = '';
     }
-  } catch (error) {
-    console.error('Login check failed:', error);
   } catch (error) {
     console.error('Login check failed:', error);
     isLoggedIn.value = false;
@@ -145,8 +133,6 @@ function logout() {
 
 onMounted(async () => {
   await checkLogin();
-onMounted(async () => {
-  await checkLogin();
 });
 
 watch(
@@ -157,21 +143,29 @@ watch(
 );
 
 const getProfile = async function () {
-    try {
-      const access = localStorage.getItem('access');
-      const response = await axios({
-        method: 'get',
-        url: `${store.API_URL}/api/auth/profile/`,
-        url: `${store.API_URL}/api/auth/profile/`,
-        headers: { Authorization: `Bearer ${access}` } 
-      })
-      const result = response.data
-      return result
-    } catch (error) {
-      console.error('No profile', error)
-      throw error
+  try {
+    const access = localStorage.getItem('access');
+    if (!access) {
+      throw new Error('No access token found');
     }
+    
+    const response = await axios({
+      method: 'get',
+      url: `${store.API_URL}/api/auth/profile/`,
+      headers: { Authorization: `Bearer ${access}` } 
+    });
+    
+    if (!response.data) {
+      throw new Error('No profile data received');
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error('Profile fetch failed:', error);
+    localStorage.removeItem('access'); // 토큰이 유효하지 않은 경우 제거
+    throw error;
   }
+}
 </script>
 
 <style scoped>
