@@ -19,7 +19,7 @@
         type="button"
         :disabled="isLoading"
       >
-        {{ isLoading ? 'Loading...' : 'done' }}
+        {{ isLoading ? '음악 생성 중...' : '음악 생성하기' }}
       </button>
     </div>
   </main>
@@ -28,7 +28,11 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRoute } from 'vue-router';
+import { useBookStore } from '@/stores/books';
 
+const store = useBookStore();
+const route = useRoute();
 const musicDescription = ref('');
 const isLoading = ref(false);
 const emit = defineEmits(['submit', 'error']);
@@ -41,21 +45,37 @@ const handleSubmit = async () => {
 
   try {
     isLoading.value = true;
+    const access = localStorage.getItem('access');
+    
+    if (!access) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
     const response = await axios({
       method: 'post',
-      url: '/api/recommend/',
+      url: `${store.API_URL}/api/songs/generate/`,
       data: {
-        prompt: musicDescription.value.trim()
+        prompt: musicDescription.value.trim(),
+        book_id: route.params.id || null  // 현재 책 상세 페이지인 경우 book_id 전달
       },
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${access}`
       }
     });
-    emit('submit', response.data);
+
+    if (response.data.status === 'processing') {
+      alert('음악 생성이 시작되었습니다. 잠시만 기다려주세요.');
+      emit('submit', response.data);
+      musicDescription.value = '';  // 입력 필드 초기화
+    } else {
+      throw new Error('음악 생성 요청 실패');
+    }
   } catch (error) {
-    console.error('음악 추천 요청 실패:', error);
-    emit('error', error.response?.data || '음악 추천을 가져오는데 실패했습니다.');
-    alert('음악 추천을 가져오는데 실패했습니다. 다시 시도해주세요.');
+    console.error('음악 생성 요청 실패:', error);
+    emit('error', error.response?.data || '음악 생성에 실패했습니다.');
+    alert(error.response?.data?.error || '음악 생성에 실패했습니다. 다시 시도해주세요.');
   } finally {
     isLoading.value = false;
   }
