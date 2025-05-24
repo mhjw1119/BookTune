@@ -24,12 +24,11 @@ class Books(models.Model):
 class Thread_song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
-    song = models.ForeignKey(CreatedSong, on_delete=models.CASCADE)
+    audio_file = models.FileField(upload_to="user_song/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    title = models.CharField(max_length=50)
     content = models.TextField()
-    like_books = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_songs')
+    like_songs = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_songs')
 
     def like_count(self):
         return self.like_users.count()
