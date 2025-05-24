@@ -56,5 +56,72 @@ export const useBookStore = defineStore('book', () => {
     return res.data // { status: 'liked' or 'unliked' }
   }
 
-  return { books, API_URL, getBooks, searchBooks, genreBooks, toggleLike }
+  const createThread = async (bookId, formData) => {
+    try {
+      const access = localStorage.getItem('access')
+      const response = await axios.post(
+        `${API_URL}/api/books/${bookId}/threads/create/`,
+        formData,
+        { 
+          headers: { 
+            Authorization: `Bearer ${access}`,
+            'Content-Type': 'multipart/form-data'
+          } 
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error creating thread:', error)
+      throw error
+    }
+  }
+
+  const getBookThreads = async (bookId) => {
+    try {
+      const access = localStorage.getItem('access')
+      const response = await axios.get(
+        `${API_URL}/api/books/${bookId}/threads/`,
+        {
+          headers: { 
+            Authorization: `Bearer ${access}`
+          }
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error fetching book threads:', error)
+      throw error
+    }
+  }
+
+  const likeThread = async (threadId) => {
+    try {
+      const access = localStorage.getItem('access')
+      const response = await axios.post(
+        `${API_URL}/api/books/threads/${threadId}/like/`,
+        {},
+        {
+          headers: { 
+            Authorization: `Bearer ${access}`
+          }
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error liking thread:', error)
+      throw error
+    }
+  }
+
+  return { 
+    books, 
+    API_URL, 
+    getBooks, 
+    searchBooks, 
+    genreBooks, 
+    toggleLike,
+    createThread,
+    getBookThreads,
+    likeThread
+  }
 }, { persist: true })

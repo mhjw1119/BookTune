@@ -44,6 +44,13 @@
                 @generate="handleGenerateMusic" 
                 class="AI-section"
               />
+              <ThreadButton 
+                v-if="book && book.id"
+                :book-id="book.id" 
+                @generate="handleGenerateMusic" 
+                class="AI-section"
+              />
+
             </div>
           </div>
         </div>
@@ -62,7 +69,7 @@ import BookInfo from '@/components/bookdetail/BookInfo.vue'
 import BookDescription from '@/components/bookdetail/BookDescription.vue'
 import BookYoutubePlayer from '@/components/bookdetail/BookYoutubePlayer.vue'
 import AIGenerateButton from '@/components/bookdetail/AIGenerateButton.vue'
-
+import ThreadButton from '@/components/bookdetail/ThreadButton.vue'
 const props = defineProps({
   isbn: {
     type: String,
