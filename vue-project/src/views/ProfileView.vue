@@ -27,6 +27,7 @@
       </form>
       <div class="profile-likes">
         <h2>좋아요한 책</h2>
+        {{ books }}
         <BookList v-if="likedBooks.length" :books="likedBooks" />
         <div v-else>좋아요한 책이 없습니다.</div>
         <h2>좋아요한 스레드</h2>
@@ -42,6 +43,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import BookList from '@/components/BookList.vue'
 import ThreadSongList from '@/components/ThreadSongList.vue'
+import { useBookStore } from '@/stores/books'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
@@ -50,8 +52,21 @@ const nickname = ref('')
 const selectedGenres = ref([])
 const likedBooks = ref([])
 const likedThreads = ref([])
+const store = useBookStore()
+const like_books = store.books
+
+
+
 
 onMounted(async () => {
+
+
+  likedBooks.value.filter(book => {
+    return ( b
+      (book.id && book.title.toLowerCase().includes(lowerKeyword)) ||
+      (book.author && book.author.toLowerCase().includes(lowerKeyword))
+    )
+  })
   const access = localStorage.getItem('access')
   const res = await axios.get('http://localhost:8000/api/accounts/profile/', {
     headers: { Authorization: `Bearer ${access}` }
