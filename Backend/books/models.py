@@ -28,7 +28,7 @@ class Thread_song(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     content = models.TextField()
-    like_songs = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_songs')
+    likesongs = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_songs')
 
     def like_count(self):
         return self.like_users.count()

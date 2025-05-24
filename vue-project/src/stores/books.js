@@ -56,11 +56,22 @@ export const useBookStore = defineStore('book', () => {
     return res.data // { status: 'liked' or 'unliked' }
   }
 
-  const createThread = async (bookId, formData) => {
+  const createThread = async (isbn, formData) => {
     try {
       const access = localStorage.getItem('access')
+      if (!access) {
+        throw new Error('Please login to create a thread')
+      }
+
+      // 토큰 유효성 검사
+      const tokenParts = access.split('.')
+      if (tokenParts.length !== 3) {
+        throw new Error('Invalid token format')
+      }
+
+      // bookId를 isbn으로 사용
       const response = await axios.post(
-        `${API_URL}/api/books/${bookId}/threads/create/`,
+        `${API_URL}/api/books/${isbn}/threads/create/`,
         formData,
         { 
           headers: { 
@@ -72,6 +83,15 @@ export const useBookStore = defineStore('book', () => {
       return response.data
     } catch (error) {
       console.error('Error creating thread:', error)
+      if (error.response) {
+        if (error.response.status === 401) {
+          throw new Error('Your session has expired. Please login again.')
+        }
+        if (error.response.status === 404) {
+          throw new Error('Book not found. Please check if the book ID is correct.')
+        }
+        throw new Error(error.response.data.message || 'Failed to create thread')
+      }
       throw error
     }
   }

@@ -11,6 +11,7 @@
       :is-visible="isPopupVisible"
       :book-id="bookId"
       :book-title="bookTitle"
+      :isbn="isbn"
       @close="closePopup"
       @thread-created="handleThreadCreated"
     />
@@ -27,6 +28,10 @@ const props = defineProps({
     required: true
   },
   bookTitle: {
+    type: String,
+    required: true
+  },
+  isbn: {
     type: String,
     required: true
   }

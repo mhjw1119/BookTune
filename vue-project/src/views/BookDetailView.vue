@@ -47,6 +47,7 @@
               <ThreadButton 
                 v-if="book && book.id"
                 :book-id="book.id" 
+                :isbn="props.isbn"
                 @generate="handleGenerateMusic" 
                 class="AI-section"
               />

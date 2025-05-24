@@ -16,7 +16,7 @@
           ></textarea>
         </div>
         <div class="form-group">
-          <label>Audio File</label>
+          <label>Song</label>
           <div class="file-upload-container" @click="triggerFileInput">
             <input 
               type="file" 
@@ -41,7 +41,7 @@
         <button 
           class="submit-button" 
           @click="submitThread"
-          :disabled="!content.trim() || isSubmitting"
+          :disabled="!isFormValid || isSubmitting"
         >
           {{ isSubmitting ? 'Creating...' : 'Create Thread' }}
         </button>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useBookStore } from '@/stores/books';
 
 const props = defineProps({
@@ -66,6 +66,10 @@ const props = defineProps({
   bookTitle: {
     type: String,
     required: true
+  },
+  isbn: {
+    type: String,
+    required: true
   }
 });
 
@@ -77,6 +81,10 @@ const isSubmitting = ref(false);
 const selectedFile = ref(null);
 const audioUrl = ref(null);
 const fileInput = ref(null);
+
+const isFormValid = computed(() => {
+  return content.value.trim() && selectedFile.value;
+});
 
 const triggerFileInput = () => {
   fileInput.value.click();
@@ -114,25 +122,25 @@ const closePopup = () => {
 };
 
 const submitThread = async () => {
-  if (!content.value.trim() || isSubmitting.value) return;
+  if (!isFormValid.value || isSubmitting.value) return;
 
   try {
     isSubmitting.value = true;
     
     const formData = new FormData();
-    formData.append('title', props.bookTitle);
     formData.append('content', content.value);
     if (selectedFile.value) {
       formData.append('audio_file', selectedFile.value);
     }
 
-    const result = await store.createThread(props.bookId, formData);
+    const result = await store.createThread(props.isbn, formData);
     
     console.log('Thread created successfully:', result);
     emit('thread-created', result);
     closePopup();
   } catch (error) {
     console.error('Error creating thread:', error);
+    alert(error.message || 'Failed to create thread. Please try again.');
   } finally {
     isSubmitting.value = false;
   }
@@ -204,8 +212,17 @@ const submitThread = async () => {
   padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
-  resize: vertical;
   font-family: inherit;
+  margin-bottom: 1rem;
+}
+
+input.content-input {
+  height: 2.5rem;
+}
+
+textarea.content-input {
+  resize: vertical;
+  min-height: 100px;
 }
 
 .popup-footer {
