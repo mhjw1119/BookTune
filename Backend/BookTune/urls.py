@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +26,4 @@ urlpatterns = [
     path('api/books/', include('books.urls')),     # 책 정보
     path('api/songs/', include('songs.urls')),     # 만들어진 음악
     path('api/token/refresh/', TokenRefreshView.as_view()), # 토큰 관련
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

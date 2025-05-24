@@ -20,10 +20,11 @@
             <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
           </template>
         </div>
-        <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
-        <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
       </div>
     </header>
+    <!-- 로그인/회원가입 팝업 -->
+    <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
+    <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
     <!-- 로고/검색바: 모든 페이지에서 항상 보이게 -->
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">BookTune</span>
@@ -93,15 +94,19 @@ function onSearch() {
   }
 }
 async function checkLogin() {
-  const access = localStorage.getItem('access');
-  if (access) {
-    isLoggedIn.value = true;
-    await nextTick()
-    const profile = await getProfile()
-    nickname.value = profile.nickname
-
+  try {
+    const access = localStorage.getItem('access');
+    if (access) {
+      isLoggedIn.value = true;
+      await nextTick()
+      const profile = await getProfile()
+      nickname.value = profile.nickname
+    } else {
+      isLoggedIn.value = false;
+      nickname.value = '';
     }
-   else {
+  } catch (error) {
+    console.error('Login check failed:', error);
     isLoggedIn.value = false;
     nickname.value = '';
   }
@@ -116,8 +121,8 @@ function logout() {
   router.push({ name: 'home' });
 }
 
-onMounted(() => {
-  checkLogin();
+onMounted(async () => {
+  await checkLogin();
 });
 
 watch(
@@ -132,7 +137,7 @@ const getProfile = async function () {
       const access = localStorage.getItem('access');
       const response = await axios({
         method: 'get',
-        url: `${store.API_URL}/api/accounts/profile/`,
+        url: `${store.API_URL}/api/auth/profile/`,
         headers: { Authorization: `Bearer ${access}` } 
       })
       const result = response.data
@@ -142,10 +147,6 @@ const getProfile = async function () {
       throw error
     }
   }
-onMounted(async () => {
-  const profile = await getProfile()
-  nickname.value = profile.nickname
-})
 </script>
 
 <style scoped>
