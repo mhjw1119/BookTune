@@ -114,7 +114,19 @@ async function checkLogin() {
     } else {
       isLoggedIn.value = false;
       nickname.value = '';
+  try {
+    const access = localStorage.getItem('access');
+    if (access) {
+      isLoggedIn.value = true;
+      await nextTick()
+      const profile = await getProfile()
+      nickname.value = profile.nickname
+    } else {
+      isLoggedIn.value = false;
+      nickname.value = '';
     }
+  } catch (error) {
+    console.error('Login check failed:', error);
   } catch (error) {
     console.error('Login check failed:', error);
     isLoggedIn.value = false;
@@ -133,6 +145,8 @@ function logout() {
 
 onMounted(async () => {
   await checkLogin();
+onMounted(async () => {
+  await checkLogin();
 });
 
 watch(
@@ -147,6 +161,7 @@ const getProfile = async function () {
       const access = localStorage.getItem('access');
       const response = await axios({
         method: 'get',
+        url: `${store.API_URL}/api/auth/profile/`,
         url: `${store.API_URL}/api/auth/profile/`,
         headers: { Authorization: `Bearer ${access}` } 
       })

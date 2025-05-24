@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+from urllib.parse import urlparse
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,8 +29,12 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# ngrok 도메인 동적 추가
+ngrok_url = config("NGROK_URL", default="")
+if ngrok_url:
+    parsed = urlparse(ngrok_url)
+    ALLOWED_HOSTS.append(parsed.hostname)
 
 # Application definition
 
@@ -80,6 +86,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",  # Vite
 ]
 CORS_ALLOW_CREDENTIALS = True
+# ngrok 도메인을 CORS 허용 출처에 자동 추가
+ngrok_url = config("NGROK_URL", default="")
+if ngrok_url:
+    CORS_ALLOWED_ORIGINS.append(ngrok_url)
 
 ROOT_URLCONF = 'BookTune.urls'
 
@@ -220,3 +230,11 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
     'JWT_AUTH_HTTPONLY': False,
 }
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+

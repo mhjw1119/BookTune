@@ -1,5 +1,7 @@
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
-    # path('/api/books/', include())
+    path('generate/', views.generate_music, name='generate-music'),
+    path('callback/', views.suno_webhook_callback, name='callback'),
 ]
