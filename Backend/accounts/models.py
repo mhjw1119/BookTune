@@ -20,10 +20,4 @@ class User(AbstractUser):
     nickname = models.CharField(max_length=20, default='콩콩이든')
     email = models.EmailField(max_length=100)
     favorite_genres = models.JSONField(default=list, blank=True)  # 여러 장르 저장
-    
-
-# class UserProfile(models.Model):
-#     like_category = models.ManyToManyField(Category, related_name='like_category')
-#     like_book = models.ManyToManyField(Book, related_name='like_book')
-#     like_song = models.ManyToManyField(Song, related_name='like_song')
-
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)

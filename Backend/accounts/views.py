@@ -66,8 +66,17 @@ def user_profile(request):
         return Response(serializer.data)
     
     elif request.method == 'PUT':
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer = UserSerializer(
+            request.user, 
+            data=request.data, 
+            partial=True, 
+            context={'request': request}
+        )
         if serializer.is_valid(raise_exception=True):
+            # 파일이 있으면 직접 할당
+            if 'profile_image' in request.FILES:
+                request.user.profile_image = request.FILES['profile_image']
+                request.user.save()
             serializer.save()
             return Response(serializer.data)
 
