@@ -17,7 +17,7 @@
         </div>
         <div v-else>
           <template v-if="nickname">
-            <a href="#" class="nav-link text-gray-800" @click.prevent="goProfile">{{ nickname }}</a>
+            <a href="#" class="nav-link text-gray-800 nicknamestyle" @click.prevent="goProfile">{{ nickname }}</a>
             <span> | </span>
             <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
           </template>
@@ -253,6 +253,7 @@ a {
 .my-custom-span {
     display: block;
     margin-bottom: 5px;
+    font-size: 1.5rem;
   }
 
 .section-title {
@@ -274,5 +275,11 @@ a {
 .nav-link:active {
   color: #6366f1;
 }
+.nicknamestyle {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 2rem;
+  transition: color 0.2s;
+  font-weight: bold;
+  color: #000000;
+}
 </style>
-

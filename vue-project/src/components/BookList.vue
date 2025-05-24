@@ -27,11 +27,11 @@ defineProps({
 
 <style scoped>
 .book-title {
-  font-family: 'Pretendard', sans-serif;
+  font-family: 'Indie Flower', cursive;
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: -1rem;
   color: #333;
 }
 
