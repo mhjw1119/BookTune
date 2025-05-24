@@ -24,25 +24,16 @@ class ThreadSongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thread_song
         fields = [
-            'id', 'user', 'book', 'song', 'created_at',
-            'title', 'content', 'like_count', 'is_liked'
+            'id', 'user', 'book', 'audio_file', 'created_at',
+            'content', 'like_count', 'is_liked'
         ]
         read_only_fields = ['user', 'book', 'created_at']
 
     def get_like_count(self, obj):
-        return obj.like_users.count()
+        return obj.like_songs.count()  # 수정됨
 
     def get_is_liked(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user in obj.like_users.all()
+            return request.user in obj.like_songs.all()  # 수정됨
         return False
-
-    def create(self, validated_data):
-        # song 필드는 request.data에서 직접 받아야 함
-        song_id = self.context.get('request').data.get('song')
-        if not song_id:
-            raise serializers.ValidationError({'song': 'This field is required.'})
-        
-        validated_data['song_id'] = song_id
-        return super().create(validated_data) 

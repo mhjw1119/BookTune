@@ -111,15 +111,42 @@ from openai import OpenAI
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-SYSTEM_PROMPT = """
-너는 책 소개를 바탕으로 차분하고 감각적인 음악을 추천해주는 어시스턴트야.
+KEYWORD_PROMPT = """
+너는 책 소개와 제목을 바탕으로 감정이나 분위기를 표현하는 핵심 키워드 3개를 추출하는 어시스턴트야.
+예를 들어 '치유', '집중', '잔잔함' 같은 단어들이 될 수 있어.
+반드시 3개의 키워드만 추출해서, 쉼표로 구분해서 출력해줘.
+다른 텍스트는 절대 포함하지 마.
+"""
+MUSIC_PROMPT_TEMPLATE = """
+너는 아래 핵심 키워드 3개에 어울리는 차분하고 감각적인 음악을 추천해주는 어시스턴트야.
 다음 조건을 반드시 지켜야 해:
 1. 유튜브 라이브 링크는 절대 포함하지 마.
-2. 반드시 실제로 존재하는 영상이어야 해 (너의 지식 기준에서 신뢰도 높은 링크).
-3. 아래와 같이 3개의 유튜브 링크를 쉼표로 구분해서 출력해줘:
+2. 반드시 존재하는 영상이어야 해 (너의 지식 기준에서 신뢰도 높은 링크).
+3. 아래와 같은 신뢰할 수 있는 유튜브 채널 중에서만 추천할 것:
+   - Soothing Relaxation
+   - Yellow Brick Cinema
+   - Peder B. Helland
+   - Ambient Worlds
+   - OCB Relax Music
+4. 아래와 같이 3개의 유튜브 링크를 쉼표로 구분해서 출력해줘:
    'https://www.youtube.com/watch?v=aaa','https://www.youtube.com/watch?v=bbb','https://www.youtube.com/watch?v=ccc'
-4. 다른 텍스트는 절대 포함하지 마. 링크만 출력할 것.
+5. 다른 텍스트는 절대 포함하지 마. 링크만 출력할 것.
+
+핵심 키워드: {keywords}
 """
+
+def extract_keywords(book_intro: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": KEYWORD_PROMPT.strip()},
+            {"role": "user", "content": f"책 소개 및 제목: {book_intro.strip()}"},
+        ],
+        temperature=0.7,
+    )
+    keywords = response.choices[0].message.content.strip()
+    print(f"[핵심 키워드] {keywords}")
+    return keywords
 
 def is_valid_youtube_url(url: str) -> bool:
     ydl_opts = {
@@ -135,40 +162,52 @@ def is_valid_youtube_url(url: str) -> bool:
         print(f"[유효성 실패] {url} → {e}")
         return False
     
-def get_candidate_urls(book_intro: str) -> list[str]:
-    user_prompt = f"책 소개 : {book_intro}"
+def get_candidate_urls_from_keywords(keywords: str) -> list[str]:
+    prompt = MUSIC_PROMPT_TEMPLATE.format(keywords=keywords)
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # 또는 "gpt-4o", "gpt-3.5-turbo"
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT.strip()},
-            {"role": "user", "content": user_prompt.strip()},
-        ],
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": prompt.strip()}],
         temperature=0.7,
     )
     content = response.choices[0].message.content.strip()
-    print(f"[GPT 응답] {content}")
+    print(f"[GPT 음악 추천 응답] {content}")
     return re.findall(r"https://www\.youtube\.com/watch\?v=[\w-]+", content)
 
-def update_books_with_recommended_song():
+def update_books_with_recommended_song(max_attempts_per_book: int = 5):
     books = Books.objects.all()
+
     for book in books:
         if book.recommended_song:
             continue
 
-        intro = book.description or book.title or ""
+        desc = book.description.strip() if book.description else ""
+        intro = desc if desc else book.title
         if not intro:
             continue
 
-        urls = get_candidate_urls(intro)
+        # Step 1: 핵심 키워드 추출
+        keywords = extract_keywords(intro)
 
-        for url in urls:
-            if "/live" in url.lower():
-                continue
-            if is_valid_youtube_url(url):
-                print(f"[저장 성공] {book.title} → {url}")
-                book.recommended_song = url
-                book.save()
+        success = False
+
+        for attempt in range(max_attempts_per_book):
+            print(f"[{book.title}] 음악 추천 재시도 {attempt + 1}/{max_attempts_per_book}")
+            urls = get_candidate_urls_from_keywords(keywords)
+
+            for url in urls:
+                if "/live" in url.lower():
+                    continue
+                if is_valid_youtube_url(url):
+                    print(f"[저장 성공] {book.title} → {url}")
+                    book.recommended_song = url
+                    book.save()
+                    success = True
+                    break
+
+            if success:
                 break
+            else:
+                print(f"[{book.title}] 유효한 링크 없음. 다시 GPT 음악 추천 요청 중...")
 
 CATEGORY_MAPPING = {
     '소설/시/희곡': '문학',
@@ -243,3 +282,11 @@ def clean_book_descriptions():
         'updated_count': updated_count,
         'message': f'{updated_count}개의 책 description이 업데이트되었습니다.'
     }
+
+
+def reset_all_recommended_songs():
+    books = Books.objects.all()
+    for book in books:
+        book.recommended_song = ""
+        book.save()
+    print(f"총 {books.count()}권의 도서 추천 음악 링크를 초기화했습니다.")
