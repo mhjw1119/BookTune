@@ -29,9 +29,9 @@ def generate_music(request):
         book = None
         if book_id:
             try:
-                from books.models import Book
-                book = Book.objects.get(id=book_id)
-            except Book.DoesNotExist:
+                from books.models import Books  # Books로 수정
+                book = Books.objects.get(id=book_id)
+            except Books.DoesNotExist:
                 return Response({"error": "해당 책을 찾을 수 없습니다."}, status=404)
 
         # 음악 생성 요청을 pending 상태로 저장
