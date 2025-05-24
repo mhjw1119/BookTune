@@ -67,9 +67,17 @@ def like_thread(request, thread_id):
 @permission_classes([IsAuthenticated])
 def like_book(request, isbn):
     book = Books.objects.get(isbn=isbn)
-    if request.user in book.like_users.all():
-        book.like_users.remove(request.user)
+    if request.user in book.like_books.all():
+        book.like_books.remove(request.user)
         return Response({'status': 'unliked'}, status=status.HTTP_200_OK)
     else:
-        book.like_users.add(request.user)
+        book.like_books.add(request.user)
         return Response({'status': 'liked'}, status=status.HTTP_200_OK)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def liked_books(request):
+    books = Books.objects.filter(like_books=request.user)
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)

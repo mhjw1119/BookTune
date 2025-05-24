@@ -1,15 +1,27 @@
 <template>
-  <!-- 2단 그리드로 Best/Recommend 배치 -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl mx-auto mt-12 px-6 pb-16">
-    <!-- Best: 왼쪽 절반 -->
-    <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
-      <h2 class="section-title text-gray-800 mb-8 text-center">Best</h2>
-      <bestBookView />
-    </section>
-    <!-- Recommend: 오른쪽 절반 -->
-    <section class="col-span-1 bg-white border border-gray-300 rounded-xl shadow-md p-8 flex flex-col">
-      <h2 class="section-title text-gray-800 mb-8 text-center">Recommend</h2>
-      <RecommendBook />
+  <div class="w-full max-w-6xl mx-auto mt-12 px-6 pb-16">
+    <!-- 탭 버튼 -->
+    <div class="tab-bar">
+      <button
+        @click="activeTab = 'best'"
+        :class="['tab-btn', { active: activeTab === 'best' } ]"
+      >
+        Best
+      </button>
+      <button
+        @click="activeTab = 'recommend'"
+        :class="['tab-btn', { active: activeTab === 'recommend' } ]"
+      >
+        Recommend
+      </button>
+    </div>
+    
+    <!-- 컴포넌트 표시 영역 -->
+    <section class="bg-white rounded-xl shadow-md p-8 flex flex-col">
+      <Transition name="fade" mode="out-in">
+        <BestBookView v-if="activeTab === 'best'" />
+        <RecommendBook v-else />
+      </Transition>
     </section>
   </div>
 </template>
@@ -18,24 +30,65 @@
 import BestBookView from '@/views/BestBookView.vue'
 import RecommendBook from '@/components/RecommendBook.vue'
 import { useBookStore } from '@/stores/books'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const store = useBookStore()
+const activeTab = ref('best')
 
 onMounted(async () => {
   await store.getBooks()
 })
-
 </script>
 
 <style scoped>
-.section-title {
-  font-family: 'Indie Flower', cursive;
-  font-size: 3rem;
-  letter-spacing: 0.03em;
-  font-weight: bold;
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  /* border-bottom: 1px solid #e5e7eb; */
+  margin-bottom: 2.5rem;
+  position: relative;
 }
-.main-content-grid {
-  min-height: 500px;
+
+.tab-btn {
+  margin-top: 1rem;
+  font-family: 'Indie Flower', cursive;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #bdbdbd;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0 2rem 0.5rem 2rem;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-btn.active {
+  color: #222;
+}
+
+.tab-btn.active::after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  margin-top: 0.2rem;
+  width: 60%;
+  height: 2px;
+  background: #e5e7eb;
+  border-radius: 1px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

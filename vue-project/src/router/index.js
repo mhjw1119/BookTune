@@ -45,6 +45,12 @@ const router = createRouter({
       meta: { layout: 'none' }
     },
     {
+      path: '/liked',
+      name: 'liked_books',
+      component: ProfileView,
+      meta: { layout: 'none' }
+    },
+    {
       path: '/create-music',
       name: 'createMusic',
       component: CreateMusicView

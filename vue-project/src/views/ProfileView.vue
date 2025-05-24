@@ -9,6 +9,7 @@
       <span class="logo text-gray-900">PROFILE</span>
     </div>
     <div class="profile-content">
+      {{ nickname.value }}
       <form @submit.prevent="updateProfile" class="profile-form">
         <div class="form-row">
           <label for="nickname">닉네임:</label>
@@ -68,7 +69,7 @@ onMounted(async () => {
     )
   })
   const access = localStorage.getItem('access')
-  const res = await axios.get('http://localhost:8000/api/accounts/profile/', {
+  const res = await axios.get('http://localhost:8000/api/auth/profile/', {
     headers: { Authorization: `Bearer ${access}` }
   })
   nickname.value = res.data.nickname
@@ -89,7 +90,7 @@ onMounted(async () => {
 
 const updateProfile = async () => {
   const access = localStorage.getItem('access')
-  await axios.put('http://localhost:8000/api/accounts/profile/', {
+  await axios.put('http://localhost:8000/api/auth/profile/', {
     nickname: nickname.value,
     favorite_genres: selectedGenres.value
   }, {

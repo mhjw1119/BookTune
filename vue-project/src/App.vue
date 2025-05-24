@@ -1,11 +1,13 @@
 <template>
   <div v-if="$route.meta.layout !== 'none'" class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <header class="w-full flex items-center justify-between px-8 py-6 bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
-      <div class="flex items-center gap-8">
+    <header class="w-full flex items-center justify-between px-8 py-6 bg-white">
+      <div class="flex items-center gap-8 ">
         <a href="#" class="nav-link text-gray-800">
           <RouterLink :to="{ name: 'home'}">Home</RouterLink>
         </a>
+        <span class="text-gray-300 mx-4"> | </span>
+        <RouterLink :to="{ name: 'BookList'}" class="nav-link text-gray-800">Book List</RouterLink>
       </div>
       <div class="flex items-center gap-8">
         <div v-if="!isLoggedIn">
@@ -20,18 +22,24 @@
             <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
           </template>
         </div>
-        <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
-        <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
       </div>
     </header>
+    <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
+    <!-- 로그인/회원가입 팝업 -->
+    <LoginView v-if="isLoginPopupVisible" @close-popup="closeLoginPopup" @login-success="checkLogin" />
+    <SignupView v-if="isSignupPopupVisible" @close-popup="closeSignupPopup" @signup-success="checkLogin" />
     <!-- 로고/검색바: 모든 페이지에서 항상 보이게 -->
-    <div class="flex flex-col items-center text-center pt-32">
+    <div class="flex flex-col items-center text-center pt-12">
       <span class="logo text-gray-900">BookTune</span>
-      <span class="text-gray-500 mt-1 text-base tracking-wide">음악과 함께 즐기는 독서</span>
-      <a href="#" class="nav-link text-gray-800">
-        <RouterLink :to="{ name: 'BookList'}">Book List</RouterLink>
-      </a>
+      <span class="text-gray-500 mt-1 mb-16 text-base tracking-wide my-custom-span">음악과 함께 즐기는 독서</span>
       <form class="search-bar-container" @submit.prevent="onSearch">
+        <span class="search-icon">
+          <!-- Search icon (left) -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+          </svg>
+        </span>
         <input
           type="text"
           placeholder="책, 저자, 음악 검색..."
@@ -39,14 +47,17 @@
           v-model="searchKeyword"
         />
         <button class="search-btn" type="submit">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
-            <circle cx="9" cy="19" r="3" fill="currentColor"/>
-            <circle cx="21" cy="17" r="3" fill="currentColor"/>
+          <!-- 펼쳐진 책 아이콘 (오픈 북) -->
+          <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 19c-2.5-1.5-6-2-9-2V6c3 0 6.5.5 9 2m0 11c2.5-1.5 6-2 9-2V6c-3 0-6.5.5-9 2m0 11V8" />
           </svg>
         </button>
       </form>
+      <!-- 구분선 -->
+      <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
     </div>
+    
     <RouterView />
   </div>
   <div v-else>
@@ -93,15 +104,19 @@ function onSearch() {
   }
 }
 async function checkLogin() {
-  const access = localStorage.getItem('access');
-  if (access) {
-    isLoggedIn.value = true;
-    await nextTick()
-    const profile = await getProfile()
-    nickname.value = profile.nickname
-
+  try {
+    const access = localStorage.getItem('access');
+    if (access) {
+      isLoggedIn.value = true;
+      await nextTick()
+      const profile = await getProfile()
+      nickname.value = profile.nickname
+    } else {
+      isLoggedIn.value = false;
+      nickname.value = '';
     }
-   else {
+  } catch (error) {
+    console.error('Login check failed:', error);
     isLoggedIn.value = false;
     nickname.value = '';
   }
@@ -116,8 +131,8 @@ function logout() {
   router.push({ name: 'home' });
 }
 
-onMounted(() => {
-  checkLogin();
+onMounted(async () => {
+  await checkLogin();
 });
 
 watch(
@@ -132,7 +147,7 @@ const getProfile = async function () {
       const access = localStorage.getItem('access');
       const response = await axios({
         method: 'get',
-        url: `${store.API_URL}/api/accounts/profile/`,
+        url: `${store.API_URL}/api/auth/profile/`,
         headers: { Authorization: `Bearer ${access}` } 
       })
       const result = response.data
@@ -142,24 +157,95 @@ const getProfile = async function () {
       throw error
     }
   }
-onMounted(async () => {
-  const profile = await getProfile()
-  nickname.value = profile.nickname
-})
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&display=swap');
 
+header {
+  font-family: 'Indie Flower', cursive;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
 body {
   font-family: 'Noto Sans KR', sans-serif;
   background: #f7f8fa;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.router-link-active {
+  color: inherit;
+}
+
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  margin: 2.5rem auto 2.5rem auto;
+  background: #fff;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  gap: 0.75rem;
+}
+
+.search-icon {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.1rem;
+  padding: 0.8rem 0;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.action-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #444;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.action-icon:hover {
+  opacity: 1;
+}
+
 .logo {
   font-family: 'Indie Flower', cursive;
   font-size: 6rem;
   letter-spacing: 0.05em;
+  margin-top: 4.5rem;
+  margin-bottom: -1rem;
 }
+
+.my-custom-span {
+    display: block;
+    margin-bottom: 5px;
+  }
+
 .section-title {
   font-family: 'Indie Flower', cursive;
   font-size: 3rem;
@@ -179,55 +265,5 @@ body {
 .nav-link:active {
   color: #6366f1;
 }
-.search-bar-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 480px;
-  margin: 3rem auto 0 auto;
-  background: #fff;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
-  padding: 0.25rem 0.5rem 0.25rem 1.2rem;
-}
-.search-input {
-  flex: 1;
-  border: 2.5px solid #ddd;
-  outline: none;
-  background: transparent;
-  font-size: 1.1rem;
-  padding: 0.8rem 1rem;
-  border-radius: 0;
-  text-align: center;
-  transition: border 0.2s;
-}
-.search-input:focus {
-  border: 2.5px solid #7bed9f;
-}
-.search-input::placeholder {
-  color: #bbb;
-  font-size: 1.1rem;
-  text-align: center;
-}
-.search-btn {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.5rem;
-  cursor: pointer;
-  transition: none;
-  box-shadow: none;
-}
-.search-btn svg {
-  color: #bbb;
-  transition: color 0.2s;
-}
-.search-btn:hover svg {
-  color: #7bed9f;
-}
 </style>
+
