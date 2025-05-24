@@ -8,10 +8,11 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    favorite_genres = serializers.ListField(child=serializers.CharField(), required=False)
     
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'password2', 'nickname')
+        fields = ('id', 'username', 'email', 'password', 'password2', 'nickname', 'favorite_genres')
         extra_kwargs = {
             'password': {'write_only': True},
         }
