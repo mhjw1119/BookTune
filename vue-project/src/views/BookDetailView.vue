@@ -34,7 +34,11 @@
             />
           </div>
         </div>
-        <AIGenerateButton @generate="generateAIMusic" />
+        <AIGenerateButton 
+          v-if="book && book.id"
+          :book-id="book.id" 
+          @generate="handleGenerateMusic" 
+        />
       </template>
     </main>
   </div>
@@ -81,10 +85,15 @@ onMounted(() => {
   })
 })
 
-const generateAIMusic = () => {
+const handleGenerateMusic = (data) => {
+  console.log('음악 생성 이벤트 수신:', data);
+  generateAIMusic(data);
+};
+
+const generateAIMusic = (data) => {
+  console.log('Generating AI Music for:', book.value?.title, 'Data:', data);
   // TODO: AI 음악 생성 로직 구현
-  console.log('Generating AI Music for:', book.value?.title)
-}
+};
 </script>
 
 <style scoped>

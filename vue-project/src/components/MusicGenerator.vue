@@ -27,8 +27,10 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useBookStore } from '@/stores/books';
+import { useRoute } from 'vue-router';
 
 const store = useBookStore();
+const route = useRoute();
 const prompt = ref('');
 const isGenerating = ref(false);
 const generatedMusic = ref(null);
@@ -43,17 +45,27 @@ const generateMusic = async () => {
     isGenerating.value = true;
     const response = await axios.post(
       `${store.API_URL}/api/songs/generate/`,
-      { prompt: prompt.value },
+      { 
+        prompt: prompt.value.trim(),
+        book_id: route.params.id  // 현재 라우트의 id 파라미터 사용
+      },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access')}`
         }
       }
     );
-    generatedMusic.value = response.data;
+
+    if (response.data.status === 'processing') {
+      alert('음악 생성이 시작되었습니다. 잠시만 기다려주세요.');
+      generatedMusic.value = response.data;
+      prompt.value = '';  // 입력 필드 초기화
+    } else {
+      throw new Error('음악 생성 요청 실패');
+    }
   } catch (error) {
     console.error('음악 생성 실패:', error);
-    alert('음악 생성에 실패했습니다. 다시 시도해주세요.');
+    alert(error.response?.data?.error || '음악 생성에 실패했습니다. 다시 시도해주세요.');
   } finally {
     isGenerating.value = false;
   }

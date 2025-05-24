@@ -1,16 +1,44 @@
 <template>
-  <div class="popup-overlay" @click.self="$emit('close-popup')">
-    <CreateMusic 
-      @submit="handleSubmit"
-      @error="handleError"
-    />
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    style="position: fixed !important; z-index: 99999 !important; width: 100vw !important; height: 100vh !important; left: 0 !important; top: 0 !important;"
+    @click.self="handleClose"
+  >
+    <div class="bg-white rounded-lg shadow-lg p-8 md:p-12 w-[95vw] max-w-xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-noto">AI 음악 생성</h2>
+      </div>
+      <CreateMusic 
+        :book-id="bookId" 
+        @close="handleClose"
+        @generate="handleGenerate" 
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
+console.log('CreateMusicView 렌더링됨');
 import CreateMusic from '@/components/createmusic/CreateMusic.vue';
 
-const emit = defineEmits(['close-popup']);
+const props = defineProps({
+  bookId: {
+    type: [String, Number],
+    required: true
+  }
+});
+
+const emit = defineEmits(['close-popup', 'generate']);
+
+const handleClose = () => {
+  console.log('CreateMusicView: 팝업 닫기');
+  emit('close-popup');
+};
+
+const handleGenerate = (data) => {
+  console.log('CreateMusicView: 음악 생성 이벤트 수신:', data);
+  emit('generate', data);
+};
 
 const handleSubmit = (data) => {
   console.log('음악 추천 결과:', data);
@@ -25,21 +53,13 @@ const handleError = (error) => {
 </script>
 
 <style scoped>
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-body {
-  background: #f7f8fa;
+.hand-drawn-box {
+  border: 5px solid #10b981;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 0 #10b981;
+  background: #fff;
 }
 
 .font-pacifico {
@@ -82,13 +102,5 @@ body {
 .hand-drawn-textarea:focus {
   outline: none;
   box-shadow: 0 0 0 2px #10b981;
-}
-
-/* Custom hand-drawn effect for the main box */
-.hand-drawn-box {
-  border: 5px solid #10b981;
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 0 #10b981;
-  background: #fff;
 }
 </style>

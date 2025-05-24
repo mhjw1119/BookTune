@@ -1,7 +1,12 @@
 <template>
   <div class="w-full max-w-5xl flex justify-start mt-10">
     <button class="btn-ai-music px-10 py-5 shadow-lg" @click="showPopup">make AI MUSIC</button>
-    <CreateMusicView v-if="isPopupVisible" @close-popup="closePopup" />
+    <CreateMusicView 
+      v-if="isPopupVisible" 
+      :book-id="bookId"
+      @close-popup="closePopup"
+      @generate="handleGenerate" 
+    />
   </div>
 </template>
 
@@ -9,14 +14,30 @@
 import { ref } from 'vue';
 import CreateMusicView from '@/views/CreateMusicView.vue';
 
+const props = defineProps({
+  bookId: {
+    type: [String, Number],
+    required: true
+  }
+});
+
+const emit = defineEmits(['generate']);
+
 const isPopupVisible = ref(false);
 
 const showPopup = () => {
+  console.log('팝업 표시');
   isPopupVisible.value = true;
 };
 
 const closePopup = () => {
+  console.log('팝업 닫기');
   isPopupVisible.value = false;
+};
+
+const handleGenerate = (data) => {
+  console.log('음악 생성 이벤트 수신:', data);
+  emit('generate', data);
 };
 </script>
 
