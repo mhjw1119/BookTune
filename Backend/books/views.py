@@ -81,3 +81,10 @@ def liked_books(request):
     books = Books.objects.filter(like_books=request.user)
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def liked_threads(request):
+    threads = Thread_song.objects.filter(like_users=request.user)
+    serializer = ThreadSongSerializer(threads, many=True, context={'request': request})
+    return Response(serializer.data)

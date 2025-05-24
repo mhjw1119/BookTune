@@ -10,4 +10,5 @@ urlpatterns = [
     path('<str:isbn>/threads/', views.book_threads, name='book_threads'),
     path('<str:isbn>/threads/create/', views.create_thread, name='create_thread'),
     path('threads/<int:thread_id>/like/', views.like_thread, name='like_thread'),
+    path('threads/liked/', views.liked_threads, name='liked_threads'),
 ]
