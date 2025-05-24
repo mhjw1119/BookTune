@@ -1,12 +1,14 @@
 <template>
-  <div class="rounded-box flex flex-row items-center justify-between px-6 py-4">
-    <div>
-      <span class="section-title">저자명 :</span>
-      <span class="ml-2 text-gray-700 font-medium">{{ author }}</span>
-    </div>
-    <div>
-      <span class="section-title">출판사 :</span>
-      <span class="ml-2 text-gray-700 font-medium">{{ publisher }}</span>
+  <div class="book-info">
+    <div class="info-container">
+      <div class="info-item">
+        <span class="section-title">저자명 :</span>
+        <span class="info-text">{{ author }}</span>
+      </div>
+      <div class="info-item">
+        <span class="section-title">출판사 :</span>
+        <span class="info-text">{{ publisher }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -25,11 +27,24 @@ defineProps({
 </script>
 
 <style scoped>
-.rounded-box {
-  border: 2.5px solid #222;
-  border-radius: 1rem;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
+.book-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.info-container {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  padding: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .section-title {
@@ -37,5 +52,11 @@ defineProps({
   font-weight: 700;
   font-size: 1.1rem;
   color: #222;
+}
+
+.info-text {
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #374151;
+  font-weight: 500;
 }
 </style> 

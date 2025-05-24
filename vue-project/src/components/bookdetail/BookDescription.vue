@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-box px-6 py-6 min-h-[120px]">
-    <span class="section-title block mb-2">책 소개</span>
+    <span class="section-title block mb-2 text-center">책 소개</span>
     <p class="text-gray-700 leading-relaxed">
       {{ description || '책 소개가 없습니다.' }}
     </p>

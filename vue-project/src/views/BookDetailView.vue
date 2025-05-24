@@ -138,6 +138,8 @@ const generateAIMusic = (data) => {
   font-weight: 700;
   margin-bottom: 2.5rem;
   text-align: center;
+  margin-right: 150px;
+  margin-left: 150px;
 }
 
 .content-container {
@@ -174,6 +176,7 @@ const generateAIMusic = (data) => {
   width: 100%;
   padding: 1.5rem;
   background: white;
+  border: 0px;
   border-radius: 1rem;
 }
 
@@ -206,6 +209,6 @@ const generateAIMusic = (data) => {
 .AI-section {
   width: auto;
   min-width: 200px;
-  min-height: 200px;
+  min-height: 100px;
 }
 </style>
