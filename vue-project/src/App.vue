@@ -268,6 +268,9 @@ a {
   transition: color 0.2s;
   font-weight: bold;
   color: #000000;
+  margin-right: 1.5rem;
+  margin-left: 1.5rem;
+
 }
 .nav-link:hover {
   color: #6366f1;
