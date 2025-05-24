@@ -149,3 +149,13 @@ def suno_webhook_callback(request):
         "message": f"{len(saved_songs)}개의 음악이 성공적으로 저장되었습니다."
     }, status=200)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_songs(request):
+    """
+    현재 로그인한 사용자가 생성한 모든 음악 목록을 반환합니다.
+    """
+    songs = CreatedSong.objects.filter(user=request.user)
+    serializer = CreatedSongSerializer(songs, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+

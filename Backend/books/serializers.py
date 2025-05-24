@@ -30,10 +30,10 @@ class ThreadSongSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'book', 'created_at']
 
     def get_like_count(self, obj):
-        return obj.like_songs.count()  # 수정됨
+        return obj.likesongs.count()  # 수정됨
 
     def get_is_liked(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user in obj.like_songs.all()  # 수정됨
+            return request.user in obj.likesongs.all()  # 수정됨
         return False

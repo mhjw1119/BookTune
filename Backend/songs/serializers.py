@@ -9,23 +9,9 @@ class CreatedSongSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CreatedSong
-        fields = [
-            'id',
-            'user',
-            'user_username',
-            'book',
-            'book_title',
-            'task_id',
-            'prompt',
-            'audio_file',
-            'audio_file_url',
-            'audio_url',
-            'title',
-            'duration',
-            'created_at',
-            'status'
-        ]
-        read_only_fields = ['id', 'created_at', 'status', 'task_id']
+        fields = ['id', 'book', 'prompt', 'audio_file', 'audio_url', 'title', 
+                 'duration', 'created_at', 'status']
+        read_only_fields = ['id', 'created_at', 'status']
 
     def get_audio_file_url(self, obj):
         if obj.audio_file:
