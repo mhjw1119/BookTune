@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-box px-6 py-6 flex flex-col items-center min-h-[120px]">
-    <span class="section-title mb-2">Youtube 로드 영상</span>
+    <span class="section-title mb-2">AI 추천 음악</span>
     <div class="w-full flex justify-center">
       <iframe 
         v-if="videoUrl"

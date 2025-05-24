@@ -1,44 +1,52 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col items-center px-4 py-10">
+  <div class="book-detail">
+    <main class="main-content">
       <!-- Loading State -->
-      <div v-if="loading" class="flex items-center justify-center min-h-[50vh]">
-        <div class="text-gray-500">로딩 중...</div>
+      <div v-if="loading" class="loading">
+        <div>로딩 중...</div>
       </div>
       <!-- Error State -->
-      <div v-else-if="error" class="flex items-center justify-center min-h-[50vh]">
-        <div class="text-red-500">{{ error }}</div>
+      <div v-else-if="error" class="error">
+        <div>{{ error }}</div>
       </div>
       <!-- Content -->
       <template v-else>
         <!-- Book Title -->
-        <h1 class="handwritten mb-10 text-5xl text-center tracking-wider">{{ book?.title || '책 제목' }}</h1>
-        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h1 class="book-title">{{ book?.title || '책 제목' }}</h1>
+        <div class="content-container">
           <!-- Book Cover -->
-          <BookCover 
-            :cover="book?.cover"
-            :title="book?.title"
-          />
+          <div class="cover-container">
+            <BookCover 
+              :cover="book?.cover"
+              :title="book?.title"
+              class="book-cover"
+            />
+          </div>
           <!-- Book Info & Description -->
-          <div class="flex flex-col gap-6 col-span-1 md:col-span-2">
+          <div class="info-container">
             <BookInfo 
               :author="book?.author"
               :publisher="book?.publisher"
+              class="info-section"
             />
             <BookDescription 
               :description="book?.description"
+              class="info-section"
             />
-            <BookYoutubePlayer 
-              :video-url="book?.recommended_song"
-            />
+            <div class="youtube-ai-container">
+              <BookYoutubePlayer 
+                :video-url="book?.recommended_song"
+                class="youtube-section"
+              />
+              <AIGenerateButton 
+                v-if="book && book.id"
+                :book-id="book.id" 
+                @generate="handleGenerateMusic" 
+                class="AI-section"
+              />
+            </div>
           </div>
         </div>
-        <AIGenerateButton 
-          v-if="book && book.id"
-          :book-id="book.id" 
-          @generate="handleGenerateMusic" 
-        />
       </template>
     </main>
   </div>
@@ -97,42 +105,107 @@ const generateAIMusic = (data) => {
 </script>
 
 <style scoped>
-.handwritten {
+.book-detail {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem;
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.error {
+  color: #ef4444;
+}
+
+.book-title {
   font-family: 'Noto Sans KR', cursive;
   font-size: 2.8rem;
   letter-spacing: 0.1em;
   font-weight: 700;
+  margin-bottom: 2.5rem;
+  text-align: center;
 }
 
-.section-title {
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: #222;
+.content-container {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+  margin-left: -20px;
+
 }
 
-.rounded-box {
-  border: 2.5px solid #222;
+.cover-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 0px;
+}
+
+.book-cover {
+  width: 400px;
+  max-width: 400px;
+  height: 560px;
+  margin : 0px;
+  border: 0px;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.info-section {
+  width: 100%;
+  padding: 1.5rem;
+  background: white;
   border-radius: 1rem;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
 }
 
-.btn-ai-music {
-  font-family: 'Inter', 'Noto Sans KR', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
-  color: #fff;
-  border: none;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.08);
-  transition: background 0.2s, transform 0.1s;
+@media (max-width: 768px) {
+  .content-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .book-cover {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
 }
 
-.btn-ai-music:hover {
-  background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
-  transform: translateY(-2px) scale(1.03);
+.youtube-ai-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-right: -64px;
+}
+
+.youtube-section {
+  flex: 1;
+  margin-left: 0px;
+  margin-right: 0px;
+  border: 0px;    
+}
+
+.AI-section {
+  width: auto;
+  min-width: 200px;
+  min-height: 200px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-box flex flex-col items-center justify-center p-6 min-h-[340px]">
-    <span class="section-title mb-2 text-lg">책 커버 이미지</span>
-    <img :src="cover || 'https://placehold.co/220x300?text=Book+Cover'" :alt="title" class="rounded-lg shadow-md border border-gray-200 mt-2">
+    <span class="section-title mb-2 text-lg"></span>
+    <img :src="cover || 'https://placehold.co/220x300?text=Book+Cover'" :alt="title" class="rounded-lg shadow-md border border-gray-200 mt-2 cover-img">
   </div>
 </template>
 
@@ -31,5 +31,11 @@ defineProps({
   font-weight: 700;
   font-size: 1.1rem;
   color: #222;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style> 
