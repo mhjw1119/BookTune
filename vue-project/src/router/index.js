@@ -72,7 +72,7 @@ const router = createRouter({
     //   component: CommunityView
     // },
     {
-      path: '/threads',
+      path: '/books/threads',
       name: 'threads',
       component: ThreadListView,
       meta: { requiresAuth: true }

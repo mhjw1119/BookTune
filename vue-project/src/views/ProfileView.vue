@@ -61,17 +61,28 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import BookList from '@/components/BookList.vue'
-import ThreadSongList from '@/components/ThreadSongList.vue'
+import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
+import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
 import MySongList from '@/components/createmusic/MySongList.vue'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
 ]
+
+const tabs = [
+  { id: 'profile', name: '프로필 수정' },
+  { id: 'liked-books', name: '좋아요한 책' },
+  { id: 'liked-threads', name: '좋아요한 스레드' },
+  { id: 'my-threads', name: '내가 작성한 스레드' }
+]
+
+const currentTab = ref('profile')
 const nickname = ref('')
 const selectedGenres = ref([])
 const likedBooks = ref([])
 const likedThreads = ref([])
+const myThreads = ref([])
 const store = useBookStore()
 
 // 프로필 이미지 관련
@@ -89,6 +100,9 @@ const onImageChange = (e) => {
 
 onMounted(async () => {
   const access = localStorage.getItem('access')
+  if (!access) return
+
+  // 프로필 정보 가져오기
   const res = await axios.get('http://localhost:8000/api/auth/profile/', {
     headers: { Authorization: `Bearer ${access}` }
   })
@@ -151,14 +165,17 @@ const updateProfile = async () => {
   min-height: 100vh;
   background: #f7f8fa;
 }
+
 .logo {
   font-family: 'Indie Flower', cursive;
   font-size: 6rem;
   letter-spacing: 0.05em;
 }
+
 .nav-bar {
   padding: 2rem 0 0 2rem;
 }
+
 .nav-link {
   font-family: 'Indie Flower', cursive;
   font-size: 2rem;
@@ -167,12 +184,15 @@ const updateProfile = async () => {
   color: #000000;
   text-decoration: none;
 }
+
 .nav-link:hover {
   color: #6366f1;
 }
+
 .nav-link:active {
   color: #6366f1;
 }
+
 .profile-content {
   margin-top: 3rem;
 }
@@ -209,19 +229,21 @@ const updateProfile = async () => {
   margin-bottom: 0.5rem;
 }
 .profile-form {
-  max-width: 400px;
+  max-width: 600px;
   margin: 0 auto;
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
+
 .form-row {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .input-box {
   width: 100%;
   border: 1px solid #d1d5db;
@@ -231,17 +253,20 @@ const updateProfile = async () => {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
+
 .genre-checkboxes {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 0.5rem;
 }
+
 .checkbox-label {
   display: flex;
   align-items: center;
   font-size: 1rem;
 }
+
 .form-button {
   font-family: 'Indie Flower', cursive;
   font-size: 1.2rem;
@@ -253,7 +278,33 @@ const updateProfile = async () => {
   transition: all 0.2s ease-in-out;
   margin-top: 1rem;
 }
+
 .form-button:hover {
   background-color: #f3f4f6;
+}
+
+.profile-likes-title {
+  font-family: 'Indie Flower', cursive;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
