@@ -9,51 +9,63 @@
       <span class="logo text-gray-900">PROFILE</span>
     </div>
     <div class="profile-content">
-      <!-- 프로필 이미지 업로드/미리보기 (폼 위에 추가) -->
-      <div class="profile-image-section">
-        <label for="profileImageInput" class="profile-image-label">
-          <img
-            v-if="profileImageUrl"
-            :src="profileImageUrl"
-            alt="프로필 이미지"
-            class="profile-image-preview"
-          />
-          <div v-else class="profile-image-placeholder">이미지 추가</div>
-          <input
-            id="profileImageInput"
-            type="file"
-            accept="image/*"
-            @change="onImageChange"
-            style="display: none"
-          />
-        </label>
-      </div>
-      <form @submit.prevent="updateProfile" class="profile-form">
-        <div class="form-row">
-          <label for="nickname">닉네임:</label>
-          <input id="nickname" v-model="nickname" class="input-box" />
+      <div class="profile-tabs">
+        <div class="tab-buttons">
+          <button 
+            v-for="tab in tabs" 
+            :key="tab.id"
+            @click="currentTab = tab.id"
+            :class="['tab-button', { active: currentTab === tab.id }]"
+          >
+            {{ tab.name }}
+          </button>
         </div>
-        <div class="form-row">
-          <label>좋아하는 장르:</label>
-          <div class="genre-checkboxes">
-            <label v-for="genre in genres" :key="genre" class="checkbox-label">
-              <input type="checkbox" :value="genre" v-model="selectedGenres" />
-              {{ genre }}
-            </label>
+
+        <div class="tab-content">
+          <!-- 프로필 수정 탭 -->
+          <div v-if="currentTab === 'profile'" class="tab-pane">
+            <h2 class="profile-likes-title">프로필 수정</h2>
+            <form @submit.prevent="updateProfile" class="profile-form">
+              <div class="form-row">
+                <label for="nickname">닉네임:</label>
+                <input id="nickname" v-model="nickname" class="input-box" />
+              </div>
+              <div class="form-row">
+                <label>좋아하는 장르:</label>
+                <div class="genre-checkboxes">
+                  <label v-for="genre in genres" :key="genre" class="checkbox-label">
+                    <input type="checkbox" :value="genre" v-model="selectedGenres" />
+                    {{ genre }}
+                  </label>
+                </div>
+              </div>
+              <button type="submit" class="form-button">저장</button>
+            </form>
+          </div>
+
+          <!-- 좋아요한 책 탭 -->
+          <div v-if="currentTab === 'liked-books'" class="tab-pane">
+            <h2 class="profile-likes-title">좋아요한 책</h2>
+            <BookList v-if="likedBooks.length" :books="likedBooks" />
+            <div v-else class="empty-message">좋아요한 책이 없습니다.</div>
+          </div>
+
+          <!-- 좋아요한 스레드 탭 -->
+          <div v-if="currentTab === 'liked-threads'" class="tab-pane">
+            <h2 class="profile-likes-title">좋아요한 스레드</h2>
+            <ThreadLikeList v-if="likedThreads.length" :threads="likedThreads" />
+            <div v-else class="empty-message">좋아요한 스레드가 없습니다.</div>
+          </div>
+
+          <!-- 내가 작성한 스레드 탭 -->
+          <div v-if="currentTab === 'my-threads'" class="tab-pane">
+            <h2 class="profile-likes-title">내가 작성한 스레드</h2>
+            <ThreadMyList v-if="myThreads.length" :threads="myThreads" />
+            <div v-else class="empty-message">작성한 스레드가 없습니다.</div>
           </div>
         </div>
-        <button type="submit" class="form-button">저장</button>
-      </form>
-      <div class="profile-likes">
-        <h2 class="profile-likes-title">좋아요한 책</h2>
-        <BookList v-if="likedBooks.length" :books="likedBooks" />
-        <div v-else>좋아요한 책이 없습니다.</div>
-        <h2>좋아요한 스레드</h2>
-        <ThreadSongList v-if="likedThreads.length" :threads="likedThreads" />
-        <div v-else>좋아요한 스레드가 없습니다.</div>
       </div>
     </div>
-    <MySongList :songs="mySongs" />
   </div>
 </template>
 
@@ -64,8 +76,6 @@ import BookList from '@/components/BookList.vue'
 import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
-import MySongList from '@/components/createmusic/MySongList.vue'
-import ThreadSongList from '@/components/ThreadSongList.vue'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
@@ -86,19 +96,6 @@ const likedThreads = ref([])
 const myThreads = ref([])
 const store = useBookStore()
 
-// 프로필 이미지 관련
-const profileImage = ref(null)
-const profileImageUrl = ref('')
-const mySongs = ref([])
-
-const onImageChange = (e) => {
-  const file = e.target.files[0]
-  if (file) {
-    profileImage.value = file
-    profileImageUrl.value = URL.createObjectURL(file)
-  }
-}
-
 onMounted(async () => {
   const access = localStorage.getItem('access')
   if (!access) return
@@ -110,17 +107,6 @@ onMounted(async () => {
   nickname.value = res.data.nickname
   selectedGenres.value = res.data.favorite_genres || []
 
-  // 프로필 이미지 경로 처리
-  if (res.data.profile_image) {
-    if (res.data.profile_image.startsWith('http')) {
-      profileImageUrl.value = res.data.profile_image
-    } else {
-      profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
-    }
-  } else {
-    profileImageUrl.value = ''
-  }
-
   // 좋아요한 책
   const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
     headers: { Authorization: `Bearer ${access}` }
@@ -131,30 +117,22 @@ onMounted(async () => {
   const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
     headers: { Authorization: `Bearer ${access}` }
   })
-  console.log('좋아요한 스레드 데이터:', resThreads.data)
   likedThreads.value = resThreads.data
 
-  // 내가 만든 노래
-  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
+  // 내가 작성한 스레드
+  const resMyThreads = await axios.get('http://localhost:8000/api/books/threads/', {
     headers: { Authorization: `Bearer ${access}` }
   })
-  console.log('mySongs:', resMySongs.data)
-  mySongs.value = resMySongs.data
+  myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
 })
 
 const updateProfile = async () => {
   const access = localStorage.getItem('access')
-  const formData = new FormData()
-  formData.append('nickname', nickname.value)
-  formData.append('favorite_genres', JSON.stringify(selectedGenres.value))
-  if (profileImage.value) {
-    formData.append('profile_image', profileImage.value)
-  }
-  await axios.put('http://localhost:8000/api/auth/profile/', formData, {
-    headers: {
-      Authorization: `Bearer ${access}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  await axios.put('http://localhost:8000/api/auth/profile/', {
+    nickname: nickname.value,
+    favorite_genres: selectedGenres.value
+  }, {
+    headers: { Authorization: `Bearer ${access}` }
   })
   alert('프로필이 저장되었습니다!')
 }
@@ -197,39 +175,62 @@ const updateProfile = async () => {
 
 .profile-content {
   margin-top: 3rem;
+  padding: 0 2rem;
 }
-.profile-image-section {
+
+.profile-tabs {
+  max-width: 1200px;
+  margin: 3rem auto;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.tab-buttons {
   display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
 }
-.profile-image-label {
+
+.tab-button {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #4b5563;
+  background: none;
+  border: none;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  transition: all 0.2s;
+  position: relative;
 }
-.profile-image-preview {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #ddd;
-  margin-bottom: 0.5rem;
+
+.tab-button:hover {
+  color: #6366f1;
 }
-.profile-image-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #aaa;
-  font-size: 1rem;
-  border: 2px dashed #ddd;
-  margin-bottom: 0.5rem;
+
+.tab-button.active {
+  color: #6366f1;
 }
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #6366f1;
+}
+
+.tab-content {
+  padding: 2rem;
+}
+
+.tab-pane {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 .profile-form {
   max-width: 600px;
   margin: 0 auto;
