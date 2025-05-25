@@ -11,7 +11,7 @@
       <div v-for="thread in threads" :key="thread.id" class="thread-card">
         <div class="thread-header">
           <div class="user-info">
-            <span class="username">{{ thread.user.username }}</span>
+            <span class="username">{{ thread.user.nickname }}</span>
             <span class="date">{{ formatDate(thread.created_at) }}</span>
           </div>
           <button class="like-btn" @click="toggleLike(thread)" :class="{ 'is-liked': thread.is_liked }">
@@ -47,6 +47,7 @@ const error = ref(null)
 const fetchThreads = async () => {
   try {
     const access = localStorage.getItem('access')
+    // console.log('Access Token:', access)
     if (!access) {
       error.value = '로그인이 필요합니다.'
       loading.value = false
