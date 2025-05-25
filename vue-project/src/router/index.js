@@ -8,6 +8,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import CreateMusicView from '@/views/CreateMusicView.vue'
 import GoogleCallback from '@/views/GoogleCallback.vue'
 import KakaoCallback from '@/views/KakaoCallback.vue'
+import ThreadListView from '@/views/ThreadListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,7 +65,18 @@ const router = createRouter({
       path: '/auth/kakao/callback',
       name: 'KakaoCallback',
       component: KakaoCallback
-    }
+    },
+    // {
+    //   path: '/community',
+    //   name: 'Community',
+    //   component: CommunityView
+    // },
+    {
+      path: '/threads',
+      name: 'threads',
+      component: ThreadListView,
+      meta: { requiresAuth: true }
+    },
   ],
 })
 

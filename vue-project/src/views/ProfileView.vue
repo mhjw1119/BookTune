@@ -27,7 +27,7 @@
         <button type="submit" class="form-button">저장</button>
       </form>
       <div class="profile-likes">
-        <h2>좋아요한 책</h2>
+        <h2 class="profile-likes-title">좋아요한 책</h2>
         {{ books }}
         <BookList v-if="likedBooks.length" :books="likedBooks" />
         <div v-else>좋아요한 책이 없습니다.</div>

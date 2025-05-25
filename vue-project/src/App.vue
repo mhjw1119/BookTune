@@ -8,6 +8,9 @@
         </a>
         <span class="text-gray-300 mx-4"> | </span>
         <RouterLink :to="{ name: 'BookList'}" class="nav-link text-gray-800">Book List</RouterLink>
+        <span class="text-gray-300 mx-4"> | </span>
+        <RouterLink :to="{ name: 'threads'}" class="nav-link text-gray-800">Community</RouterLink>
+
       </div>
       <div class="flex items-center gap-8">
         <div v-if="!isLoggedIn">
