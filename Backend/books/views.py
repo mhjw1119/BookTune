@@ -99,6 +99,6 @@ def liked_threads(request):
 @permission_classes([IsAuthenticated])
 def thread_list(request):
     threads = Thread_song.objects.all().order_by('-created_at')
-    serializer = ThreadSongSerializer(threads, many=True)
-    return Response(serializer.data)
+    serializer = ThreadSongSerializer(threads, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
