@@ -1,5 +1,7 @@
 <template>
   <div class="profile-layout">
+        <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
+
     <div class="flex items-center gap-8 nav-bar">
       <a href="#" class="nav-link text-gray-800">
         <RouterLink :to="{ name: 'home'}">Home</RouterLink>
@@ -24,14 +26,13 @@
         <div class="tab-content">
           <!-- 프로필 수정 탭 -->
           <div v-if="currentTab === 'profile'" class="tab-pane">
-            <h2 class="profile-likes-title">프로필 수정</h2>
             <form @submit.prevent="updateProfile" class="profile-form">
               <div class="form-row">
                 <label for="nickname">닉네임:</label>
                 <input id="nickname" v-model="nickname" class="input-box" />
               </div>
               <div class="form-row">
-                <label>좋아하는 장르:</label>
+                <label >좋아하는 장르:</label>
                 <div class="genre-checkboxes">
                   <label v-for="genre in genres" :key="genre" class="checkbox-label">
                     <input type="checkbox" :value="genre" v-model="selectedGenres" />
@@ -41,27 +42,30 @@
               </div>
               <button type="submit" class="form-button">저장</button>
             </form>
+            
           </div>
 
           <!-- 좋아요한 책 탭 -->
           <div v-if="currentTab === 'liked-books'" class="tab-pane">
-            <h2 class="profile-likes-title">좋아요한 책</h2>
             <BookList v-if="likedBooks.length" :books="likedBooks" />
             <div v-else class="empty-message">좋아요한 책이 없습니다.</div>
           </div>
 
           <!-- 좋아요한 스레드 탭 -->
           <div v-if="currentTab === 'liked-threads'" class="tab-pane">
-            <h2 class="profile-likes-title">좋아요한 스레드</h2>
             <ThreadLikeList v-if="likedThreads.length" :threads="likedThreads" />
             <div v-else class="empty-message">좋아요한 스레드가 없습니다.</div>
           </div>
 
           <!-- 내가 작성한 스레드 탭 -->
           <div v-if="currentTab === 'my-threads'" class="tab-pane">
-            <h2 class="profile-likes-title">내가 작성한 스레드</h2>
             <ThreadMyList v-if="myThreads.length" :threads="myThreads" />
             <div v-else class="empty-message">작성한 스레드가 없습니다.</div>
+          </div>
+
+          <div v-if="currentTab === 'my-music'" class="tab-pane">
+            <MusicList v-if="mySongs.length" :songs="mySongs" />
+            <div v-else class="empty-message">만든 음악이 없습니다.</div>
           </div>
         </div>
       </div>
@@ -85,7 +89,8 @@ const tabs = [
   { id: 'profile', name: '프로필 수정' },
   { id: 'liked-books', name: '좋아요한 책' },
   { id: 'liked-threads', name: '좋아요한 스레드' },
-  { id: 'my-threads', name: '내가 작성한 스레드' }
+  { id: 'my-threads', name: '내가 작성한 스레드' },
+  { id: 'my-music', name: '내가 만든 음악' }
 ]
 
 const currentTab = ref('profile')
@@ -94,6 +99,7 @@ const selectedGenres = ref([])
 const likedBooks = ref([])
 const likedThreads = ref([])
 const myThreads = ref([])
+const mySongs = ref([])
 const store = useBookStore()
 
 onMounted(async () => {
@@ -143,7 +149,7 @@ const updateProfile = async () => {
 
 .profile-layout {
   min-height: 100vh;
-  background: #f7f8fa;
+  background: #f7f7f7;
 }
 
 .logo {
@@ -158,19 +164,39 @@ const updateProfile = async () => {
 
 .nav-link {
   font-family: 'Indie Flower', cursive;
-  font-size: 2rem;
+  font-size: 3rem;
   transition: color 0.2s;
   font-weight: bold;
   color: #000000;
+  margin-right: 1.5rem;
+  margin-left: 1.5rem;
   text-decoration: none;
 }
 
 .nav-link:hover {
-  color: #6366f1;
+  color: #000000;
 }
 
 .nav-link:active {
+  color: #000000;
+}
+
+.nav-link a {
+  color: #000000;
+  text-decoration: none;
+}
+
+.nav-link a:hover {
+  color: #000000;
+}
+
+.nav-link a:active {
   color: #6366f1;
+}
+
+.nav-link a.router-link-active {
+  color: #6366f1;
+  /* text-decoration: none; */
 }
 
 .profile-content {
@@ -189,45 +215,54 @@ const updateProfile = async () => {
 
 .tab-buttons {
   display: flex;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  justify-content: center;
+  gap: 2rem;
+  border-bottom: none;
+  background: none;
+  padding: 1rem 0;
 }
 
 .tab-button {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #4b5563;
+  margin-top: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #bdbdbd;
   background: none;
   border: none;
+  outline: none;
   cursor: pointer;
-  transition: all 0.2s;
+  padding: 0 1.5rem 0.5rem 1.5rem;
   position: relative;
+  transition: color 0.2s;
+  text-decoration: none;
 }
 
 .tab-button:hover {
-  color: #6366f1;
+  color: #6fe192;
 }
 
 .tab-button.active {
-  color: #6366f1;
+  color: #000000;
 }
 
 .tab-button.active::after {
   content: '';
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: #6366f1;
+  background: #000000;
 }
 
 .tab-content {
   padding: 2rem;
+  margin-top: 2rem;
 }
 
 .tab-pane {
+  text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -271,15 +306,16 @@ const updateProfile = async () => {
 }
 
 .form-button {
-  font-family: 'Indie Flower', cursive;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 1.2rem;
   font-weight: bold;
   padding: 0.5rem 2rem;
   border: 2px solid #333;
   border-radius: 0.5rem;
-  background-color: white;
+  background-color: rgb(50, 177, 48);
   transition: all 0.2s ease-in-out;
   margin-top: 1rem;
+  
 }
 
 .form-button:hover {
@@ -287,7 +323,7 @@ const updateProfile = async () => {
 }
 
 .profile-likes-title {
-  font-family: 'Indie Flower', cursive;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 2rem;
   margin-bottom: 1.5rem;
   color: #333;
