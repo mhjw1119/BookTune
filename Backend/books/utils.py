@@ -173,8 +173,9 @@ def get_candidate_urls_from_keywords(keywords: str) -> list[str]:
     print(f"[GPT 음악 추천 응답] {content}")
     return re.findall(r"https://www\.youtube\.com/watch\?v=[\w-]+", content)
 
-def update_books_with_recommended_song(max_attempts_per_book: int = 5):
+def update_books_with_recommended_song(max_attempts_per_book: int = 2):
     books = Books.objects.all()
+    DEFAULT_SONG_URL = "https://www.youtube.com/watch?v=KaSFoOF6Yw0&ab_channel=HealingMate-DogMusic"
 
     for book in books:
         if book.recommended_song:
@@ -191,7 +192,7 @@ def update_books_with_recommended_song(max_attempts_per_book: int = 5):
         success = False
 
         for attempt in range(max_attempts_per_book):
-            print(f"[{book.title}] 음악 추천 재시도 {attempt + 1}/{max_attempts_per_book}")
+            print(f"[{book.title}] 음악 추천 시도 {attempt + 1}/{max_attempts_per_book}")
             urls = get_candidate_urls_from_keywords(keywords)
 
             for url in urls:
@@ -206,8 +207,11 @@ def update_books_with_recommended_song(max_attempts_per_book: int = 5):
 
             if success:
                 break
-            else:
-                print(f"[{book.title}] 유효한 링크 없음. 다시 GPT 음악 추천 요청 중...")
+
+        if not success:
+            print(f"[{book.title}] 유효한 링크 없음. 기본 음악 URL 사용")
+            book.recommended_song = DEFAULT_SONG_URL
+            book.save()
 
 CATEGORY_MAPPING = {
     '소설/시/희곡': '문학',
