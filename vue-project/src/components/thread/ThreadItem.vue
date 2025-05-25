@@ -5,9 +5,9 @@
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
-      <button class="like-btn" @click="toggleLike" :class="{ 'is-liked': thread.is_liked }">
+      <button class="like-btn" @click="toggleLike" :class="{ 'is-liked': isLiked }">
         <span class="heart-icon">♥</span>
-        <span class="like-count">{{ thread.like_count }}</span>
+        <span class="like-count">{{ likeCount }}</span>
       </button>
     </div>
     <div class="thread-body">
@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useBookStore } from '@/stores/books'
 import axios from 'axios'
 
@@ -37,18 +38,26 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['like-toggled'])
 const store = useBookStore()
+const isLiked = ref(false)
+const likeCount = ref(props.thread.like_count || 0)
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+const checkLikeStatus = async () => {
+  try {
+    const access = localStorage.getItem('access')
+    if (!access) {
+      isLiked.value = false
+      return
+    }
+
+    const response = await axios.get(`${store.API_URL}/api/books/threads/${props.thread.id}/like-status/`, {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    isLiked.value = response.data.is_liked
+  } catch (error) {
+    console.error('Error checking like status:', error)
+    isLiked.value = false
+  }
 }
 
 const toggleLike = async () => {
@@ -65,11 +74,8 @@ const toggleLike = async () => {
       { headers: { Authorization: `Bearer ${access}` } }
     )
     
-    emit('like-toggled', {
-      threadId: props.thread.id,
-      isLiked: response.data.status === 'liked',
-      likeCount: props.thread.like_count + (response.data.status === 'liked' ? 1 : -1)
-    })
+    isLiked.value = response.data.status === 'liked'
+    likeCount.value += response.data.status === 'liked' ? 1 : -1
   } catch (err) {
     if (err.response?.status === 401) {
       alert('로그인이 필요합니다.')
@@ -78,6 +84,21 @@ const toggleLike = async () => {
     }
   }
 }
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+onMounted(() => {
+  checkLikeStatus()
+})
 </script>
 
 <style scoped>

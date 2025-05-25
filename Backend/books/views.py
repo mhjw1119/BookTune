@@ -81,17 +81,17 @@ def create_thread(request, isbn):
 @permission_classes([IsAuthenticated])
 def like_thread(request, thread_id):
     thread = get_object_or_404(Thread_song, id=thread_id)
-    if request.user in thread.likes.all():
-        thread.likes.remove(request.user)
+    if request.user in thread.likesongs.all():
+        thread.likesongs.remove(request.user)
         return Response({'status': 'unliked'}, status=status.HTTP_200_OK)
     else:
-        thread.likes.add(request.user)
+        thread.likesongs.add(request.user)
         return Response({'status': 'liked'}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def liked_threads(request):
-    threads = Thread_song.objects.filter(likes=request.user)
+    threads = Thread_song.objects.filter(likesongs=request.user)
     serializer = ThreadSongSerializer(threads, many=True)
     return Response(serializer.data)
 
@@ -101,4 +101,11 @@ def thread_list(request):
     threads = Thread_song.objects.all().order_by('-created_at')
     serializer = ThreadSongSerializer(threads, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def thread_like_status(request, thread_id):
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    is_liked = request.user in thread.likesongs.all()
+    return Response({'is_liked': is_liked})
 

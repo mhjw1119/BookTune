@@ -72,6 +72,7 @@ onMounted(() => {
 }
 
 .thread-list-title {
+  text-align: center;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;

@@ -7,6 +7,7 @@ urlpatterns = [
     path('liked/', views.liked_books, name='liked_books'),
     path('threads/', views.thread_list, name='thread_list'),
     path('threads/<int:thread_id>/like/', views.like_thread, name='like_thread'),
+    path('threads/<int:thread_id>/like-status/', views.thread_like_status, name='thread_like_status'),
     path('threads/liked/', views.liked_threads, name='liked_threads'),
     path('<str:isbn>/', views.book_detail, name='book_detail'),
     path('<str:isbn>/likes/', views.like_book, name='like_book'),
