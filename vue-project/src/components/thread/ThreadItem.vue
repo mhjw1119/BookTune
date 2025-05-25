@@ -115,16 +115,19 @@ onMounted(() => {
 
 <style scoped>
 .thread-card {
-  background: white;
+  background: rgb(255, 255, 255);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 600px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .thread-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-itms: center;
   margin-bottom: 1rem;
 }
 

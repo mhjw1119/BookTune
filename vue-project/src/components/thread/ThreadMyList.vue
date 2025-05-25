@@ -54,8 +54,9 @@ const handleLikeToggle = async (threadId, isLiked) => {
 
 .thread-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  justify-items: center;
   padding: 1rem;
 }
 

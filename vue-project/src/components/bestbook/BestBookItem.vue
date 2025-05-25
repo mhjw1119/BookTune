@@ -2,7 +2,19 @@
   
   <div class="book-card" @click="navigateToDetail">
     <button class="heart-btn" @click.stop="toggleLike">
-      <span :class="{ liked: isLiked }">♥</span>
+      <span
+        class="insta-heart"
+        :class="{ liked: isLiked, animate: animateHeart, hovered: isHeartHovered }"
+        @mouseenter="isHeartHovered = true"
+        @mouseleave="isHeartHovered = false"
+      >
+        <svg viewBox="0 0 48 48" width="56" height="56">
+          <path
+            :fill="isLiked || isHeartHovered ? '#ff3b5c' : '#ddd'"
+            d="M34.6 6c-3.4 0-6.4 1.7-8.6 4.3C23.8 7.7 20.8 6 17.4 6 11.6 6 7 10.6 7 16.4c0 9.1 10.2 15.7 16.2 20.7.5.4 1.2.4 1.7 0C30.8 32.1 41 25.5 41 16.4 41 10.6 36.4 6 34.6 6z"
+          />
+        </svg>
+      </span>
     </button>
     <div class="rank-badge">{{ book.best_rank }}</div>
     <img :src="book.cover" :alt="book.title" class="book-cover">
@@ -30,6 +42,8 @@ const props = defineProps({
 })
 
 const isLiked = ref(false)
+const animateHeart = ref(false)
+const isHeartHovered = ref(false)
 
 const checkLikeStatus = async () => {
   try {
@@ -59,6 +73,13 @@ const toggleLike = async () => {
 
     const result = await store.toggleLike(props.book.isbn)
     isLiked.value = result.status === 'liked'
+    // 하트 애니메이션 트리거
+    animateHeart.value = false
+    void animateHeart.value
+    setTimeout(() => {
+      animateHeart.value = true
+      setTimeout(() => (animateHeart.value = false), 400)
+    }, 0)
   } catch (e) {
     if (e.response?.status === 401) {
       alert('로그인이 필요합니다.')
@@ -140,7 +161,7 @@ onMounted(() => {
 .heart-btn {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 0px;
   background: none;
   border: none;
   cursor: pointer;
@@ -149,16 +170,24 @@ onMounted(() => {
   z-index: 2;
 }
 
-.heart-btn span {
-  color: #bbb;
-  transition: color 0.2s;
+.insta-heart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
 }
-
-.heart-btn span.liked {
-  color: #ff6b81;
+.insta-heart.liked {
+  /* 좋아요 상태일 때 하트 색상은 SVG에서 fill로 처리 */
 }
-
-.heart-btn:hover span {
-  color: #ff3b5c;
+.insta-heart.animate {
+  animation: heart-bounce 0.4s;
+}
+@keyframes heart-bounce {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.3); }
+  40% { transform: scale(0.95); }
+  60% { transform: scale(1.1); }
+  80% { transform: scale(0.98); }
+  100% { transform: scale(1); }
 }
 </style> 

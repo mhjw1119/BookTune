@@ -1,6 +1,5 @@
 <template>
   <div class="thread-list">
-    <h2 class="thread-list-title">전체 스레드</h2>
     <div v-if="loading" class="loading">
       로딩 중...
     </div>
@@ -83,7 +82,7 @@ onMounted(() => {
   text-align: center;
   padding: 2rem;
   font-size: 1.2rem;
-  color: #666;
+  color: #ffffff;
 }
 
 .error {
@@ -92,6 +91,8 @@ onMounted(() => {
 
 .threads-container {
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  justify-items: center;
 }
 </style> 

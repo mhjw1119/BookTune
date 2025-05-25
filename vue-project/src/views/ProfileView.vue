@@ -28,11 +28,11 @@
           <div v-if="currentTab === 'profile'" class="tab-pane">
             <form @submit.prevent="updateProfile" class="profile-form">
               <div class="form-row">
-                <label for="nickname">닉네임:</label>
+                <label for="nickname" class="form-label">닉네임</label>
                 <input id="nickname" v-model="nickname" class="input-box" />
               </div>
               <div class="form-row">
-                <label >좋아하는 장르:</label>
+                <label for="description" class="form-label">좋아하는 장르</label>
                 <div class="genre-checkboxes">
                   <label v-for="genre in genres" :key="genre" class="checkbox-label">
                     <input type="checkbox" :value="genre" v-model="selectedGenres" />
@@ -271,24 +271,34 @@ const updateProfile = async () => {
   margin: 0 auto;
   background: #fff;
   padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
 .form-row {
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 1.1rem;
 }
 
 .input-box {
-  width: 100%;
+  text-align: center;
+  width: 50%;
   border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  padding: 0.8rem 1.2rem;
   font-size: 1rem;
-  margin-top: 0.5rem;
+  background: #ffffff;
+  margin-bottom: 0.2rem;
+  resize: none;
+}
+
+.input-desc {
+  font-size: 0.9rem;
+  color: #888;
   margin-bottom: 0.5rem;
 }
 
@@ -297,6 +307,7 @@ const updateProfile = async () => {
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 .checkbox-label {
@@ -306,20 +317,21 @@ const updateProfile = async () => {
 }
 
 .form-button {
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 1.2rem;
+  width:20%;
+  background: #61bef8;
+  color: #fff;
   font-weight: bold;
-  padding: 0.5rem 2rem;
-  border: 2px solid #333;
-  border-radius: 0.5rem;
-  background-color: rgb(50, 177, 48);
-  transition: all 0.2s ease-in-out;
-  margin-top: 1rem;
-  
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.9rem 0;
+  margin-top: 2rem;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .form-button:hover {
-  background-color: #f3f4f6;
+  background: #0078c8;
 }
 
 .profile-likes-title {
@@ -333,7 +345,7 @@ const updateProfile = async () => {
   text-align: center;
   padding: 3rem;
   color: #666;
-  font-style: italic;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 @keyframes fadeIn {
