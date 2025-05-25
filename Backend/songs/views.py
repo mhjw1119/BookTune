@@ -158,4 +158,3 @@ def get_user_songs(request):
     songs = CreatedSong.objects.filter(user=request.user)
     serializer = CreatedSongSerializer(songs, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-

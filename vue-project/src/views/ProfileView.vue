@@ -9,7 +9,25 @@
       <span class="logo text-gray-900">PROFILE</span>
     </div>
     <div class="profile-content">
-      {{ nickname.value }}
+      <!-- 프로필 이미지 업로드/미리보기 (폼 위에 추가) -->
+      <div class="profile-image-section">
+        <label for="profileImageInput" class="profile-image-label">
+          <img
+            v-if="profileImageUrl"
+            :src="profileImageUrl"
+            alt="프로필 이미지"
+            class="profile-image-preview"
+          />
+          <div v-else class="profile-image-placeholder">이미지 추가</div>
+          <input
+            id="profileImageInput"
+            type="file"
+            accept="image/*"
+            @change="onImageChange"
+            style="display: none"
+          />
+        </label>
+      </div>
       <form @submit.prevent="updateProfile" class="profile-form">
         <div class="form-row">
           <label for="nickname">닉네임:</label>
@@ -28,7 +46,6 @@
       </form>
       <div class="profile-likes">
         <h2 class="profile-likes-title">좋아요한 책</h2>
-        {{ books }}
         <BookList v-if="likedBooks.length" :books="likedBooks" />
         <div v-else>좋아요한 책이 없습니다.</div>
         <h2>좋아요한 스레드</h2>
@@ -36,6 +53,7 @@
         <div v-else>좋아요한 스레드가 없습니다.</div>
       </div>
     </div>
+    <MySongList :songs="mySongs" />
   </div>
 </template>
 
@@ -45,6 +63,7 @@ import axios from 'axios'
 import BookList from '@/components/BookList.vue'
 import ThreadSongList from '@/components/ThreadSongList.vue'
 import { useBookStore } from '@/stores/books'
+import MySongList from '@/components/createmusic/MySongList.vue'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
@@ -54,20 +73,21 @@ const selectedGenres = ref([])
 const likedBooks = ref([])
 const likedThreads = ref([])
 const store = useBookStore()
-const like_books = store.books
 
+// 프로필 이미지 관련
+const profileImage = ref(null)
+const profileImageUrl = ref('')
+const mySongs = ref([])
 
-
+const onImageChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    profileImage.value = file
+    profileImageUrl.value = URL.createObjectURL(file)
+  }
+}
 
 onMounted(async () => {
-
-
-  likedBooks.value.filter(book => {
-    return ( b
-      (book.id && book.title.toLowerCase().includes(lowerKeyword)) ||
-      (book.author && book.author.toLowerCase().includes(lowerKeyword))
-    )
-  })
   const access = localStorage.getItem('access')
   const res = await axios.get('http://localhost:8000/api/auth/profile/', {
     headers: { Authorization: `Bearer ${access}` }
@@ -75,26 +95,50 @@ onMounted(async () => {
   nickname.value = res.data.nickname
   selectedGenres.value = res.data.favorite_genres || []
 
+  // 프로필 이미지 경로 처리
+  if (res.data.profile_image) {
+    if (res.data.profile_image.startsWith('http')) {
+      profileImageUrl.value = res.data.profile_image
+    } else {
+      profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
+    }
+  } else {
+    profileImageUrl.value = ''
+  }
+
   // 좋아요한 책
   const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
     headers: { Authorization: `Bearer ${access}` }
   })
   likedBooks.value = resBooks.data
 
-  // 좋아요한 ThreadSong
-  const resThreads = await axios.get('http://localhost:8000/api/threads/liked/', {
+  // 좋아요한 ThreadSong (API 경로 수정)
+  const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
     headers: { Authorization: `Bearer ${access}` }
   })
   likedThreads.value = resThreads.data
+
+  // 내가 만든 노래
+  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
+    headers: { Authorization: `Bearer ${access}` }
+  })
+  console.log('mySongs:', resMySongs.data)
+  mySongs.value = resMySongs.data
 })
 
 const updateProfile = async () => {
   const access = localStorage.getItem('access')
-  await axios.put('http://localhost:8000/api/auth/profile/', {
-    nickname: nickname.value,
-    favorite_genres: selectedGenres.value
-  }, {
-    headers: { Authorization: `Bearer ${access}` }
+  const formData = new FormData()
+  formData.append('nickname', nickname.value)
+  formData.append('favorite_genres', JSON.stringify(selectedGenres.value))
+  if (profileImage.value) {
+    formData.append('profile_image', profileImage.value)
+  }
+  await axios.put('http://localhost:8000/api/auth/profile/', formData, {
+    headers: {
+      Authorization: `Bearer ${access}`,
+      'Content-Type': 'multipart/form-data'
+    }
   })
   alert('프로필이 저장되었습니다!')
 }
@@ -131,6 +175,38 @@ const updateProfile = async () => {
 }
 .profile-content {
   margin-top: 3rem;
+}
+.profile-image-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.profile-image-label {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  margin-bottom: 0.5rem;
+}
+.profile-image-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1rem;
+  border: 2px dashed #ddd;
+  margin-bottom: 0.5rem;
 }
 .profile-form {
   max-width: 400px;
