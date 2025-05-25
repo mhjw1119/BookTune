@@ -65,6 +65,7 @@ import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
 import MySongList from '@/components/createmusic/MySongList.vue'
+import ThreadSongList from '@/components/ThreadSongList.vue'
 
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
@@ -126,10 +127,11 @@ onMounted(async () => {
   })
   likedBooks.value = resBooks.data
 
-  // 좋아요한 ThreadSong (API 경로 수정)
+  // 좋아요한 스레드
   const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
     headers: { Authorization: `Bearer ${access}` }
   })
+  console.log('좋아요한 스레드 데이터:', resThreads.data)
   likedThreads.value = resThreads.data
 
   // 내가 만든 노래

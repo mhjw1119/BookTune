@@ -2,6 +2,12 @@
   <div class="thread-card">
     <div class="thread-header">
       <div class="user-info">
+        <img
+          v-if="thread.user.profile_image"
+          :src="getProfileImageUrl(thread.user.profile_image)"
+          alt="프로필 이미지"
+          class="profile-thumb"
+        />
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
@@ -41,6 +47,12 @@ const props = defineProps({
 const store = useBookStore()
 const isLiked = ref(false)
 const likeCount = ref(props.thread.like_count || 0)
+
+const getProfileImageUrl = (profileImage) => {
+  if (!profileImage) return ''
+  if (profileImage.startsWith('http')) return profileImage
+  return 'http://localhost:8000' + profileImage
+}
 
 const checkLikeStatus = async () => {
   try {
@@ -120,6 +132,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.profile-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border: 1px solid #eee;
 }
 
 .username {
