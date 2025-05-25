@@ -88,3 +88,10 @@ def liked_threads(request):
     threads = Thread_song.objects.filter(like_users=request.user)
     serializer = ThreadSongSerializer(threads, many=True, context={'request': request})
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def book_like_status(request, isbn):
+    book = get_object_or_404(Books, isbn=isbn)
+    is_liked = request.user in book.like_books.all()
+    return Response({'is_liked': is_liked})

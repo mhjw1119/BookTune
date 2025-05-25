@@ -21,6 +21,10 @@
               :title="book?.title"
               class="book-cover"
             />
+            <LikeButton 
+              :isbn="props.isbn"
+              class="like-button-container"
+            />
           </div>
           <!-- Book Info & Description -->
           <div class="info-container">
@@ -71,6 +75,8 @@ import BookDescription from '@/components/bookdetail/BookDescription.vue'
 import BookYoutubePlayer from '@/components/bookdetail/BookYoutubePlayer.vue'
 import AIGenerateButton from '@/components/bookdetail/AIGenerateButton.vue'
 import ThreadButton from '@/components/bookdetail/ThreadButton.vue'
+import LikeButton from '@/components/bookdetail/LikeButton.vue'
+
 const props = defineProps({
   isbn: {
     type: String,
@@ -161,6 +167,7 @@ const generateAIMusic = (data) => {
 }
 
 .cover-container {
+  position: relative;
   display: flex;
   justify-content: flex-start;
   margin-left: 0px;
@@ -196,6 +203,7 @@ const generateAIMusic = (data) => {
   .book-cover {
     max-width: 400px;
     margin: 0 auto;
+    
   }
 
 }
@@ -218,5 +226,11 @@ const generateAIMusic = (data) => {
   width: auto;
   min-width: 200px;
   min-height: 100px;
+}
+
+.like-button-container {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
 }
 </style>

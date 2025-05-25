@@ -1,4 +1,5 @@
 <template>
+  
   <div class="book-card" @click="navigateToDetail">
     <button class="heart-btn" @click.stop="toggleLike">
       <span :class="{ liked: isLiked }">♥</span>
@@ -14,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import axios from 'axios'
@@ -28,14 +29,42 @@ const props = defineProps({
   }
 })
 
-const isLiked = ref(props.book.is_liked ?? false)
+const isLiked = ref(false)
+
+const checkLikeStatus = async () => {
+  try {
+    const access = localStorage.getItem('access')
+    if (!access) {
+      isLiked.value = false
+      return
+    }
+
+    const response = await axios.get(`${store.API_URL}/api/books/${props.book.isbn}/like-status/`, {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    isLiked.value = response.data.is_liked
+  } catch (error) {
+    console.error('Error checking like status:', error)
+    isLiked.value = false
+  }
+}
 
 const toggleLike = async () => {
   try {
+    const access = localStorage.getItem('access')
+    if (!access) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+
     const result = await store.toggleLike(props.book.isbn)
     isLiked.value = result.status === 'liked'
   } catch (e) {
-    alert('로그인이 필요합니다.')
+    if (e.response?.status === 401) {
+      alert('로그인이 필요합니다.')
+    } else {
+      alert('좋아요 처리 중 오류가 발생했습니다.')
+    }
   }
 }
 
@@ -45,6 +74,10 @@ const navigateToDetail = () => {
     params: { isbn: props.book.isbn }
   })
 }
+
+onMounted(() => {
+  checkLikeStatus()
+})
 </script>
 
 <style scoped>

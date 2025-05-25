@@ -17,7 +17,7 @@
         </div>
         <div v-else>
           <template v-if="nickname">
-            <a href="#" class="nav-link text-gray-800 nicknamestyle" @click.prevent="goProfile">{{ nickname }}</a>
+            <a href="#" class="nav-link text-gray-800" :class="nicknameClass" @click.prevent="goProfile">{{ nickname }}</a>
             <span> | </span>
             <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
           </template>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, nextTick, watch } from 'vue';
+import { ref, onMounted, onUpdated, nextTick, watch, computed } from 'vue';
 import { RouterView, RouterLink, useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
@@ -166,10 +166,22 @@ const getProfile = async function () {
     throw error;
   }
 }
+
+const isKorean = (text) => {
+  return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
+}
+
+const nicknameClass = computed(() => {
+  return {
+    'nicknamestyle': true,
+    'korean-font': isKorean(nickname.value),
+    'english-font': !isKorean(nickname.value)
+  }
+})
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&family=Gaegu:wght@400;700&display=swap');
 
 header {
   font-family: 'Indie Flower', cursive;
@@ -279,10 +291,17 @@ a {
   color: #6366f1;
 }
 .nicknamestyle {
-  font-family: 'Noto Sans KR', sans-serif;
   font-size: 2rem;
   transition: color 0.2s;
   font-weight: bold;
   color: #000000;
+}
+
+.korean-font {
+  font-family: 'Gaegu', cursive;
+}
+
+.english-font {
+  font-family: 'Indie Flower', cursive;
 }
 </style>
