@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
-from .models import Books, Thread_song
-from .serializers import BookSerializer, ThreadSongSerializer
+from .models import Books, Thread_song, Thread_comment
+from .serializers import BookSerializer, ThreadSongSerializer, ThreadCommentSerializer, ThreadCommentCreateSerializer
 from .recommendation import recommend_books
 # Create your views here.
 
@@ -116,4 +116,20 @@ def thread_detail(request, thread_id):
     serializer = ThreadSongSerializer(thread)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def thread_comments(request, thread_id):    
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    comments = Thread_comment.objects.filter(thread=thread)
+    serializer = ThreadCommentSerializer(comments, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_thread_comment(request, thread_id):
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    serializer = ThreadCommentCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user, thread=thread)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  

@@ -32,3 +32,11 @@ class Thread_song(models.Model):
 
     def like_count(self):
         return self.like_users.count()
+    
+class Thread_comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    thread = models.ForeignKey(Thread_song, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    

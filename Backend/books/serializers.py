@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Books, Thread_song
+from .models import Books, Thread_song, Thread_comment
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -37,3 +37,16 @@ class ThreadSongSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return request.user in obj.likesongs.all()
         return False
+    
+class ThreadCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = Thread_comment
+        fields = ['id', 'user', 'thread', 'content', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'thread', 'created_at', 'updated_at']
+
+class ThreadCommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Thread_comment
+        fields = ['content']
+        read_only_fields = ['user', 'thread']
