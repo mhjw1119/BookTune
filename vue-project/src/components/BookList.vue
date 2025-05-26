@@ -1,6 +1,5 @@
 <template>
   <div class="book-list">
-    <h1 class="book-title">Book List</h1>
     <div class="best-books-container">
       <h2 class="section-title"></h2>
       <div class="books-grid">

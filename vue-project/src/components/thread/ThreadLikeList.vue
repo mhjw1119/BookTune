@@ -72,33 +72,58 @@ const handleLikeToggle = async ({ threadId, isLiked, likeCount }) => {
 
 <style scoped>
 .thread-like-list {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .thread-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  justify-items: center;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 }
 
-.loading {
+.loading, .error, .empty {
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
   color: #666;
+  width: 100%;
+  background: var(--glass-bg);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .error {
-  text-align: center;
-  padding: 2rem;
   color: #dc2626;
 }
 
 .empty {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
   font-style: italic;
+}
+
+/* 스크롤바 스타일링 */
+.thread-like-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.thread-like-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.thread-like-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.thread-like-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 </style> 

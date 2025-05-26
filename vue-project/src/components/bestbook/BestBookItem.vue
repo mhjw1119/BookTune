@@ -105,18 +105,22 @@ onMounted(() => {
 .book-card {
   position: relative;
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 16px;
-  box-shadow: var(--glass-shadow);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  padding: 1px;
 }
 
 .book-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.9);
 }
 
 .rank-badge {
