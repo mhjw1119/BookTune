@@ -10,7 +10,6 @@
         <RouterLink :to="{ name: 'BookList'}" class="nav-link text-gray-800">Book List</RouterLink>
         <span class="text-gray-300 mx-4"> | </span>
         <RouterLink :to="{ name: 'threads'}" class="nav-link text-gray-800">Community</RouterLink>
-
       </div>
       <div class="flex items-center gap-8">
         <div v-if="!isLoggedIn">
@@ -20,7 +19,10 @@
         </div>
         <div v-else>
           <template v-if="nickname">
-            <a href="#" class="nav-link text-gray-800" :class="nicknameClass" @click.prevent="goProfile">{{ nickname }}</a>
+            <Generating v-if="isGenerating" style="display:inline-block; margin-right:8px;" />
+            <a href="#" class="nav-link text-gray-800" :class="nicknameClass" @click.prevent="goProfile">
+              {{ nickname }}
+            </a>
             <span> | </span>
             <a href="#" class="nav-link text-gray-800" @click.prevent="logout">Logout</a>
           </template>
@@ -60,7 +62,7 @@
       <!-- 구분선 -->
       <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
     </div>
-    
+    <Notification />
     <RouterView />
   </div>
   <div v-else>
@@ -69,22 +71,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, nextTick, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
 import { RouterView, RouterLink, useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import SignupView from './views/SignUpView.vue';
 import axios from 'axios';
-import { useBookStore } from '@/stores/books'
+import { useBookStore } from '@/stores/books';
+import { websocketService } from './utils/websocket';
+import Notification from './components/Notification.vue';
+import Generating from './components/notification/Generating.vue';
+import { useGenerating } from '@/composables/useGenerating';
 
 const isLoginPopupVisible = ref(false);
 const isSignupPopupVisible = ref(false);
 const searchKeyword = ref('');
 const isLoggedIn = ref(false);
-const store = useBookStore()
-const nickname = ref('')
+const store = useBookStore();
+const nickname = ref('');
 const router = useRouter();
 const route = useRoute();
+
+// 생성중 상태 composable 사용
+const { isGenerating, stopGenerating } = useGenerating();
 
 function openLoginPopup() {
   isLoginPopupVisible.value = true;
@@ -111,9 +120,9 @@ async function checkLogin() {
     const access = localStorage.getItem('access');
     if (access) {
       isLoggedIn.value = true;
-      await nextTick()
-      const profile = await getProfile()
-      nickname.value = profile.nickname
+      await nextTick();
+      const profile = await getProfile();
+      nickname.value = profile.nickname;
     } else {
       isLoggedIn.value = false;
       nickname.value = '';
@@ -136,6 +145,12 @@ function logout() {
 
 onMounted(async () => {
   await checkLogin();
+  websocketService.connect();
+  websocketService.addListener('song_notification', stopGenerating);
+});
+
+onUnmounted(() => {
+  websocketService.disconnect();
 });
 
 watch(
@@ -168,19 +183,19 @@ const getProfile = async function () {
     localStorage.removeItem('access'); // 토큰이 유효하지 않은 경우 제거
     throw error;
   }
-}
+};
 
 const isKorean = (text) => {
-  return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
-}
+  return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text);
+};
 
 const nicknameClass = computed(() => {
   return {
     'nicknamestyle': true,
     'korean-font': isKorean(nickname.value),
     'english-font': !isKorean(nickname.value)
-  }
-})
+  };
+});
 </script>
 
 <style scoped>

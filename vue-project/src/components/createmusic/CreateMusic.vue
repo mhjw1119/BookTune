@@ -35,6 +35,9 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useBookStore } from '@/stores/books';
+import { useGenerating } from '@/composables/useGenerating';
+
+const { startGenerating } = useGenerating();
 
 const props = defineProps({
   bookId: {
@@ -59,15 +62,17 @@ const handleGenerateMusic = async () => {
 
   try {
     console.log('음악 생성 요청 시작');
+    startGenerating(); // 생성중 애니메이션 시작
     isGenerating.value = true;
     const response = await axios.post(
       `${store.API_URL}/api/songs/generate/`,
-      { 
+      JSON.stringify({
         prompt: prompt.value.trim(),
         book_id: props.bookId
-      },
+      }),
       {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access')}`
         }
       }

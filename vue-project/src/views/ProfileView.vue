@@ -89,7 +89,7 @@
           </div>
 
           <div v-if="currentTab === 'my-music'" class="tab-pane">
-            <MusicList v-if="mySongs.length" :songs="mySongs" />
+            <MySongList v-if="mySongs.length" :songs="mySongs" />
             <div v-else class="empty-message">만든 음악이 없습니다.</div>
           </div>
         </div>
@@ -105,7 +105,7 @@ import BookList from '@/components/BookList.vue'
 import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
-
+import MySongList from '@/components/createmusic/MySongList.vue'
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년', '만화'
 ]
@@ -226,6 +226,12 @@ onMounted(async () => {
   } catch (error) {
     console.error('프로필 로드 에러:', error)
   }
+  // 내가 만든 음악
+  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
+    headers: { Authorization: `Bearer ${access}` }
+  })
+  mySongs.value = resMySongs.data
+  console.log('내가 만든 음악:', mySongs.value)
 })
 
 const updateProfile = async () => {
