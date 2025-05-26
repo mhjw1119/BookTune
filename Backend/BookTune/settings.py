@@ -66,6 +66,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.kakao',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+
+    # Channels
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -86,12 +89,17 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
     "http://localhost:5174",    # Vite
+    "ws://localhost:5173",     # WebSocket
+    "ws://127.0.0.1:5173",
+    "ws://localhost:5174",
+    "ws://127.0.0.1:5174",
 ]
 CORS_ALLOW_CREDENTIALS = True
 # ngrok 도메인을 CORS 허용 출처에 자동 추가
 ngrok_url = config("NGROK_URL", default="")
 if ngrok_url:
     CORS_ALLOWED_ORIGINS.append(ngrok_url)
+    CORS_ALLOWED_ORIGINS.append(f"ws://{urlparse(ngrok_url).netloc}")
 
 ROOT_URLCONF = 'BookTune.urls'
 
@@ -239,4 +247,12 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Channels 설정
+ASGI_APPLICATION = 'BookTune.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 

@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = get_user_model()
 
@@ -32,3 +34,22 @@ class CreatedSong(models.Model):
 
     def __str__(self):
         return f"{self.title or 'Untitled'} - {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        if not is_new and self.audio_file:  # 기존 객체가 업데이트되고 audio_file이 있는 경우
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "song_notifications",
+                {
+                    "type": "song_notification",
+                    "message": {
+                        "song_id": self.id,
+                        "title": self.title,
+                        "status": self.status,
+                        "audio_url": self.audio_file.url if self.audio_file else None
+                    }
+                }
+            )
