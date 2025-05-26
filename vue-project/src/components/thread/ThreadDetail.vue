@@ -1,24 +1,24 @@
 <template>
-  <div v-if="isOpen && thread" class="thread-detail-modal">
+  <div v-if="isOpen && props.thread" class="thread-detail-modal">
     <div class="modal-overlay" @click="closeModal"></div>
     <div class="modal-content">
       <button class="close-button" @click="closeModal">&times;</button>
       
       <div class="thread-header">
-        <div class="user-info">
+        <div class="user-info" @click="goToProfile" style="cursor: pointer;">
           <img
-            v-if="thread.user?.profile_image"
-            :src="getProfileImageUrl(thread.user.profile_image)"
+            v-if="props.thread.user?.profile_image"
+            :src="getProfileImageUrl(props.thread.user.profile_image)"
             alt="프로필 이미지"
             class="profile-thumb"
           />
-          <span class="username">{{ thread.user?.nickname }}</span>
-          <span class="date">{{ formatDate(thread.created_at) }}</span>
+          <span class="username">{{ props.thread.user?.nickname }}</span>
+          <span class="date">{{ formatDate(props.thread.created_at) }}</span>
         </div>
         <div class="thread-actions">
-          <button class="like-btn" @click="toggleLike" :class="{ 'is-liked': thread.is_liked }">
+          <button class="like-btn" @click="toggleLike" :class="{ 'is-liked': props.thread.is_liked }">
             <span class="heart-icon">♥</span>
-            <span class="like-count">{{ thread.like_count || 0 }}</span>
+            <span class="like-count">{{ props.thread.like_count || 0 }}</span>
           </button>
           <div v-if="isAuthor" class="author-actions">
             <button class="edit-btn" @click="startEdit" v-if="!isEditing">수정</button>
@@ -28,11 +28,11 @@
       </div>
 
       <div class="thread-body">
-        <img :src="thread.book?.cover" alt="책 커버" class="book-cover">
+        <img :src="props.thread.book?.cover" alt="책 커버" class="book-cover">
         <div class="thread-content">
-          <p class="book-title">{{ thread.book?.title }}</p>
+          <p class="book-title">{{ props.thread.book?.title }}</p>
           <div v-if="!isEditing">
-            <p class="thread-text">{{ thread.content }}</p>
+            <p class="thread-text">{{ props.thread.content }}</p>
           </div>
           <div v-else class="edit-form">
             <textarea 
@@ -45,9 +45,9 @@
               <button class="cancel-btn" @click="cancelEdit">취소</button>
             </div>
           </div>
-          <div v-if="thread.audio_file" class="audio-player">
+          <div v-if="props.thread.audio_file" class="audio-player">
             <audio controls>
-              <source :src="thread.audio_file" type="audio/mpeg">
+              <source :src="props.thread.audio_file" type="audio/mpeg">
               브라우저가 오디오 재생을 지원하지 않습니다.
             </audio>
           </div>
@@ -58,7 +58,7 @@
         <h3 class="comment-title">댓글</h3>
         <div class="comment-list">
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
-            <div class="comment-header">
+            <div class="comment-header" @click="goToUserProfile(comment.user.id)" style="cursor: pointer;">
               <img 
                 v-if="comment.user?.profile_image"
                 :src="getProfileImageUrl(comment.user.profile_image)" 
@@ -70,7 +70,7 @@
               <button 
                 v-if="isCommentAuthor(comment) && comment.id" 
                 class="delete-comment-btn" 
-                @click="confirmDeleteComment(comment)"
+                @click.stop="confirmDeleteComment(comment)"
               >삭제</button>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
@@ -103,13 +103,16 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     required: true
+  },
+  thread: {
+    type: Object,
+    required: true
   }
 })
 
 const emit = defineEmits(['close', 'like-toggled', 'thread-deleted', 'thread-updated'])
 
 // 상태 변수들
-const thread = ref(null)
 const comments = ref([])
 const newComment = ref('')
 const isEditing = ref(false)
@@ -153,19 +156,6 @@ const fetchComments = async () => {
   }
 }
 
-const fetchThread = async () => {
-  try {
-    const access = localStorage.getItem('access')
-    const res = await axios.get(
-      `http://localhost:8000/api/books/threads/${props.threadId}/`,
-      { headers: { Authorization: `Bearer ${access}` } }
-    )
-    thread.value = res.data
-  } catch (error) {
-    console.error('스레드 정보를 불러오는데 실패했습니다:', error)
-  }
-}
-
 const getCurrentUser = async () => {
   try {
     const access = localStorage.getItem('access')
@@ -183,7 +173,6 @@ const getCurrentUser = async () => {
 // watch 설정
 watch(() => props.isOpen, (newValue) => {
   if (newValue) {
-    fetchThread()
     fetchComments()
     getCurrentUser()
   }
@@ -198,18 +187,14 @@ const toggleLike = async () => {
 
   try {
     // 현재 상태를 미리 저장
-    const currentLikeCount = thread.value.like_count || 0
-    const currentIsLiked = thread.value.is_liked
-
-    // UI를 즉시 업데이트
-    thread.value.is_liked = !currentIsLiked
-    thread.value.like_count = currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+    const currentLikeCount = props.thread.like_count || 0
+    const currentIsLiked = props.thread.is_liked
 
     // 부모 컴포넌트에 상태 변경 알림
     emit('like-toggled', { 
       threadId: props.threadId,
       isLiked: !currentIsLiked,
-      likeCount: thread.value.like_count
+      likeCount: currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
     })
 
     // 서버 요청
@@ -220,9 +205,7 @@ const toggleLike = async () => {
     )
 
     // 서버 응답이 실패하면 원래 상태로 되돌림
-    if (res.data.status !== (thread.value.is_liked ? 'liked' : 'unliked')) {
-      thread.value.is_liked = currentIsLiked
-      thread.value.like_count = currentLikeCount
+    if (res.data.status !== (!currentIsLiked ? 'liked' : 'unliked')) {
       emit('like-toggled', { 
         threadId: props.threadId,
         isLiked: currentIsLiked,
@@ -240,8 +223,8 @@ const toggleLike = async () => {
 }
 
 const isAuthor = computed(() => {
-  if (!currentUser.value || !thread.value) return false
-  return currentUser.value.id === thread.value.user?.id
+  if (!currentUser.value || !props.thread) return false
+  return currentUser.value.id === props.thread.user?.id
 })
 
 const closeModal = () => {
@@ -308,7 +291,7 @@ const submitComment = async () => {
 }
 
 const startEdit = () => {
-  editedContent.value = thread.value.content
+  editedContent.value = props.thread.content
   isEditing.value = true
 }
 
@@ -325,7 +308,7 @@ const saveEdit = async () => {
       { content: editedContent.value },
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    await fetchThread()
+    await fetchComments()
     isEditing.value = false
     // 수정된 스레드 정보를 부모 컴포넌트에 전달
     emit('thread-updated', { 
@@ -359,9 +342,21 @@ const deleteThread = async () => {
   }
 }
 
+// 프로필 페이지 이동 함수 수정
+const goToProfile = () => {
+  if (props.thread?.user?.id) {
+    router.push({ name: 'userProfile', params: { userId: props.thread.user.id } })
+  }
+}
+
+const goToUserProfile = (userId) => {
+  if (userId) {
+    router.push({ name: 'userProfile', params: { userId } })
+  }
+}
+
 onMounted(() => {
   if (props.isOpen) {
-    fetchThread()
     fetchComments()
     getCurrentUser()
   }
@@ -424,6 +419,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: opacity 0.2s;
+}
+
+.user-info:hover {
+  opacity: 0.8;
 }
 
 .profile-thumb {
@@ -537,6 +537,11 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+  transition: opacity 0.2s;
+}
+
+.comment-header:hover {
+  opacity: 0.8;
 }
 
 .comment-header .profile-thumb {

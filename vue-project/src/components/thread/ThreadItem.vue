@@ -8,6 +8,7 @@
           alt="프로필 이미지"
           class="profile-thumb"
         />
+      
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
@@ -34,6 +35,7 @@
   <ThreadDetail
     v-if="isDetailOpen"
     :thread-id="thread.id"
+    :thread="thread"
     :is-open="isDetailOpen"
     @close="closeThreadDetail"
     @like-toggled="handleLikeToggled"
@@ -43,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import axios from 'axios'
@@ -58,11 +60,13 @@ const props = defineProps({
 
 const store = useBookStore()
 const router = useRouter()
-const isLiked = ref(false)
-const likeCount = ref(props.thread.like_count || 0)
 const isDetailOpen = ref(false)
 
 const emit = defineEmits(['like-toggled', 'thread-deleted', 'thread-updated'])
+
+// 좋아요 상태를 props의 thread에서 직접 사용
+const isLiked = computed(() => props.thread.is_liked)
+const likeCount = computed(() => props.thread.like_count || 0)
 
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
@@ -97,18 +101,14 @@ const toggleLike = async () => {
     }
 
     // 현재 상태를 미리 저장
-    const currentLikeCount = likeCount.value
-    const currentIsLiked = isLiked.value
-
-    // UI를 즉시 업데이트
-    isLiked.value = !currentIsLiked
-    likeCount.value = currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+    const currentLikeCount = props.thread.like_count || 0
+    const currentIsLiked = props.thread.is_liked
 
     // 부모 컴포넌트에 상태 변경 알림
     emit('like-toggled', {
       threadId: props.thread.id,
       isLiked: !currentIsLiked,
-      likeCount: likeCount.value
+      likeCount: currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
     })
 
     // 서버 요청
@@ -119,9 +119,7 @@ const toggleLike = async () => {
     )
 
     // 서버 응답이 실패하면 원래 상태로 되돌림
-    if (response.data.status !== (isLiked.value ? 'liked' : 'unliked')) {
-      isLiked.value = currentIsLiked
-      likeCount.value = currentLikeCount
+    if (response.data.status !== (!currentIsLiked ? 'liked' : 'unliked')) {
       emit('like-toggled', {
         threadId: props.thread.id,
         isLiked: currentIsLiked,
@@ -159,6 +157,7 @@ const closeThreadDetail = () => {
 }
 
 const handleLikeToggled = (data) => {
+  // ThreadDetail에서 받은 좋아요 이벤트를 부모 컴포넌트로 전달
   emit('like-toggled', data)
 }
 
