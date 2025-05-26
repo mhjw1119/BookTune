@@ -1,11 +1,12 @@
+// ... existing code ...
 <template>
   <div
-    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
     v-if="visible"
   >
-    <div class="bg-[#fafbfc] w-full max-w-md mx-auto p-8 rounded-2xl shadow-lg relative">
+    <div class="glass-card w-full max-w-md mx-auto p-8 relative">
       <!-- Close Button -->
-      <button @click="$emit('close')" class="absolute top-4 right-4 text-gray-500 hover:text-black text-xl">&times;</button>
+      <button @click="$emit('close')" class="absolute top-4 right-4 text-gray-500 hover:text-black text-xl glass-button">&times;</button>
 
       <!-- Logo -->
       <h1 class="logo-font text-5xl font-bold text-gray-800 mb-10 text-center select-none">BookTune</h1>
@@ -16,19 +17,19 @@
           v-model="id"
           type="text"
           placeholder="id" 
-          class="handwriting px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-400"
+          class="glass-input handwriting px-5 py-3 text-lg placeholder:text-gray-400"
           autocomplete="username"
         />
         <input 
           v-model="password"
           type="password" 
           placeholder="password" 
-          class="handwriting px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-400"
+          class="glass-input handwriting px-5 py-3 text-lg placeholder:text-gray-400"
           autocomplete="current-password"
         />
         <button 
           type="submit"
-          class="handwriting py-3 mt-2 border-2 border-gray-400 rounded-lg text-lg font-bold bg-gray-400 hover:bg-blue-50 transition"
+          class="glass-button handwriting py-3 mt-2 text-lg font-bold"
         >
           login
         </button>
@@ -41,12 +42,12 @@
       </div>
 
       <!-- Social Login -->
-      <div class="bg-white rounded-lg shadow-sm py-5 px-4 flex flex-col items-center mb-6">
+      <div class="glass-card py-5 px-4 flex flex-col items-center mb-6">
         <div class="flex gap-4 mb-2">
-          <button type="button" class="social-btn bg-yellow-300 hover:bg-yellow-400" aria-label="카카오 로그인">
+          <button type="button" class="glass-button social-btn" aria-label="카카오 로그인">
             <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Kakao_icon.png" alt="Kakao" class="w-8 h-8">
           </button>
-          <button type="button" class="social-btn bg-white border border-gray-300 hover:bg-gray-100" aria-label="구글 로그인">
+          <button type="button" class="glass-button social-btn" aria-label="구글 로그인">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="w-8 h-8">
           </button>
         </div>
@@ -58,7 +59,7 @@
 
       <!-- Signup -->
       <button 
-        class="py-3 w-full border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-blue-50 transition"
+        class="glass-button py-3 w-full text-lg font-bold"
         type="button"
       >
         회원가입
@@ -67,24 +68,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
-  visible: Boolean,
-})
-
-const emit = defineEmits(['close'])
-
-const id = ref('')
-const password = ref('')
-const rememberId = ref(true)
-
-function handleLogin() {
-  // 여기에 로그인 로직 추가
-  alert(`ID: ${id.value}, PW: ${password.value}, Remember: ${rememberId.value}`)
-}
-</script>
+// ... existing code ...
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Nunito:wght@400;700&display=swap');
@@ -103,10 +87,11 @@ body {
 }
 
 .social-btn {
-  @apply flex items-center justify-center w-12 h-12 rounded-full shadow transition hover:scale-105;
+  @apply flex items-center justify-center w-12 h-12 rounded-full transition hover:scale-105;
 }
+
 .social-btn:focus {
-  outline: 2px solid #2563eb;
+  outline: 2px solid rgba(99, 102, 241, 0.3);
   outline-offset: 2px;
 }
 </style>

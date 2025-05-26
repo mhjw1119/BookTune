@@ -104,70 +104,132 @@ onMounted(() => {
 <style scoped>
 .book-card {
   position: relative;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .book-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .rank-badge {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2f3542, #1e272e);
   color: white;
-  width: 30px;
-  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .book-cover {
   width: 100%;
-  height: auto;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .book-info {
-  padding: 0.5rem;
+  padding: 16px;
 }
 
 .book-title {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
 }
 
-.book-author, .book-publisher {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0.25rem 0;
+.book-author {
+  font-size: 14px;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-publisher {
+  font-size: 12px;
+  color: var(--text-color);
+  opacity: 0.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .heart-btn {
   position: absolute;
-  top: 10px;
-  right: 0px;
-  background: none;
-  border: none;
+  top: 12px;
+  right: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  outline: none;
-  font-size: 2.3rem;
-  z-index: 2;
+  transition: all 0.3s ease;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  z-index: 1;
+}
+
+.heart-btn:hover {
+  transform: scale(1.1);
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.heart-btn.is-liked {
+  color: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.heart-btn.is-liked:hover {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart-btn.is-liked i {
+  animation: heartBeat 0.3s ease-in-out;
 }
 
 .insta-heart {
@@ -176,18 +238,23 @@ onMounted(() => {
   justify-content: center;
   transition: transform 0.15s;
 }
+
 .insta-heart.liked {
-  /* 좋아요 상태일 때 하트 색상은 SVG에서 fill로 처리 */
+  animation: heart-shake 0.5s cubic-bezier(0.36, 0, 0.66, -0.56);
 }
+
 .insta-heart.animate {
-  animation: heart-bounce 0.4s;
+  animation: heart-shake 0.5s cubic-bezier(0.36, 0, 10, -0.56);
 }
-@keyframes heart-bounce {
-  0% { transform: scale(1); }
-  20% { transform: scale(1.3); }
-  40% { transform: scale(0.95); }
-  60% { transform: scale(1.1); }
-  80% { transform: scale(0.98); }
-  100% { transform: scale(1); }
+
+@keyframes heart-shake {
+  0% { transform: scale(1) rotate(0deg); }
+  15% { transform: scale(1.4) rotate(-5deg); }
+  30% { transform: scale(1.4) rotate(5deg); }
+  45% { transform: scale(1.4) rotate(-5deg); }
+  60% { transform: scale(1.2) rotate(5deg); }
+  75% { transform: scale(1.2) rotate(-5deg); }
+  90% { transform: scale(1.1) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
-</style> 
+</style>
