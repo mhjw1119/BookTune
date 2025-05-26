@@ -1,14 +1,14 @@
 <template>
-  <main class="hand-drawn-box px-16 py-20 md:px-24 md:py-28 w-[90vw] max-w-lg mx-auto">
-    <label for="music-desc" class="block mb-6 text-2xl md:text-3xl font-noto text-gray-900 leading-snug">
-      원하는 <span class="font-pacifico text-black text-2xl md:text-3xl align-middle">ai</span> 음악을 설명해주세요.
+  <main class="modal-content music-modal-content">
+    <label for="music-desc" class="block mb-6 text-2xl font-indie text-gray-900 leading-snug">
+      원하는 <span class="font-pacifico text-blue-400 text-2xl align-middle"></span> AI 음악을 설명해주세요.
     </label>
     <textarea
       id="music-desc"
       v-model="prompt"
       rows="6"
       placeholder="음악 생성을 위한 프롬프트를 입력하세요..."
-      class="hand-drawn-textarea w-full mb-8"
+      class="edit-textarea w-full mb-8"
       aria-label="원하는 ai 음악 설명 입력"
       :disabled="isGenerating"
       style="max-width: 100%; box-sizing: border-box;"
@@ -16,7 +16,7 @@
     <div class="flex justify-center">
       <button
         @click="handleGenerateMusic"
-        class="hand-drawn px-8 py-2"
+        class="save-btn px-8 py-2"
         type="button"
         :disabled="isGenerating"
         style="max-width: 100%;"
@@ -25,7 +25,7 @@
       </button>
     </div>
     <div v-if="generatedMusic" class="mt-8">
-      <h3 class="text-xl font-bold mb-4">생성된 음악</h3>
+      <h3 class="text-xl font-bold mb-4 font-indie">생성된 음악</h3>
       <audio :src="generatedMusic.audio_url" controls class="w-full"></audio>
     </div>
   </main>
@@ -101,62 +101,79 @@ const handleGenerateMusic = async () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Noto+Sans+KR:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&display=swap');
 
-.hand-drawn-box {
-  border: 5px solid #10b981;
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 0 #10b981;
-  background: #fff;
+.font-indie {
+  font-family: sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
 }
-
 .font-pacifico {
-  font-family: 'Pacifico', cursive;
+  font-family: sans-serif;
 }
 
-.font-noto {
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.hand-drawn {
-  border: 3px solid #222;
-  border-radius: 0.75rem;
-  box-shadow: 2px 2px 0 #222;
-  font-family: 'Pacifico', cursive;
-  font-size: 1.25rem;
+.music-modal-content {
   background: #fff;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-
-.hand-drawn:active {
-  background: #e5e7eb;
-  box-shadow: 1px 1px 0 #222;
-}
-
-.hand-drawn-textarea {
-  border: 4px solid #222;
+  padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 2px 2px 0 #222;
-  background: #fff;
-  resize: none;
-  font-size: 1.1rem;
-  font-family: 'Noto Sans KR', sans-serif;
+  width: 90vw;
+  max-width: 480px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+  margin: 3rem auto 0 auto;
+}
+
+.edit-textarea {
+  width: 100%;
+  min-height: 120px;
   padding: 1rem;
-  transition: box-shadow 0.2s;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  resize: vertical;
+  font-size: 1.05rem;
+  font-family: 'Noto Sans KR', 'Indie Flower', cursive;
+  transition: box-shadow 0.2s, border 0.2s;
 }
-
-.hand-drawn-textarea:focus {
+.edit-textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #10b981;
+  border-color: #61bef8;
+  box-shadow: 0 0 0 2px #61bef855;
 }
-
-.hand-drawn:disabled {
+.edit-textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.hand-drawn-textarea:disabled {
-  opacity: 0.5;
+.save-btn {
+  background: #61bef8;
+  color: white;
+  border: none;
+  padding: 0.8rem 2.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+  font-family: sans-serif;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.save-btn:hover:not(:disabled) {
+  background: #0078c8;
+  box-shadow: 0 4px 16px rgba(97,190,248,0.13);
+  transform: translateY(-2px) scale(1.03);
+}
+.save-btn:active:not(:disabled) {
+  background: #005fa3;
+  transform: scale(0.98);
+}
+.save-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+h3 {
+  font-family: 'Indie Flower', cursive;
 }
 </style> 
