@@ -13,6 +13,8 @@
         :thread="thread"
         :book="thread.book"
         @like-toggled="handleLikeToggled"
+        @thread-deleted="handleThreadDeleted"
+        @thread-updated="handleThreadUpdated"
       />
     </div>
   </div>
@@ -55,6 +57,18 @@ const handleLikeToggled = ({ threadId, isLiked, likeCount }) => {
   if (thread) {
     thread.is_liked = isLiked
     thread.like_count = likeCount
+  }
+}
+
+const handleThreadDeleted = (threadId) => {
+  threads.value = threads.value.filter(thread => thread.id !== threadId)
+}
+
+const handleThreadUpdated = ({ threadId, content }) => {
+  const thread = threads.value.find(t => t.id === threadId)
+  if (thread) {
+    thread.content = content
+    thread.updated_at = new Date().toISOString()
   }
 }
 
