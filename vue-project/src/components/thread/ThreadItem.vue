@@ -33,15 +33,17 @@
 
   <ThreadDetail
     v-if="isDetailOpen"
-    :thread="thread"
+    :thread-id="thread.id"
     :is-open="isDetailOpen"
     @close="closeThreadDetail"
     @like-toggled="handleLikeToggled"
+    @refresh-threads="handleRefreshThreads"
   />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import axios from 'axios'
 import ThreadDetail from './ThreadDetail.vue'
@@ -54,11 +56,12 @@ const props = defineProps({
 })
 
 const store = useBookStore()
+const router = useRouter()
 const isLiked = ref(false)
 const likeCount = ref(props.thread.like_count || 0)
 const isDetailOpen = ref(false)
 
-const emit = defineEmits(['like-toggled'])
+const emit = defineEmits(['like-toggled', 'refresh-threads'])
 
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
@@ -126,10 +129,16 @@ const openThreadDetail = () => {
 
 const closeThreadDetail = () => {
   isDetailOpen.value = false
+  router.push('/books/threads')
 }
 
 const handleLikeToggled = (data) => {
   emit('like-toggled', data)
+}
+
+const handleRefreshThreads = () => {
+  emit('refresh-threads')
+  router.push('/books/threads')
 }
 
 onMounted(() => {

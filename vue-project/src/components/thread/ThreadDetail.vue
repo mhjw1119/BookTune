@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="thread-detail-modal">
+  <div v-if="isOpen && thread" class="thread-detail-modal">
     <div class="modal-overlay" @click="closeModal"></div>
     <div class="modal-content">
       <button class="close-button" @click="closeModal">&times;</button>
@@ -7,12 +7,12 @@
       <div class="thread-header">
         <div class="user-info">
           <img
-            v-if="thread.user.profile_image"
+            v-if="thread.user?.profile_image"
             :src="getProfileImageUrl(thread.user.profile_image)"
             alt="프로필 이미지"
             class="profile-thumb"
           />
-          <span class="username">{{ thread.user.nickname }}</span>
+          <span class="username">{{ thread.user?.nickname }}</span>
           <span class="date">{{ formatDate(thread.created_at) }}</span>
         </div>
         <div class="thread-actions">
@@ -28,9 +28,9 @@
       </div>
 
       <div class="thread-body">
-        <img :src="thread.book.cover" alt="책 커버" class="book-cover">
+        <img :src="thread.book?.cover" alt="책 커버" class="book-cover">
         <div class="thread-content">
-          <p class="book-title">{{ thread.book.title }}</p>
+          <p class="book-title">{{ thread.book?.title }}</p>
           <div v-if="!isEditing">
             <p class="thread-text">{{ thread.content }}</p>
           </div>
@@ -59,9 +59,19 @@
         <div class="comment-list">
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
             <div class="comment-header">
-              <img :src="getProfileImageUrl(comment.user.profile_image)" alt="프로필 이미지" class="profile-thumb">
+              <img 
+                v-if="comment.user?.profile_image"
+                :src="getProfileImageUrl(comment.user.profile_image)" 
+                alt="프로필 이미지" 
+                class="profile-thumb"
+              >
               <span class="comment-author">{{ comment.user?.nickname }}</span>
               <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
+              <button 
+                v-if="isCommentAuthor(comment) && comment.id" 
+                class="delete-comment-btn" 
+                @click="confirmDeleteComment(comment)"
+              >삭제</button>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
           </div>
@@ -81,12 +91,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 
 const props = defineProps({
-  thread: {
-    type: Object,
+  threadId: {
+    type: Number,
     required: true
   },
   isOpen: {
@@ -95,18 +105,17 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'like-toggled', 'thread-deleted'])
+const emit = defineEmits(['close', 'like-toggled', 'thread-deleted', 'thread-updated', 'refresh-threads'])
 
+// 상태 변수들
+const thread = ref(null)
 const comments = ref([])
 const newComment = ref('')
 const isEditing = ref(false)
 const editedContent = ref('')
 const currentUser = ref(null)
 
-const isAuthor = computed(() => {
-  return currentUser.value && props.thread?.user?.id === currentUser.value.id
-})
-
+// 유틸리티 함수들
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
   if (profileImage.startsWith('http')) return profileImage
@@ -114,7 +123,9 @@ const getProfileImageUrl = (profileImage) => {
 }
 
 const formatDate = (dateString) => {
+  if (!dateString) return ''
   const date = new Date(dateString)
+  if (isNaN(date.getTime())) return ''
   return date.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -124,51 +135,30 @@ const formatDate = (dateString) => {
   })
 }
 
-const closeModal = () => {
-  emit('close')
-}
-
-const toggleLike = async () => {
-  try {
-    const access = localStorage.getItem('access')
-    const res = await axios.post(
-      `http://localhost:8000/api/books/threads/${props.thread.id}/likes/`,
-      {},
-      { headers: { Authorization: `Bearer ${access}` } }
-    )
-    emit('like-toggled', { threadId: props.thread.id, isLiked: res.data.status === 'liked' })
-  } catch (error) {
-    alert('로그인이 필요합니다.')
-  }
-}
-
+// API 호출 함수들
 const fetchComments = async () => {
   try {
     const access = localStorage.getItem('access')
     const res = await axios.get(
-      `http://localhost:8000/api/books/threads/${props.thread.id}/comments/`,
+      `http://localhost:8000/api/books/threads/${props.threadId}/comments/`,
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    comments.value = res.data
+    comments.value = res.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
   } catch (error) {
     console.error('댓글을 불러오는데 실패했습니다:', error)
   }
 }
 
-const submitComment = async () => {
-  if (!newComment.value.trim()) return
-
+const fetchThread = async () => {
   try {
     const access = localStorage.getItem('access')
-    const res = await axios.post(
-      `http://localhost:8000/api/books/threads/${props.thread.id}/comments/create/`,
-      { content: newComment.value },
+    const res = await axios.get(
+      `http://localhost:8000/api/books/threads/${props.threadId}/`,
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    comments.value.push(res.data)
-    newComment.value = ''
+    thread.value = res.data
   } catch (error) {
-    alert('댓글 작성에 실패했습니다.')
+    console.error('스레드 정보를 불러오는데 실패했습니다:', error)
   }
 }
 
@@ -181,16 +171,123 @@ const getCurrentUser = async () => {
       headers: { Authorization: `Bearer ${access}` }
     })
     currentUser.value = res.data
-    if (currentUser.value.id === props.thread.user.id) {
-      console.log(currentUser.value.id, props.thread.user.id)
-    }
   } catch (error) {
     console.error('사용자 정보를 불러오는데 실패했습니다:', error)
   }
 }
 
+// watch 설정
+watch(() => props.isOpen, (newValue) => {
+  if (newValue) {
+    fetchThread()
+    fetchComments()
+    getCurrentUser()
+  }
+}, { immediate: true })
+
+const toggleLike = async () => {
+  const access = localStorage.getItem('access')
+  if (!access) {
+    alert('로그인이 필요합니다.')
+    return
+  }
+
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/books/threads/${props.threadId}/like/`,
+      {},
+      { headers: { Authorization: `Bearer ${access}` } }
+    )
+    
+    // 스레드 정보 새로고침
+    await fetchThread()
+    
+    // 부모 컴포넌트에 상태 변경 알림
+    emit('like-toggled', { 
+      threadId: props.threadId,
+      isLiked: res.data.status === 'liked',
+      likeCount: res.data.like_count
+    })
+  } catch (error) {
+    if (error.response?.status === 401) {
+      alert('로그인이 필요합니다.')
+    } else {
+      alert('좋아요 처리 중 오류가 발생했습니다.')
+    }
+  }
+}
+
+const isAuthor = computed(() => {
+  if (!currentUser.value || !thread.value) return false
+  return currentUser.value.id === thread.value.user?.id
+})
+
+const closeModal = () => {
+  emit('refresh-threads')
+  emit('close')
+}
+
+const isCommentAuthor = (comment) => {
+  if (!currentUser.value || !comment.user) return false
+  return currentUser.value.id === comment.user.id
+}
+
+const confirmDeleteComment = (comment) => {
+  if (!comment || !comment.id) {
+    console.error('댓글 정보가 올바르지 않습니다:', comment)
+    return
+  }
+  
+  if (confirm('이 댓글을 삭제하시겠습니까?')) {
+    deleteComment(comment.id)
+  }
+}
+
+const deleteComment = async (commentId) => {
+  if (!commentId) {
+    console.error('댓글 ID가 없습니다')
+    return
+  }
+
+  try {
+    const access = localStorage.getItem('access')
+    await axios.delete(
+      `http://localhost:8000/api/books/threads/${props.threadId}/comments/${commentId}/delete/`,
+      { headers: { Authorization: `Bearer ${access}` } }
+    )
+    // 댓글 목록에서 삭제된 댓글 제거
+    comments.value = comments.value.filter(comment => comment.id !== commentId)
+  } catch (error) {
+    console.error('댓글 삭제 실패:', error)
+    alert('댓글 삭제에 실패했습니다.')
+  }
+}
+
+const submitComment = async () => {
+  if (!newComment.value.trim()) return
+
+  try {
+    const access = localStorage.getItem('access')
+    const res = await axios.post(
+      `http://localhost:8000/api/books/threads/${props.threadId}/comments/create/`,
+      { content: newComment.value },
+      { headers: { Authorization: `Bearer ${access}` } }
+    )
+    
+    // 새 댓글 데이터 구성 - 서버 응답 데이터를 그대로 사용
+    comments.value.push(res.data)
+    newComment.value = ''
+    
+    // 댓글 목록 새로고침
+    await fetchComments()
+  } catch (error) {
+    console.error('댓글 작성 실패:', error)
+    alert('댓글 작성에 실패했습니다.')
+  }
+}
+
 const startEdit = () => {
-  editedContent.value = props.thread.content
+  editedContent.value = thread.value.content
   isEditing.value = true
 }
 
@@ -202,13 +299,18 @@ const cancelEdit = () => {
 const saveEdit = async () => {
   try {
     const access = localStorage.getItem('access')
-    const res = await axios.put(
-      `http://localhost:8000/api/books/threads/${props.thread.id}/update/`,
+    await axios.put(
+      `http://localhost:8000/api/books/threads/${props.threadId}/update/`,
       { content: editedContent.value },
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    props.thread = res.data
+    await fetchThread()
     isEditing.value = false
+    emit('thread-updated', { 
+      threadId: props.threadId,
+      content: editedContent.value 
+    })
+    emit('refresh-threads')
   } catch (error) {
     alert('수정에 실패했습니다.')
   }
@@ -224,11 +326,12 @@ const deleteThread = async () => {
   try {
     const access = localStorage.getItem('access')
     await axios.delete(
-      `http://localhost:8000/api/books/threads/${props.thread.id}/delete/`,
+      `http://localhost:8000/api/books/threads/${props.threadId}/delete/`,
       { headers: { Authorization: `Bearer ${access}` } }
     )
+    emit('thread-deleted', props.threadId)
+    emit('refresh-threads')
     emit('close')
-    emit('thread-deleted', props.thread.id)
   } catch (error) {
     alert('삭제에 실패했습니다.')
   }
@@ -236,6 +339,7 @@ const deleteThread = async () => {
 
 onMounted(() => {
   if (props.isOpen) {
+    fetchThread()
     fetchComments()
     getCurrentUser()
   }
@@ -562,5 +666,21 @@ onMounted(() => {
   margin-bottom: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
+}
+
+.delete-comment-btn {
+  margin-left: auto;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  background: #ff6b81;
+  color: white;
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-comment-btn:hover {
+  background: #ff4757;
 }
 </style> 
