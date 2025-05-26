@@ -164,5 +164,11 @@ def delete_thread(request, thread_id):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_thread_comment(request, thread_id, comment_id):
-    comment = get_object_or_404(Thread_comment, id=comment_id)
+    comment = get_object_or_404(Thread_comment, id=comment_id, thread_id=thread_id)
     
+    # 작성자 확인
+    if comment.user != request.user:
+        return Response({'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    comment.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
