@@ -5,7 +5,7 @@
       <button class="close-button" @click="closeModal">&times;</button>
       
       <div class="thread-header">
-        <div class="user-info">
+        <div class="user-info" @click="goToProfile" style="cursor: pointer;">
           <img
             v-if="props.thread.user?.profile_image"
             :src="getProfileImageUrl(props.thread.user.profile_image)"
@@ -58,7 +58,7 @@
         <h3 class="comment-title">댓글</h3>
         <div class="comment-list">
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
-            <div class="comment-header">
+            <div class="comment-header" @click="goToUserProfile(comment.user.id)" style="cursor: pointer;">
               <img 
                 v-if="comment.user?.profile_image"
                 :src="getProfileImageUrl(comment.user.profile_image)" 
@@ -70,7 +70,7 @@
               <button 
                 v-if="isCommentAuthor(comment) && comment.id" 
                 class="delete-comment-btn" 
-                @click="confirmDeleteComment(comment)"
+                @click.stop="confirmDeleteComment(comment)"
               >삭제</button>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
@@ -342,6 +342,19 @@ const deleteThread = async () => {
   }
 }
 
+// 프로필 페이지 이동 함수 수정
+const goToProfile = () => {
+  if (props.thread?.user?.id) {
+    router.push({ name: 'userProfile', params: { userId: props.thread.user.id } })
+  }
+}
+
+const goToUserProfile = (userId) => {
+  if (userId) {
+    router.push({ name: 'userProfile', params: { userId } })
+  }
+}
+
 onMounted(() => {
   if (props.isOpen) {
     fetchComments()
@@ -406,6 +419,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: opacity 0.2s;
+}
+
+.user-info:hover {
+  opacity: 0.8;
 }
 
 .profile-thumb {
@@ -519,6 +537,11 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+  transition: opacity 0.2s;
+}
+
+.comment-header:hover {
+  opacity: 0.8;
 }
 
 .comment-header .profile-thumb {

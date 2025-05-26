@@ -8,6 +8,7 @@
           alt="프로필 이미지"
           class="profile-thumb"
         />
+      
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
