@@ -16,10 +16,10 @@ class Books(models.Model):
     description = models.TextField()
     best_rank = models.IntegerField()
     main_category = models.CharField(max_length=50, null=True, blank=True)
-    like_books = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_books')
+    like_books = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_books')
     
     def like_count(self):
-        return self.likes.count()
+        return self.like_books.count()
 
 class Thread_song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

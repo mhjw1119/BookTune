@@ -4,6 +4,9 @@ import axios from 'axios'
 
 export const useBookStore = defineStore('book', () => {
   const books = ref([])
+  const recommendedBooks = ref([])
+  const loading = ref(false)
+  const error = ref(null)
   const API_URL = 'http://127.0.0.1:8000'
 
   const getBooks = function () {
@@ -133,8 +136,37 @@ export const useBookStore = defineStore('book', () => {
     }
   }
 
+  const getRecommendedBooks = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const access = localStorage.getItem('access')
+      if (!access) {
+        throw new Error('로그인이 필요합니다.')
+      }
+      
+      const response = await axios.get(
+        `${API_URL}/api/books/recommendations/`,
+        {
+          headers: {
+            Authorization: `Bearer ${access}`
+          }
+        }
+      )
+      recommendedBooks.value = response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || '추천 도서를 불러오는데 실패했습니다.'
+      console.error('Error fetching recommended books:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
   return { 
     books, 
+    recommendedBooks,
+    loading,
+    error,
     API_URL, 
     getBooks, 
     searchBooks, 
@@ -142,6 +174,7 @@ export const useBookStore = defineStore('book', () => {
     toggleLike,
     createThread,
     getBookThreads,
-    likeThread
+    likeThread,
+    getRecommendedBooks
   }
 }, { persist: true })
