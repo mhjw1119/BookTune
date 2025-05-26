@@ -109,3 +109,11 @@ def thread_like_status(request, thread_id):
     is_liked = request.user in thread.likesongs.all()
     return Response({'is_liked': is_liked})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def thread_detail(request, thread_id):
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    serializer = ThreadSongSerializer(thread)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+

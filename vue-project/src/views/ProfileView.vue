@@ -64,7 +64,7 @@
           </div>
 
           <div v-if="currentTab === 'my-music'" class="tab-pane">
-            <MusicList v-if="mySongs.length" :songs="mySongs" />
+            <MySongList v-if="mySongs.length" :songs="mySongs" />
             <div v-else class="empty-message">만든 음악이 없습니다.</div>
           </div>
         </div>
@@ -79,6 +79,7 @@ import axios from 'axios'
 import BookList from '@/components/BookList.vue'
 import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
+import MySongList from '@/components/createmusic/MySongList.vue'
 import { useBookStore } from '@/stores/books'
 
 const genres = [
@@ -130,6 +131,13 @@ onMounted(async () => {
     headers: { Authorization: `Bearer ${access}` }
   })
   myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
+
+  // 내가 만든 음악
+  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
+    headers: { Authorization: `Bearer ${access}` }
+  })
+  mySongs.value = resMySongs.data
+  console.log(mySongs.value)
 })
 
 const updateProfile = async () => {

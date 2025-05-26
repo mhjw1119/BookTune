@@ -7,14 +7,6 @@
             <h3 class="song-title">{{ song.title }}</h3>
             <div class="song-controls">
               <audio v-if="song.audio_file_url" controls :src="song.audio_file_url"></audio>
-              <a 
-                v-if="song.audio_file_url" 
-                :href="song.audio_file_url" 
-                download 
-                class="download-button"
-              >
-                다운로드
-              </a>
             </div>
           </div>
         </div>
