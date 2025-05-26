@@ -37,7 +37,8 @@
     :is-open="isDetailOpen"
     @close="closeThreadDetail"
     @like-toggled="handleLikeToggled"
-    @refresh-threads="handleRefreshThreads"
+    @thread-deleted="handleThreadDeleted"
+    @thread-updated="handleThreadUpdated"
   />
 </template>
 
@@ -61,7 +62,7 @@ const isLiked = ref(false)
 const likeCount = ref(props.thread.like_count || 0)
 const isDetailOpen = ref(false)
 
-const emit = defineEmits(['like-toggled', 'refresh-threads'])
+const emit = defineEmits(['like-toggled', 'thread-deleted', 'thread-updated'])
 
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
@@ -95,14 +96,39 @@ const toggleLike = async () => {
       return
     }
 
+    // 현재 상태를 미리 저장
+    const currentLikeCount = likeCount.value
+    const currentIsLiked = isLiked.value
+
+    // UI를 즉시 업데이트
+    isLiked.value = !currentIsLiked
+    likeCount.value = currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+
+    // 부모 컴포넌트에 상태 변경 알림
+    emit('like-toggled', {
+      threadId: props.thread.id,
+      isLiked: !currentIsLiked,
+      likeCount: likeCount.value
+    })
+
+    // 서버 요청
     const response = await axios.post(
       `${store.API_URL}/api/books/threads/${props.thread.id}/like/`,
       {},
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    
-    isLiked.value = response.data.status === 'liked'
-    likeCount.value += response.data.status === 'liked' ? 1 : -1
+
+    // 서버 응답이 실패하면 원래 상태로 되돌림
+    if (response.data.status !== (isLiked.value ? 'liked' : 'unliked')) {
+      isLiked.value = currentIsLiked
+      likeCount.value = currentLikeCount
+      emit('like-toggled', {
+        threadId: props.thread.id,
+        isLiked: currentIsLiked,
+        likeCount: currentLikeCount
+      })
+      throw new Error('좋아요 상태가 일치하지 않습니다.')
+    }
   } catch (err) {
     if (err.response?.status === 401) {
       alert('로그인이 필요합니다.')
@@ -136,9 +162,12 @@ const handleLikeToggled = (data) => {
   emit('like-toggled', data)
 }
 
-const handleRefreshThreads = () => {
-  emit('refresh-threads')
-  router.push('/books/threads')
+const handleThreadDeleted = (threadId) => {
+  emit('thread-deleted', threadId)
+}
+
+const handleThreadUpdated = (data) => {
+  emit('thread-updated', data)
 }
 
 onMounted(() => {

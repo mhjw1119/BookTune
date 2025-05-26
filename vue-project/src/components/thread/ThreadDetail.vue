@@ -92,6 +92,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const props = defineProps({
@@ -105,7 +106,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'like-toggled', 'thread-deleted', 'thread-updated', 'refresh-threads'])
+const emit = defineEmits(['close', 'like-toggled', 'thread-deleted', 'thread-updated'])
 
 // 상태 변수들
 const thread = ref(null)
@@ -114,6 +115,9 @@ const newComment = ref('')
 const isEditing = ref(false)
 const editedContent = ref('')
 const currentUser = ref(null)
+
+// router 설정 추가
+const router = useRouter()
 
 // 유틸리티 함수들
 const getProfileImageUrl = (profileImage) => {
@@ -193,21 +197,39 @@ const toggleLike = async () => {
   }
 
   try {
+    // 현재 상태를 미리 저장
+    const currentLikeCount = thread.value.like_count || 0
+    const currentIsLiked = thread.value.is_liked
+
+    // UI를 즉시 업데이트
+    thread.value.is_liked = !currentIsLiked
+    thread.value.like_count = currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+
+    // 부모 컴포넌트에 상태 변경 알림
+    emit('like-toggled', { 
+      threadId: props.threadId,
+      isLiked: !currentIsLiked,
+      likeCount: thread.value.like_count
+    })
+
+    // 서버 요청
     const res = await axios.post(
       `http://localhost:8000/api/books/threads/${props.threadId}/like/`,
       {},
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    
-    // 스레드 정보 새로고침
-    await fetchThread()
-    
-    // 부모 컴포넌트에 상태 변경 알림
-    emit('like-toggled', { 
-      threadId: props.threadId,
-      isLiked: res.data.status === 'liked',
-      likeCount: res.data.like_count
-    })
+
+    // 서버 응답이 실패하면 원래 상태로 되돌림
+    if (res.data.status !== (thread.value.is_liked ? 'liked' : 'unliked')) {
+      thread.value.is_liked = currentIsLiked
+      thread.value.like_count = currentLikeCount
+      emit('like-toggled', { 
+        threadId: props.threadId,
+        isLiked: currentIsLiked,
+        likeCount: currentLikeCount
+      })
+      throw new Error('좋아요 상태가 일치하지 않습니다.')
+    }
   } catch (error) {
     if (error.response?.status === 401) {
       alert('로그인이 필요합니다.')
@@ -223,7 +245,6 @@ const isAuthor = computed(() => {
 })
 
 const closeModal = () => {
-  emit('refresh-threads')
   emit('close')
 }
 
@@ -306,11 +327,12 @@ const saveEdit = async () => {
     )
     await fetchThread()
     isEditing.value = false
+    // 수정된 스레드 정보를 부모 컴포넌트에 전달
     emit('thread-updated', { 
       threadId: props.threadId,
       content: editedContent.value 
     })
-    emit('refresh-threads')
+    emit('close')
   } catch (error) {
     alert('수정에 실패했습니다.')
   }
@@ -329,8 +351,8 @@ const deleteThread = async () => {
       `http://localhost:8000/api/books/threads/${props.threadId}/delete/`,
       { headers: { Authorization: `Bearer ${access}` } }
     )
+    // 삭제된 스레드 ID를 부모 컴포넌트에 전달
     emit('thread-deleted', props.threadId)
-    emit('refresh-threads')
     emit('close')
   } catch (error) {
     alert('삭제에 실패했습니다.')
