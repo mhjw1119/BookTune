@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Books, Thread_song, Thread_comment
 from .serializers import BookSerializer, ThreadSongSerializer, ThreadCommentSerializer, ThreadCommentCreateSerializer
-from .recommendation import recommend_books
+# from .recommendation import recommend_books
 # Create your views here.
 
 # 책 목록
@@ -40,13 +40,13 @@ def like_book(request, isbn):
         book.like_books.add(request.user)
         return Response({'status': 'liked'}, status=status.HTTP_200_OK)
 
-# 책 추천
-@api_view(['GET'])
-def get_word2vec_recommendations(request):
-    user = request.user
-    recommended_books = recommend_books(user)
-    serializer = BookSerializer(recommended_books, many=True)
-    return Response(serializer.data)
+# # 책 추천
+# @api_view(['GET'])
+# def get_word2vec_recommendations(request):
+#     user = request.user
+#     recommended_books = recommend_books(user)
+#     serializer = BookSerializer(recommended_books, many=True)
+#     return Response(serializer.data)
 
 # 좋아요 한 책 조회
 @api_view(['GET'])
