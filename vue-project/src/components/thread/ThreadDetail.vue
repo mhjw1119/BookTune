@@ -107,6 +107,10 @@ const props = defineProps({
   thread: {
     type: Object,
     required: true
+  },
+  isOwnProfile: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -229,6 +233,9 @@ const isAuthor = computed(() => {
 
 const closeModal = () => {
   emit('close')
+  if (!props.isOwnProfile) {
+    router.back()
+  }
 }
 
 const isCommentAuthor = (comment) => {
@@ -345,13 +352,13 @@ const deleteThread = async () => {
 // 프로필 페이지 이동 함수 수정
 const goToProfile = () => {
   if (props.thread?.user?.id) {
-    router.push({ name: 'userProfile', params: { userId: props.thread.user.id } })
+    router.push({ name: 'profile', params: { userId: props.thread.user.id } })
   }
 }
 
 const goToUserProfile = (userId) => {
   if (userId) {
-    router.push({ name: 'userProfile', params: { userId } })
+    router.push({ name: 'profile', params: { userId } })
   }
 }
 

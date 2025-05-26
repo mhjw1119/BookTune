@@ -31,7 +31,7 @@ class Thread_song(models.Model):
     likesongs = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_songs')
 
     def like_count(self):
-        return self.like_users.count()
+        return self.likesongs.count()
     
 class Thread_comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

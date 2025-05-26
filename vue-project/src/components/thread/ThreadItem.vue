@@ -12,10 +12,19 @@
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
-      <button class="like-btn" @click.stop="toggleLike" :class="{ 'is-liked': isLiked }">
+      <button 
+        v-if="isOwnProfile"
+        class="like-btn" 
+        @click.stop="toggleLike" 
+        :class="{ 'is-liked': isLiked }"
+      >
         <span class="heart-icon">♥</span>
         <span class="like-count">{{ likeCount }}</span>
       </button>
+      <div v-else class="like-btn disabled">
+        <span class="heart-icon">♥</span>
+        <span class="like-count">{{ likeCount }}</span>
+      </div>
     </div>
     <div class="thread-body">
       <img :src="thread.book.cover" alt="책 커버" class="book-cover">
@@ -37,6 +46,7 @@
     :thread-id="thread.id"
     :thread="thread"
     :is-open="isDetailOpen"
+    :is-own-profile="isOwnProfile"
     @close="closeThreadDetail"
     @like-toggled="handleLikeToggled"
     @thread-deleted="handleThreadDeleted"
@@ -55,6 +65,10 @@ const props = defineProps({
   thread: {
     type: Object,
     required: true
+  },
+  isOwnProfile: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -78,17 +92,16 @@ const checkLikeStatus = async () => {
   try {
     const access = localStorage.getItem('access')
     if (!access) {
-      isLiked.value = false
       return
     }
 
     const response = await axios.get(`${store.API_URL}/api/books/threads/${props.thread.id}/like-status/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
-    isLiked.value = response.data.is_liked
+    // computed 값은 직접 변경하지 않음
+    // 필요하다면 emit 등으로 부모에게 알릴 수 있음
   } catch (error) {
     console.error('Error checking like status:', error)
-    isLiked.value = false
   }
 }
 
@@ -130,8 +143,6 @@ const toggleLike = async () => {
   } catch (err) {
     if (err.response?.status === 401) {
       alert('로그인이 필요합니다.')
-    } else {
-      alert('좋아요 처리 중 오류가 발생했습니다.')
     }
   }
 }
@@ -153,7 +164,6 @@ const openThreadDetail = () => {
 
 const closeThreadDetail = () => {
   isDetailOpen.value = false
-  router.push('/books/threads')
 }
 
 const handleLikeToggled = (data) => {
@@ -289,5 +299,16 @@ onMounted(() => {
 .audio-player audio {
   width: 100%;
   max-width: 300px;
+}
+
+.like-btn.disabled {
+  background: #f1f2f6;
+  color: #666;
+  border: 1px solid #ddd;
+  cursor: not-allowed;
+}
+
+.like-btn.disabled:hover {
+  background: #f1f2f6;
 }
 </style> 

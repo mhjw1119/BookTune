@@ -1,6 +1,6 @@
 <template>
   <div class="profile-layout">
-        <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
+    <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
 
     <div class="flex items-center gap-8 nav-bar">
       <a href="#" class="nav-link text-gray-800">
@@ -12,20 +12,86 @@
     </div>
     <div class="profile-content">
       <div class="profile-tabs">
+        <!-- 프로필 헤더 섹션 추가 -->
+        <div class="profile-header">
+          <div class="profile-image-section">
+            <img
+              v-if="profileImageUrl"
+              :src="profileImageUrl"
+              alt="프로필 이미지"
+              class="profile-image-preview"
+            />
+            <div v-else class="profile-image-placeholder">이미지 없음</div>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-nickname">{{ nickname }}</h2>
+            <div class="profile-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ followersCount }}</span>
+                <span class="stat-label">팔로워</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ followingsCount }}</span>
+                <span class="stat-label">팔로잉</span>
+              </div>
+            </div>
+            <button 
+              v-if="!isOwnProfile" 
+              @click="toggleFollow" 
+              :class="['follow-button', { 'following': isFollowing }]"
+            >
+              {{ isFollowing ? '언팔로우' : '팔로우' }}
+            </button>
+          </div>
+        </div>
+
         <div class="tab-buttons">
           <button 
-            v-for="tab in tabs" 
+            v-for="tab in visibleTabs" 
             :key="tab.id"
             @click="currentTab = tab.id"
             :class="['tab-button', { active: currentTab === tab.id }]"
           >
-            {{ tab.name }}
+            {{ getTabName(tab.id) }}
           </button>
         </div>
 
         <div class="tab-content">
+          <!-- 프로필 조회 탭 -->
+          <div v-if="currentTab === 'profile-view'" class="tab-pane">
+            <div class="profile-view-content">
+              <div class="profile-info-section">
+                <div class="profile-image-section">
+                  <img
+                    v-if="profileImageUrl"
+                    :src="profileImageUrl"
+                    alt="프로필 이미지"
+                    class="profile-image-preview"
+                  />
+                  <div v-else class="profile-image-placeholder">이미지 없음</div>
+                </div>
+                <div class="profile-details">
+                  <h3 class="profile-detail-title">닉네임</h3>
+                  <p class="profile-detail-content">{{ nickname }}</p>
+                  
+                  <h3 class="profile-detail-title">좋아하는 장르</h3>
+                  <div class="profile-genres">
+                    <span 
+                      v-for="genre in selectedGenres" 
+                      :key="genre" 
+                      class="genre-tag"
+                    >
+                      {{ genre }}
+                    </span>
+                    <span v-if="!selectedGenres.length" class="no-genres">선택된 장르가 없습니다</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 프로필 수정 탭 -->
-          <div v-if="currentTab === 'profile'" class="tab-pane">
+          <div v-if="currentTab === 'profile-edit' && isOwnProfile" class="tab-pane">
             <!-- 프로필 이미지 업로드/미리보기 -->
             <div class="profile-image-section">
               <label for="profileImageInput" class="profile-image-label">
@@ -67,7 +133,6 @@
               </div>
               <button type="submit" class="form-button">저장</button>
             </form>
-            
           </div>
 
           <!-- 좋아요한 책 탭 -->
@@ -78,7 +143,7 @@
 
           <!-- 좋아요한 스레드 탭 -->
           <div v-if="currentTab === 'liked-threads'" class="tab-pane">
-            <ThreadLikeList v-if="likedThreads.length" :threads="likedThreads" />
+            <ThreadLikeList v-if="likedThreads.length" :threads="likedThreads" :is-own-profile="isOwnProfile" @refresh-threads="handleRefreshLikedThreads" />
             <div v-else class="empty-message">좋아요한 스레드가 없습니다.</div>
           </div>
 
@@ -99,26 +164,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 import BookList from '@/components/BookList.vue'
 import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
 import MySongList from '@/components/createmusic/MySongList.vue'
+
+const route = useRoute()
 const genres = [
   '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년', '만화'
 ]
 
 const tabs = [
-  { id: 'profile', name: '프로필 수정' },
+  { id: 'profile-view', name: '프로필 조회' },
+  { id: 'profile-edit', name: '프로필 수정' },
   { id: 'liked-books', name: '좋아요한 책' },
   { id: 'liked-threads', name: '좋아요한 스레드' },
   { id: 'my-threads', name: '내가 작성한 스레드' },
   { id: 'my-music', name: '내가 만든 음악' }
 ]
 
-const currentTab = ref('profile')
+const currentTab = ref('profile-view')
 const nickname = ref('')
 const selectedGenres = ref([])
 const likedBooks = ref([])
@@ -128,6 +197,45 @@ const mySongs = ref([])
 const store = useBookStore()
 const profileImage = ref(null)
 const profileImageUrl = ref('')
+const followersCount = ref(0)
+const followingsCount = ref(0)
+const isFollowing = ref(false)
+const currentUserId = ref(null)
+const loggedInUserId = ref(null)
+
+// 현재 로그인한 사용자의 ID를 가져오는 함수
+const getLoggedInUserId = async () => {
+  try {
+    const access = localStorage.getItem('access')
+    if (!access) return null
+    
+    const response = await axios.get('http://localhost:8000/api/auth/profile/', {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    loggedInUserId.value = response.data.id
+    console.log('로그인한 사용자 ID:', loggedInUserId.value)
+    return response.data.id
+  } catch (error) {
+    console.error('로그인한 사용자 정보를 가져오는데 실패했습니다:', error)
+    return null
+  }
+}
+
+// 현재 보고 있는 프로필이 자신의 것인지 확인
+const isOwnProfile = computed(() => {
+  console.log('현재 프로필 ID:', currentUserId.value)
+  console.log('로그인한 사용자 ID:', loggedInUserId.value)
+  if (!currentUserId.value || !loggedInUserId.value) return false
+  return String(currentUserId.value) === String(loggedInUserId.value)
+})
+
+// 보여줄 탭 필터링
+const visibleTabs = computed(() => {
+  if (isOwnProfile.value) {
+    return tabs
+  }
+  return tabs.filter(tab => tab.id !== 'profile-edit' && tab.id !== 'my-music')
+})
 
 const onImageChange = (e) => {
   const file = e.target.files[0]
@@ -138,40 +246,84 @@ const onImageChange = (e) => {
 }
 
 const toggleGenre = (genre) => {
-  console.log('토글 전 장르:', selectedGenres.value)
   const index = selectedGenres.value.indexOf(genre)
   if (index === -1) {
     selectedGenres.value.push(genre)
   } else {
     selectedGenres.value.splice(index, 1)
   }
-  console.log('토글 후 장르:', selectedGenres.value)
+}
+
+const toggleFollow = async () => {
+  try {
+    const access = localStorage.getItem('access')
+    const response = await axios.post(
+      `http://localhost:8000/api/auth/${currentUserId.value}/follow/`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${access}` }
+      }
+    )
+    
+    isFollowing.value = response.data.status === 'followed'
+    // 팔로워 수 업데이트
+    followersCount.value += isFollowing.value ? 1 : -1
+  } catch (error) {
+    console.error('팔로우/언팔로우 에러:', error)
+  }
+}
+
+// 좋아요한 스레드 새로고침 함수
+const handleRefreshLikedThreads = async () => {
+  try {
+    const access = localStorage.getItem('access')
+    const userId = currentUserId.value
+    const resThreads = await axios.get(`http://localhost:8000/api/books/threads/liked/${userId}/`, {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    likedThreads.value = resThreads.data
+  } catch (error) {
+    console.error('좋아요한 스레드 새로고침 에러:', error)
+  }
 }
 
 onMounted(async () => {
   const access = localStorage.getItem('access')
-  if (!access) return
+  if (!access) {
+    console.log('액세스 토큰이 없습니다.')
+    return
+  }
+
+  // URL에서 사용자 ID 가져오기
+  const userId = route.params.userId
+  if (!userId) {
+    console.log('URL에 사용자 ID가 없습니다.')
+    return
+  }
+  currentUserId.value = userId
+  console.log('URL에서 가져온 사용자 ID:', userId)
+
+  // 로그인한 사용자의 ID 가져오기
+  await getLoggedInUserId()
 
   try {
     // 프로필 정보 가져오기
-    const res = await axios.get('http://localhost:8000/api/auth/profile/', {
+    const res = await axios.get(`http://localhost:8000/api/auth/profile/${userId}/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
+    
     nickname.value = res.data.nickname
+    followersCount.value = res.data.followers_count
+    followingsCount.value = res.data.followings_count
+    isFollowing.value = res.data.is_following
     
     // 장르 데이터 처리
-    console.log('서버에서 받은 장르 데이터:', res.data.favorite_genres)
-    
     if (res.data.favorite_genres) {
       try {
         let genresData = res.data.favorite_genres
-        
-        // 문자열인 경우 JSON 파싱 시도
         if (typeof genresData === 'string') {
           try {
-            // 첫 번째 파싱
             genresData = JSON.parse(genresData)
-            // 배열의 첫 번째 요소가 문자열인 경우 한 번 더 파싱
             if (Array.isArray(genresData) && genresData.length > 0 && typeof genresData[0] === 'string') {
               try {
                 genresData = JSON.parse(genresData[0])
@@ -183,16 +335,11 @@ onMounted(async () => {
             console.log('첫 번째 파싱 실패, 현재 데이터 사용')
           }
         }
-        
-        // 최종적으로 배열이 아닌 경우 빈 배열로 초기화
         selectedGenres.value = Array.isArray(genresData) ? genresData : []
-        console.log('최종 선택된 장르:', selectedGenres.value)
       } catch (e) {
         console.error('장르 데이터 파싱 에러:', e)
         selectedGenres.value = []
       }
-    } else {
-      selectedGenres.value = []
     }
 
     // 프로필 이미지 경로 처리
@@ -202,36 +349,38 @@ onMounted(async () => {
       } else {
         profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
       }
-    } else {
-      profileImageUrl.value = ''
     }
 
-    // 좋아요한 책
-    const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
+    // 좋아요한 책 - 현재 사용자의 좋아요한 책만 가져오기
+    const resBooks = await axios.get(`http://localhost:8000/api/books/liked/${userId}/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
     likedBooks.value = resBooks.data
 
-    // 좋아요한 스레드
-    const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
+    // 좋아요한 스레드 - 현재 사용자의 좋아요한 스레드만 가져오기
+    const resThreads = await axios.get(`http://localhost:8000/api/books/threads/liked/${userId}/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
     likedThreads.value = resThreads.data
 
     // 내가 작성한 스레드
-    const resMyThreads = await axios.get('http://localhost:8000/api/books/threads/', {
+    const resMyThreads = await axios.get(`http://localhost:8000/api/books/threads/user/${userId}/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
-    myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
+    myThreads.value = resMyThreads.data
+
+    // 내가 만든 음악
+    const resMySongs = await axios.get(`http://localhost:8000/api/songs/song_list/`, {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    mySongs.value = resMySongs.data
   } catch (error) {
     console.error('프로필 로드 에러:', error)
+    if (error.response) {
+      console.error('에러 응답:', error.response.data)
+      console.error('에러 상태:', error.response.status)
+    }
   }
-  // 내가 만든 음악
-  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  mySongs.value = resMySongs.data
-  console.log('내가 만든 음악:', mySongs.value)
 })
 
 const updateProfile = async () => {
@@ -239,11 +388,7 @@ const updateProfile = async () => {
     const access = localStorage.getItem('access')
     const formData = new FormData()
     formData.append('nickname', nickname.value)
-    
-    // 현재 선택된 장르만 전송 (기존 데이터 덮어쓰기)
-    const genresToSave = [...selectedGenres.value]
-    console.log('저장할 장르 데이터:', genresToSave)
-    formData.append('favorite_genres', JSON.stringify(genresToSave))
+    formData.append('favorite_genres', JSON.stringify(selectedGenres.value))
     
     if (profileImage.value) {
       formData.append('profile_image', profileImage.value)
@@ -256,16 +401,19 @@ const updateProfile = async () => {
       }
     })
     
-    console.log('서버 응답:', response.data)
-    
-    // 저장 후 현재 선택된 장르 유지
-    selectedGenres.value = genresToSave
-
     alert('프로필이 저장되었습니다!')
   } catch (error) {
     console.error('프로필 업데이트 에러:', error)
     alert('프로필 저장 중 오류가 발생했습니다.')
   }
+}
+
+// 탭 이름 동적 변경
+const getTabName = (tabId) => {
+  if (tabId === 'my-threads') {
+    return `${nickname.value}의 스레드`
+  }
+  return tabs.find(tab => tab.id === tabId)?.name || tabId
 }
 </script>
 
@@ -336,6 +484,69 @@ const updateProfile = async () => {
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   overflow: hidden;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-info {
+  margin-left: 2rem;
+}
+
+.profile-nickname {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.follow-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #61bef8;
+  color: white;
+  border: none;
+}
+
+.follow-button:hover {
+  background: #0078c8;
+}
+
+.follow-button.following {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.follow-button.following:hover {
+  background: #d0d0d0;
 }
 
 .tab-buttons {
@@ -518,5 +729,58 @@ const updateProfile = async () => {
   font-size: 1rem;
   border: 2px dashed #ddd;
   margin-bottom: 0.5rem;
+}
+
+.profile-view-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-info-section {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-detail-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.profile-detail-title:first-child {
+  margin-top: 0;
+}
+
+.profile-detail-content {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.profile-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.genre-tag {
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.no-genres {
+  color: #999;
+  font-style: italic;
 }
 </style>
