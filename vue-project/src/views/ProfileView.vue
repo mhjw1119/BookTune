@@ -55,7 +55,12 @@
                 <label for="description" class="form-label">좋아하는 장르</label>
                 <div class="genre-checkboxes">
                   <label v-for="genre in genres" :key="genre" class="checkbox-label">
-                    <input type="checkbox" :value="genre" v-model="selectedGenres" />
+                    <input 
+                      type="checkbox" 
+                      :value="genre" 
+                      :checked="selectedGenres.includes(genre)"
+                      @change="toggleGenre(genre)"
+                    />
                     {{ genre }}
                   </label>
                 </div>
@@ -102,7 +107,7 @@ import ThreadMyList from '@/components/thread/ThreadMyList.vue'
 import { useBookStore } from '@/stores/books'
 
 const genres = [
-  '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
+  '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년', '만화'
 ]
 
 const tabs = [
@@ -132,62 +137,129 @@ const onImageChange = (e) => {
   }
 }
 
+const toggleGenre = (genre) => {
+  console.log('토글 전 장르:', selectedGenres.value)
+  const index = selectedGenres.value.indexOf(genre)
+  if (index === -1) {
+    selectedGenres.value.push(genre)
+  } else {
+    selectedGenres.value.splice(index, 1)
+  }
+  console.log('토글 후 장르:', selectedGenres.value)
+}
+
 onMounted(async () => {
   const access = localStorage.getItem('access')
   if (!access) return
 
-  // 프로필 정보 가져오기
-  const res = await axios.get('http://localhost:8000/api/auth/profile/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  nickname.value = res.data.nickname
-  selectedGenres.value = res.data.favorite_genres || []
-
-  // 프로필 이미지 경로 처리
-  if (res.data.profile_image) {
-    if (res.data.profile_image.startsWith('http')) {
-      profileImageUrl.value = res.data.profile_image
+  try {
+    // 프로필 정보 가져오기
+    const res = await axios.get('http://localhost:8000/api/auth/profile/', {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    nickname.value = res.data.nickname
+    
+    // 장르 데이터 처리
+    console.log('서버에서 받은 장르 데이터:', res.data.favorite_genres)
+    
+    if (res.data.favorite_genres) {
+      try {
+        let genresData = res.data.favorite_genres
+        
+        // 문자열인 경우 JSON 파싱 시도
+        if (typeof genresData === 'string') {
+          try {
+            // 첫 번째 파싱
+            genresData = JSON.parse(genresData)
+            // 배열의 첫 번째 요소가 문자열인 경우 한 번 더 파싱
+            if (Array.isArray(genresData) && genresData.length > 0 && typeof genresData[0] === 'string') {
+              try {
+                genresData = JSON.parse(genresData[0])
+              } catch (e) {
+                console.log('두 번째 파싱 실패, 현재 데이터 사용')
+              }
+            }
+          } catch (e) {
+            console.log('첫 번째 파싱 실패, 현재 데이터 사용')
+          }
+        }
+        
+        // 최종적으로 배열이 아닌 경우 빈 배열로 초기화
+        selectedGenres.value = Array.isArray(genresData) ? genresData : []
+        console.log('최종 선택된 장르:', selectedGenres.value)
+      } catch (e) {
+        console.error('장르 데이터 파싱 에러:', e)
+        selectedGenres.value = []
+      }
     } else {
-      profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
+      selectedGenres.value = []
     }
-  } else {
-    profileImageUrl.value = ''
+
+    // 프로필 이미지 경로 처리
+    if (res.data.profile_image) {
+      if (res.data.profile_image.startsWith('http')) {
+        profileImageUrl.value = res.data.profile_image
+      } else {
+        profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
+      }
+    } else {
+      profileImageUrl.value = ''
+    }
+
+    // 좋아요한 책
+    const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    likedBooks.value = resBooks.data
+
+    // 좋아요한 스레드
+    const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    likedThreads.value = resThreads.data
+
+    // 내가 작성한 스레드
+    const resMyThreads = await axios.get('http://localhost:8000/api/books/threads/', {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+    myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
+  } catch (error) {
+    console.error('프로필 로드 에러:', error)
   }
-
-  // 좋아요한 책
-  const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  likedBooks.value = resBooks.data
-
-  // 좋아요한 스레드
-  const resThreads = await axios.get('http://localhost:8000/api/books/threads/liked/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  likedThreads.value = resThreads.data
-
-  // 내가 작성한 스레드
-  const resMyThreads = await axios.get('http://localhost:8000/api/books/threads/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
 })
 
 const updateProfile = async () => {
-  const access = localStorage.getItem('access')
-  const formData = new FormData()
-  formData.append('nickname', nickname.value)
-  formData.append('favorite_genres', JSON.stringify(selectedGenres.value))
-  if (profileImage.value) {
-    formData.append('profile_image', profileImage.value)
-  }
-  await axios.put('http://localhost:8000/api/auth/profile/', formData, {
-    headers: {
-      Authorization: `Bearer ${access}`,
-      'Content-Type': 'multipart/form-data'
+  try {
+    const access = localStorage.getItem('access')
+    const formData = new FormData()
+    formData.append('nickname', nickname.value)
+    
+    // 현재 선택된 장르만 전송 (기존 데이터 덮어쓰기)
+    const genresToSave = [...selectedGenres.value]
+    console.log('저장할 장르 데이터:', genresToSave)
+    formData.append('favorite_genres', JSON.stringify(genresToSave))
+    
+    if (profileImage.value) {
+      formData.append('profile_image', profileImage.value)
     }
-  })
-  alert('프로필이 저장되었습니다!')
+
+    const response = await axios.put('http://localhost:8000/api/auth/profile/', formData, {
+      headers: {
+        Authorization: `Bearer ${access}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    console.log('서버 응답:', response.data)
+    
+    // 저장 후 현재 선택된 장르 유지
+    selectedGenres.value = genresToSave
+
+    alert('프로필이 저장되었습니다!')
+  } catch (error) {
+    console.error('프로필 업데이트 에러:', error)
+    alert('프로필 저장 중 오류가 발생했습니다.')
+  }
 }
 </script>
 

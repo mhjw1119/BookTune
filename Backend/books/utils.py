@@ -9,7 +9,7 @@ from .models import Books
 from openai import OpenAI
 from django.db.models import Q
 import re
-import yt_dlp
+# import yt_dlp
 
 ALADIN_API_URL = config('ALADIN_API_URL')
 ALADIN_API_KEY = config('ALADIN_API_KEY')
@@ -107,111 +107,111 @@ def clean_book_descriptions():
         'message': f'{updated_count}개의 책 description이 업데이트되었습니다.'
     }
 
-from openai import OpenAI
+# from openai import OpenAI
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# client = OpenAI(api_key=OPENAI_API_KEY)
 
-KEYWORD_PROMPT = """
-너는 책 소개와 제목을 바탕으로 감정이나 분위기를 표현하는 핵심 키워드 3개를 추출하는 어시스턴트야.
-예를 들어 '치유', '집중', '잔잔함' 같은 단어들이 될 수 있어.
-반드시 3개의 키워드만 추출해서, 쉼표로 구분해서 출력해줘.
-다른 텍스트는 절대 포함하지 마.
-"""
-MUSIC_PROMPT_TEMPLATE = """
-너는 아래 핵심 키워드 3개에 어울리는 차분하고 감각적인 음악을 추천해주는 어시스턴트야.
-다음 조건을 반드시 지켜야 해:
-1. 유튜브 라이브 링크는 절대 포함하지 마.
-2. 반드시 존재하는 영상이어야 해 (너의 지식 기준에서 신뢰도 높은 링크).
-3. 아래와 같은 신뢰할 수 있는 유튜브 채널 중에서만 추천할 것:
-   - Soothing Relaxation
-   - Yellow Brick Cinema
-   - Peder B. Helland
-   - Ambient Worlds
-   - OCB Relax Music
-4. 아래와 같이 3개의 유튜브 링크를 쉼표로 구분해서 출력해줘:
-   'https://www.youtube.com/watch?v=aaa','https://www.youtube.com/watch?v=bbb','https://www.youtube.com/watch?v=ccc'
-5. 다른 텍스트는 절대 포함하지 마. 링크만 출력할 것.
+# KEYWORD_PROMPT = """
+# 너는 책 소개와 제목을 바탕으로 감정이나 분위기를 표현하는 핵심 키워드 3개를 추출하는 어시스턴트야.
+# 예를 들어 '치유', '집중', '잔잔함' 같은 단어들이 될 수 있어.
+# 반드시 3개의 키워드만 추출해서, 쉼표로 구분해서 출력해줘.
+# 다른 텍스트는 절대 포함하지 마.
+# """
+# MUSIC_PROMPT_TEMPLATE = """
+# 너는 아래 핵심 키워드 3개에 어울리는 차분하고 감각적인 음악을 추천해주는 어시스턴트야.
+# 다음 조건을 반드시 지켜야 해:
+# 1. 유튜브 라이브 링크는 절대 포함하지 마.
+# 2. 반드시 존재하는 영상이어야 해 (너의 지식 기준에서 신뢰도 높은 링크).
+# 3. 아래와 같은 신뢰할 수 있는 유튜브 채널 중에서만 추천할 것:
+#    - Soothing Relaxation
+#    - Yellow Brick Cinema
+#    - Peder B. Helland
+#    - Ambient Worlds
+#    - OCB Relax Music
+# 4. 아래와 같이 3개의 유튜브 링크를 쉼표로 구분해서 출력해줘:
+#    'https://www.youtube.com/watch?v=aaa','https://www.youtube.com/watch?v=bbb','https://www.youtube.com/watch?v=ccc'
+# 5. 다른 텍스트는 절대 포함하지 마. 링크만 출력할 것.
 
-핵심 키워드: {keywords}
-"""
+# 핵심 키워드: {keywords}
+# """
 
-def extract_keywords(book_intro: str) -> str:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": KEYWORD_PROMPT.strip()},
-            {"role": "user", "content": f"책 소개 및 제목: {book_intro.strip()}"},
-        ],
-        temperature=0.7,
-    )
-    keywords = response.choices[0].message.content.strip()
-    print(f"[핵심 키워드] {keywords}")
-    return keywords
+# def extract_keywords(book_intro: str) -> str:
+#     response = client.chat.completions.create(
+#         model="gpt-4o-mini",
+#         messages=[
+#             {"role": "system", "content": KEYWORD_PROMPT.strip()},
+#             {"role": "user", "content": f"책 소개 및 제목: {book_intro.strip()}"},
+#         ],
+#         temperature=0.7,
+#     )
+#     keywords = response.choices[0].message.content.strip()
+#     print(f"[핵심 키워드] {keywords}")
+#     return keywords
 
-def is_valid_youtube_url(url: str) -> bool:
-    ydl_opts = {
-        "quiet": True,
-        "skip_download": True,
-        "force_generic_extractor": False,
-    }
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            return not info.get("is_live", False)
-    except Exception as e:
-        print(f"[유효성 실패] {url} → {e}")
-        return False
+# def is_valid_youtube_url(url: str) -> bool:
+#     ydl_opts = {
+#         "quiet": True,
+#         "skip_download": True,
+#         "force_generic_extractor": False,
+#     }
+#     try:
+#         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+#             info = ydl.extract_info(url, download=False)
+#             return not info.get("is_live", False)
+#     except Exception as e:
+#         print(f"[유효성 실패] {url} → {e}")
+#         return False
     
-def get_candidate_urls_from_keywords(keywords: str) -> list[str]:
-    prompt = MUSIC_PROMPT_TEMPLATE.format(keywords=keywords)
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": prompt.strip()}],
-        temperature=0.7,
-    )
-    content = response.choices[0].message.content.strip()
-    print(f"[GPT 음악 추천 응답] {content}")
-    return re.findall(r"https://www\.youtube\.com/watch\?v=[\w-]+", content)
+# def get_candidate_urls_from_keywords(keywords: str) -> list[str]:
+#     prompt = MUSIC_PROMPT_TEMPLATE.format(keywords=keywords)
+#     response = client.chat.completions.create(
+#         model="gpt-4o-mini",
+#         messages=[{"role": "system", "content": prompt.strip()}],
+#         temperature=0.7,
+#     )
+#     content = response.choices[0].message.content.strip()
+#     print(f"[GPT 음악 추천 응답] {content}")
+#     return re.findall(r"https://www\.youtube\.com/watch\?v=[\w-]+", content)
 
-def update_books_with_recommended_song(max_attempts_per_book: int = 2):
-    books = Books.objects.all()
-    DEFAULT_SONG_URL = "https://www.youtube.com/watch?v=KaSFoOF6Yw0&ab_channel=HealingMate-DogMusic"
+# def update_books_with_recommended_song(max_attempts_per_book: int = 2):
+#     books = Books.objects.all()
+#     DEFAULT_SONG_URL = "https://www.youtube.com/watch?v=KaSFoOF6Yw0&ab_channel=HealingMate-DogMusic"
 
-    for book in books:
-        if book.recommended_song:
-            continue
+#     for book in books:
+#         if book.recommended_song:
+#             continue
 
-        desc = book.description.strip() if book.description else ""
-        intro = desc if desc else book.title
-        if not intro:
-            continue
+#         desc = book.description.strip() if book.description else ""
+#         intro = desc if desc else book.title
+#         if not intro:
+#             continue
 
-        # Step 1: 핵심 키워드 추출
-        keywords = extract_keywords(intro)
+#         # Step 1: 핵심 키워드 추출
+#         keywords = extract_keywords(intro)
 
-        success = False
+#         success = False
 
-        for attempt in range(max_attempts_per_book):
-            print(f"[{book.title}] 음악 추천 시도 {attempt + 1}/{max_attempts_per_book}")
-            urls = get_candidate_urls_from_keywords(keywords)
+#         for attempt in range(max_attempts_per_book):
+#             print(f"[{book.title}] 음악 추천 시도 {attempt + 1}/{max_attempts_per_book}")
+#             urls = get_candidate_urls_from_keywords(keywords)
 
-            for url in urls:
-                if "/live" in url.lower():
-                    continue
-                if is_valid_youtube_url(url):
-                    print(f"[저장 성공] {book.title} → {url}")
-                    book.recommended_song = url
-                    book.save()
-                    success = True
-                    break
+#             for url in urls:
+#                 if "/live" in url.lower():
+#                     continue
+#                 if is_valid_youtube_url(url):
+#                     print(f"[저장 성공] {book.title} → {url}")
+#                     book.recommended_song = url
+#                     book.save()
+#                     success = True
+#                     break
 
-            if success:
-                break
+#             if success:
+#                 break
 
-        if not success:
-            print(f"[{book.title}] 유효한 링크 없음. 기본 음악 URL 사용")
-            book.recommended_song = DEFAULT_SONG_URL
-            book.save()
+#         if not success:
+#             print(f"[{book.title}] 유효한 링크 없음. 기본 음악 URL 사용")
+#             book.recommended_song = DEFAULT_SONG_URL
+#             book.save()
 
 CATEGORY_MAPPING = {
     '소설/시/희곡': '문학',

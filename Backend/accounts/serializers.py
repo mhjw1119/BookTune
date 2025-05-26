@@ -8,7 +8,7 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-    favorite_genres = serializers.ListField(child=serializers.CharField(), required=False)
+    favorite_genres = serializers.JSONField(required=False)
     profile_image = serializers.ImageField(required=False, allow_null=True)
     
     class Meta:

@@ -7,6 +7,7 @@ from konlpy.tag import Okt
 import numpy as np
 import re
 from django.conf import settings
+from .utils import CATEGORY_MAPPING
 
 # 불용어 리스트 (train_word2vec.py에서 사용한 것과 동일하게 유지)
 stopwords = set([
@@ -37,32 +38,36 @@ def recommend_books(user, top_n=10):
         # 모델 파일 경로 설정
         model_path = os.path.join(settings.BASE_DIR, 'ml', 'word2vec_books.model')
         
+        # 사용자의 찜한 책들 가져오기
+        liked_books = user.liked_books.all()
+        
+        # 찜한 책이 없는 경우 선호 장르 기반으로 추천
+        if not liked_books.exists():
+            if not user.favorite_genres:
+                return Books.objects.none()
+            
+            # 선호 장르에 해당하는 책들 추천 (main_category 기준)
+            return Books.objects.filter(
+                main_category__in=user.favorite_genres
+            ).order_by('-customer_review')[:top_n]
+        
         # 모델 파일 존재 확인
         if not os.path.exists(model_path):
             print(f"Warning: Word2Vec model not found at {model_path}")
             # 기본 추천: 사용자의 찜한 책과 같은 장르의 책 추천
-            liked_books = user.liked_books.all()
-            if not liked_books.exists():
-                return Books.objects.none()
-            
             # 사용자가 찜한 책들의 장르 수집
             user_genres = set()
             for book in liked_books:
-                if book.category_name:
-                    user_genres.add(book.category_name)
+                if book.main_category:
+                    user_genres.add(book.main_category)
             
             # 같은 장르의 다른 책들 추천
-            return Books.objects.filter(category_name__in=user_genres).exclude(
+            return Books.objects.filter(main_category__in=user_genres).exclude(
                 id__in=liked_books.values_list('id', flat=True)
             )[:top_n]
         
         # Word2Vec 모델 로드
         model = Word2Vec.load(model_path)
-        
-        # 사용자의 찜한 책들 가져오기
-        liked_books = user.liked_books.all()
-        if not liked_books.exists():
-            return Books.objects.none()
 
         # Word2Vec 기반 벡터 계산
         vectors = []
@@ -74,6 +79,11 @@ def recommend_books(user, top_n=10):
                 vectors.extend(word_vecs)
 
         if not vectors:
+            # 벡터 계산이 실패한 경우 선호 장르 기반으로 추천
+            if user.favorite_genres:
+                return Books.objects.filter(
+                    main_category__in=user.favorite_genres
+                ).order_by('-customer_review')[:top_n]
             return Books.objects.none()
 
         user_vector = np.mean(vectors, axis=0)
@@ -95,7 +105,7 @@ def recommend_books(user, top_n=10):
             )
 
             # 장르 기반 유사도 계산
-            book_genres = [book.category_name] if book.category_name else []
+            book_genres = [book.main_category] if book.main_category else []
             genre_similarity = get_genre_similarity(user.favorite_genres, book_genres)
 
             # 최종 유사도 계산 (Word2Vec 70%, 장르 30% 가중치)
@@ -109,18 +119,9 @@ def recommend_books(user, top_n=10):
 
     except Exception as e:
         print(f"Error in recommend_books: {str(e)}")
-        # 에러 발생 시 기본 추천 방식으로 대체
-        liked_books = user.liked_books.all()
-        if not liked_books.exists():
-            return Books.objects.none()
-        
-        # 사용자가 찜한 책들의 장르 수집
-        user_genres = set()
-        for book in liked_books:
-            if book.category_name:
-                user_genres.add(book.category_name)
-        
-        # 같은 장르의 다른 책들 추천
-        return Books.objects.filter(category_name__in=user_genres).exclude(
-            id__in=liked_books.values_list('id', flat=True)
-        )[:top_n]
+        # 에러 발생 시 선호 장르 기반으로 추천
+        if user.favorite_genres:
+            return Books.objects.filter(
+                main_category__in=user.favorite_genres
+            ).order_by('-customer_review')[:top_n]
+        return Books.objects.none()
