@@ -80,7 +80,7 @@ onMounted(() => {
 
 <style scoped>
 .thread-list {
-  padding: 2rem;
+  padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -107,7 +107,7 @@ onMounted(() => {
 .threads-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  gap: 1.5rem;
   justify-items: center;
 }
 </style> 

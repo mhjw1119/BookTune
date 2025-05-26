@@ -20,10 +20,14 @@ defineProps({
 
 <style scoped>
 .rounded-box {
-  border: 2.5px solid #222;
-  border-radius: 1rem;
   background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 340px;
 }
 
 .section-title {
@@ -31,11 +35,16 @@ defineProps({
   font-weight: 700;
   font-size: 1.1rem;
   color: #222;
+  margin-bottom: 1rem;
+  padding: 0 1.5rem;
 }
 
 .cover-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #ddd;
+  margin-top: 1rem;
 }
 </style> 

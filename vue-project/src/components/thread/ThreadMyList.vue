@@ -82,7 +82,7 @@ const handleLikeToggle = async (threadId, isLiked) => {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -91,9 +91,9 @@ const handleLikeToggle = async (threadId, isLiked) => {
 .thread-grid {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1.5rem;
   overflow-x: auto;
-  padding: 1rem;
+  padding: 1.5rem;
   cursor: grab;
   scrollbar-width: thin;
   scrollbar-color: #bbb #eee;

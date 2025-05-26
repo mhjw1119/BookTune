@@ -423,6 +423,7 @@ const getTabName = (tabId) => {
 .profile-layout {
   min-height: 100vh;
   background: #f7f7f7;
+  padding-bottom: 3rem;
 }
 
 .logo {
@@ -491,22 +492,25 @@ const getTabName = (tabId) => {
   align-items: center;
   padding: 2rem;
   border-bottom: 1px solid #eee;
+  gap: 3rem;
 }
 
 .profile-info {
-  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .profile-nickname {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
 }
 
 .profile-stats {
   display: flex;
   gap: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-item {
@@ -516,190 +520,207 @@ const getTabName = (tabId) => {
 }
 
 .stat-value {
-  font-weight: bold;
   font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
 }
 
 .stat-label {
-  color: #666;
   font-size: 0.9rem;
+  color: #666;
 }
 
 .follow-button {
-  padding: 0.5rem 1.5rem;
-  border-radius: 1rem;
-  font-weight: bold;
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.2s;
-  background: #61bef8;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  background: #0078c8;
   color: white;
   border: none;
 }
 
 .follow-button:hover {
-  background: #0078c8;
+    background-color: #005fa3;
 }
 
 .follow-button.following {
-  background: #e0e0e0;
+  background: #eee;
   color: #333;
+  border: 1px solid #ccc;
 }
 
 .follow-button.following:hover {
-  background: #d0d0d0;
+    background-color: #ddd;
 }
 
 .tab-buttons {
   display: flex;
-  justify-content: flex-start;
   gap: 2rem;
-  border-bottom: none;
-  background: none;
-  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+  padding: 0 2rem;
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #bbb #eee;
-  white-space: nowrap;
-}
-
-.tab-buttons::-webkit-scrollbar {
-  height: 8px;
-}
-
-.tab-buttons::-webkit-scrollbar-thumb {
-  background: #bbb;
-  border-radius: 5px;
-}
-
-.tab-buttons::-webkit-scrollbar-track {
-  background: #eee;
-  border-radius: 5px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tab-button {
-  margin-top: 1rem;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #bdbdbd;
   background: none;
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 0 1.5rem 0.5rem 1.5rem;
-  position: relative;
-  transition: color 0.2s;
-  text-decoration: none;
-}
-
-.tab-button:hover {
-  color: #6fe192;
+  padding: 1rem 0;
+  font-size: 1.1rem;
+  color: #666;
+  transition: color 0.2s, border-bottom 0.2s;
+  white-space: nowrap;
 }
 
 .tab-button.active {
-  color: #000000;
+  color: #333;
+  border-bottom: 2px solid #0078c8;
+  font-weight: 600;
 }
 
-.tab-button.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #000000;
+.tab-button:hover:not(.active) {
+    color: #333;
 }
 
 .tab-content {
   padding: 2rem;
-  margin-top: 2rem;
 }
 
 .tab-pane {
-  text-align: center;
-  animation: fadeIn 0.3s ease-in-out;
+}
+
+.profile-view-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-info-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.profile-image-section {
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-detail-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.profile-detail-content {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.profile-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.genre-tag {
+  background: #e0e7ef;
+  color: #4a5568;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+}
+
+.no-genres {
+  font-style: italic;
+  color: #888;
 }
 
 .profile-form {
-  max-width: 600px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .form-row {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-label {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  display: block;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
 }
 
 .input-box {
-  text-align: center;
-  width: 50%;
-  border: 1px solid #d1d5db;
-  border-radius: 1rem;
-  padding: 0.8rem 1.2rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
   font-size: 1rem;
-  background: #ffffff;
-  margin-bottom: 0.2rem;
-  resize: none;
 }
 
-.input-desc {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 0.5rem;
+.input-box:focus {
+  outline: none;
+  border-color: #0078c8;
+  box-shadow: 0 0 0 2px #0078c833;
+}
+
+.form-button {
+  padding: 0.8rem 1.5rem;
+  background: #0078c8;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+  margin-top: 1rem;
+}
+
+.form-button:hover {
+  background-color: #005fa3;
 }
 
 .genre-checkboxes {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  text-align: center;
+  gap: 0.75rem;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
+  gap: 0.3rem;
   font-size: 1rem;
-}
-
-.form-button {
-  width:20%;
-  background: #61bef8;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 0.9rem;
-  padding: 0.9rem 0;
-  margin-top: 2rem;
-  transition: background 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-
-.form-button:hover {
-  background: #0078c8;
-}
-
-.profile-likes-title {
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
   color: #333;
+}
+
+.checkbox-label input[type="checkbox"] {
+  /* Custom checkbox styling if needed */
 }
 
 .empty-message {
   text-align: center;
-  padding: 3rem;
+  padding: 2rem;
   color: #666;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-style: italic;
+  background: #f9f9f9;
+  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid #eee;
 }
 
 @keyframes fadeIn {
@@ -747,58 +768,5 @@ const getTabName = (tabId) => {
   font-size: 1rem;
   border: 2px dashed #ddd;
   margin-bottom: 0.5rem;
-}
-
-.profile-view-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.profile-info-section {
-  display: flex;
-  gap: 3rem;
-  align-items: flex-start;
-}
-
-.profile-details {
-  flex: 1;
-}
-
-.profile-detail-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.profile-detail-title:first-child {
-  margin-top: 0;
-}
-
-.profile-detail-content {
-  font-size: 1.1rem;
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-.profile-genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.genre-tag {
-  background: #f0f0f0;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  font-size: 0.9rem;
-  color: #333;
-}
-
-.no-genres {
-  color: #999;
-  font-style: italic;
 }
 </style>

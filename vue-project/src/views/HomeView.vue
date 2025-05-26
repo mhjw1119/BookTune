@@ -46,7 +46,7 @@ onMounted(async () => {
 .tab-bar {
   display: flex;
   justify-content: center;
-  gap: 5rem;
+  gap: 2rem;
   /* border-bottom: 1px solid #e5e7eb; */
   margin-bottom: 2.5rem;
   position: relative;
@@ -62,7 +62,7 @@ onMounted(async () => {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 0 2rem 0.5rem 2rem;
+  padding: 0 1.5rem 0.5rem 1.5rem;
   position: relative;
   transition: color 0.2s;
 }
