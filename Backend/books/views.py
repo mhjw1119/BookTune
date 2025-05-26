@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Books, Thread_song, Thread_comment
+from accounts.models import User
 from .serializers import BookSerializer, ThreadSongSerializer, ThreadCommentSerializer, ThreadCommentCreateSerializer
 # from .recommendation import recommend_books
 # Create your views here.
@@ -26,7 +27,7 @@ def book_detail(request, isbn):
 @permission_classes([AllowAny])
 def book_categories(request):
     categories = Books.objects.values_list('category_name', flat=True).distinct()
-    return Response(list(categories))
+    return Response(list(categories), status=status.HTTP_200_OK)
 
 # 책 좋아요
 @api_view(['POST'])
@@ -51,10 +52,11 @@ def like_book(request, isbn):
 # 좋아요 한 책 조회
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def liked_books(request):
-    books = Books.objects.filter(like_books=request.user)
+def liked_books(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    books = Books.objects.filter(like_books=user)
     serializer = BookSerializer(books, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 좋아요 상태 조회
 @api_view(['GET'])
@@ -62,7 +64,7 @@ def liked_books(request):
 def book_like_status(request, isbn):
     book = get_object_or_404(Books, isbn=isbn)
     is_liked = request.user in book.like_books.all()
-    return Response({'is_liked': is_liked})
+    return Response({'is_liked': is_liked}, status=status.HTTP_200_OK)
 
 # 책 스레드 목록
 @api_view(['GET'])
@@ -71,7 +73,7 @@ def book_threads(request, isbn):
     book = get_object_or_404(Books, isbn=isbn)
     threads = Thread_song.objects.filter(book=book).order_by('-created_at')
     serializer = ThreadSongSerializer(threads, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 책 스레드 생성
 @api_view(['POST'])
@@ -99,10 +101,11 @@ def like_thread(request, thread_id):
 # 좋아요 한 스레드 조회
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def liked_threads(request):
-    threads = Thread_song.objects.filter(likesongs=request.user)
-    serializer = ThreadSongSerializer(threads, many=True)
-    return Response(serializer.data)
+def liked_threads(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    threads = Thread_song.objects.filter(likesongs=user)
+    serializer = ThreadSongSerializer(threads, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 스레드 목록
 @api_view(['GET'])
@@ -118,7 +121,7 @@ def thread_list(request):
 def thread_like_status(request, thread_id):
     thread = get_object_or_404(Thread_song, id=thread_id)
     is_liked = request.user in thread.likesongs.all()
-    return Response({'is_liked': is_liked})
+    return Response({'is_liked': is_liked}, status=status.HTTP_200_OK)
 
 # 스레드 상세 조회
 @api_view(['GET'])
@@ -186,3 +189,12 @@ def delete_thread_comment(request, thread_id, comment_id):
     
     comment.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+# 사용자가 작성한 스레드 조회
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_threads(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    threads = Thread_song.objects.filter(user=user)
+    serializer = ThreadSongSerializer(threads, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

@@ -8,6 +8,7 @@
         v-for="thread in threads"
         :key="thread.id"
         :thread="thread"
+        :is-own-profile="isOwnProfile"
         @like-toggled="handleLikeToggle"
       />
     </div>
@@ -15,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 import ThreadItem from './ThreadItem.vue'
 
@@ -23,13 +24,18 @@ const props = defineProps({
   threads: {
     type: Array,
     required: true
+  },
+  isOwnProfile: {
+    type: Boolean,
+    default: false
   }
 })
 
 const loading = ref(false)
 const error = ref(null)
+const emit = defineEmits(['refresh-threads'])
 
-const handleLikeToggle = async (threadId, isLiked) => {
+const handleLikeToggle = async ({ threadId, isLiked, likeCount }) => {
   try {
     const access = localStorage.getItem('access')
     if (!access) {
@@ -37,9 +43,26 @@ const handleLikeToggle = async (threadId, isLiked) => {
       return
     }
 
-    await axios.post(`http://localhost:8000/api/books/threads/${threadId}/like/`, {}, {
-      headers: { Authorization: `Bearer ${access}` }
-    })
+    // 현재 상태를 미리 저장
+    const currentThread = props.threads.find(t => t.id === threadId)
+    if (!currentThread) return
+
+    const currentLikeCount = currentThread.like_count || 0
+    const currentIsLiked = currentThread.is_liked
+
+    // 서버 요청
+    const response = await axios.post(
+      `http://localhost:8000/api/books/threads/${threadId}/like/`,
+      {},
+      { headers: { Authorization: `Bearer ${access}` } }
+    )
+
+    // 서버 응답 로그 추가
+    console.log('좋아요 요청 전 상태:', currentIsLiked)
+    console.log('서버 응답:', response.data)
+
+    // 성공적으로 처리된 경우 부모에게 새로고침 요청
+    emit('refresh-threads')
   } catch (err) {
     console.error('좋아요 토글 실패:', err)
     error.value = '좋아요 상태 변경에 실패했습니다.'

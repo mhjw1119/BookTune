@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer, ProfileSerializer
 from .utils import get_or_create_social_user, generate_jwt_for_user
 from decouple import config
 from django.shortcuts import get_object_or_404
@@ -64,7 +64,7 @@ def logout(request):
 def user_profile(request):
     if request.method == 'GET':
         serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'PUT':
         serializer = UserSerializer(
@@ -79,8 +79,15 @@ def user_profile(request):
                 request.user.profile_image = request.FILES['profile_image']
                 request.user.save()
             serializer.save()
-            return Response(serializer.data)
-        
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile_detail(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    serializer = ProfileSerializer(user, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def follow(request, user_id):
@@ -113,7 +120,7 @@ class KakaoLoginView(APIView):
         access_token = token_data.get("access_token")
 
         if not access_token:
-            return Response({"error": "Token request failed"}, status=400)
+            return Response({"error": "Token request failed"}, status=status.HTTP_400_BAD_REQUEST)
 
         # 2. 사용자 정보 요청
         user_res = requests.get("https://kapi.kakao.com/v2/user/me", headers={
@@ -127,7 +134,7 @@ class KakaoLoginView(APIView):
         email = user_data.get("kakao_account", {}).get("email")
 
         if not email:
-            return Response({"error": "이메일 제공에 동의해야 합니다."}, status=400)
+            return Response({"error": "이메일 제공에 동의해야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         # # 카카오 설정에서 진짜 이메일 받아오는 거 해야할 듯 -> 유찬 사업자등록..
         # ### 이메일이 없으면 임시 이메일 생성
@@ -176,4 +183,4 @@ class GoogleLoginView(APIView):
         user = get_or_create_social_user("google", google_id, email)
         tokens = generate_jwt_for_user(user)
 
-        return Response(tokens, status=200)
+        return Response(tokens, status=status.HTTP_200_OK)

@@ -23,7 +23,7 @@ def generate_music(request):
     book_id = request.data.get('book_id')  # book_id 받기
 
     if not prompt:
-        return Response({"error": "prompt가 필요합니다."}, status=400)
+        return Response({"error": "prompt가 필요합니다."}, status = status.HTTP_400_BAD_REQUEST)
 
     # book_id가 있는 경우 해당 책이 존재하는지 확인
     book = None
@@ -32,7 +32,7 @@ def generate_music(request):
             from books.models import Books  # Books로 수정
             book = Books.objects.get(id=book_id)
         except Books.DoesNotExist:
-            return Response({"error": "해당 책을 찾을 수 없습니다."}, status=404)
+            return Response({"error": "해당 책을 찾을 수 없습니다."}, status = status.HTTP_404_NOT_FOUND)
 
     # Suno API 호출 (DB에 곡을 생성하기 전에!)
     response = generate_music_with_webhook(prompt)
@@ -53,7 +53,7 @@ def generate_music(request):
             "book_id": book_id
         })
     else:
-        return Response({"error": "음악 생성 요청 실패"}, status=500)
+        return Response({"error": "음악 생성 요청 실패"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST', 'PUT'])  # Suno API 웹훅은 POST로 오지만, 내부적으로는 PUT 작업을 수행
 @permission_classes([AllowAny])  # 웹훅은 인증 없이 접근 가능해야 함
@@ -70,11 +70,11 @@ def suno_webhook_callback(request):
 
     if not task_id:
         print(f"[❌] task_id 없음: {data}")  # 디버깅을 위한 로깅
-        return Response({"error": "task_id가 없습니다."}, status=400)
+        return Response({"error": "task_id가 없습니다."}, status = status.HTTP_400_BAD_REQUEST)
 
     if not audio_items:
         print(f"[❌] audio_items 비어있음: {data}")  # 디버깅을 위한 로깅
-        return Response({"error": "audio_items 비어 있음"}, status=400)
+        return Response({"error": "audio_items 비어 있음"}, status = status.HTTP_400_BAD_REQUEST)
 
     # task_id로 음악 생성 요청을 찾습니다
     try:
@@ -136,9 +136,9 @@ def suno_webhook_callback(request):
             return Response({
                 "saved_songs": saved_songs,
                 "message": f"{len(saved_songs)}개의 음악이 성공적으로 저장되었습니다."
-            }, status=200)
+            }, status=status.HTTP_200_OK)
     except CreatedSong.DoesNotExist:
-        return Response({"error": "해당 task_id에 대한 음악 생성 요청을 찾을 수 없습니다."}, status=404)
+        return Response({"error": "해당 task_id에 대한 음악 생성 요청을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

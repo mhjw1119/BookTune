@@ -40,7 +40,7 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/profile',
+      path: '/profile/:userId?',
       name: 'profile',
       component: ProfileView,
       meta: { layout: 'none' }

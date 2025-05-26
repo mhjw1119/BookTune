@@ -11,7 +11,7 @@
         v-for="thread in threads"
         :key="thread.id"
         :thread="thread"
-        :book="thread.book"
+        :is-own-profile="isOwnProfile"
         @like-toggled="handleLikeToggled"
         @thread-deleted="handleThreadDeleted"
         @thread-updated="handleThreadUpdated"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useBookStore } from '@/stores/books'
 import ThreadItem from './ThreadItem.vue'
@@ -30,6 +30,7 @@ const store = useBookStore()
 const threads = ref([])
 const loading = ref(true)
 const error = ref(null)
+const isOwnProfile = computed(() => true)
 
 const fetchThreads = async () => {
   try {

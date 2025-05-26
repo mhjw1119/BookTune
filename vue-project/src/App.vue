@@ -133,8 +133,13 @@ async function checkLogin() {
     nickname.value = '';
   }
 }
-function goProfile() {
-  router.push({ name: 'profile' });
+async function goProfile() {
+  try {
+    const profile = await getProfile();
+    router.push({ name: 'profile', params: { userId: profile.id } });
+  } catch (error) {
+    console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+  }
 }
 function logout() {
   localStorage.removeItem('access');
