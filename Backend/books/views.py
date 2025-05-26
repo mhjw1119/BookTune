@@ -146,4 +146,37 @@ def create_thread_comment(request, thread_id):
     if serializer.is_valid():
         serializer.save(user=request.user, thread=thread)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_thread(request, thread_id):
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    
+    # 작성자 확인
+    if thread.user != request.user:
+        return Response({'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    serializer = ThreadSongSerializer(thread, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_thread(request, thread_id):
+    thread = get_object_or_404(Thread_song, id=thread_id)
+    
+    # 작성자 확인
+    if thread.user != request.user:
+        return Response({'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    thread.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)  
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_thread_comment(request, thread_id, comment_id):
+    comment = get_object_or_404(Thread_comment, id=comment_id)
+    

@@ -1,5 +1,5 @@
 <template>
-  <div class="thread-card">
+  <div class="thread-card" @click="openThreadDetail">
     <div class="thread-header">
       <div class="user-info">
         <img
@@ -11,7 +11,7 @@
         <span class="username">{{ thread.user.nickname }}</span>
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
-      <button class="like-btn" @click="toggleLike" :class="{ 'is-liked': isLiked }">
+      <button class="like-btn" @click.stop="toggleLike" :class="{ 'is-liked': isLiked }">
         <span class="heart-icon">♥</span>
         <span class="like-count">{{ likeCount }}</span>
       </button>
@@ -30,12 +30,21 @@
       </div>
     </div>
   </div>
+
+  <ThreadDetail
+    v-if="isDetailOpen"
+    :thread="thread"
+    :is-open="isDetailOpen"
+    @close="closeThreadDetail"
+    @like-toggled="handleLikeToggled"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useBookStore } from '@/stores/books'
 import axios from 'axios'
+import ThreadDetail from './ThreadDetail.vue'
 
 const props = defineProps({
   thread: {
@@ -47,6 +56,9 @@ const props = defineProps({
 const store = useBookStore()
 const isLiked = ref(false)
 const likeCount = ref(props.thread.like_count || 0)
+const isDetailOpen = ref(false)
+
+const emit = defineEmits(['like-toggled'])
 
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
@@ -108,6 +120,18 @@ const formatDate = (dateString) => {
   })
 }
 
+const openThreadDetail = () => {
+  isDetailOpen.value = true
+}
+
+const closeThreadDetail = () => {
+  isDetailOpen.value = false
+}
+
+const handleLikeToggled = (data) => {
+  emit('like-toggled', data)
+}
+
 onMounted(() => {
   checkLikeStatus()
 })
@@ -122,6 +146,13 @@ onMounted(() => {
   width: 600px;
   max-width: 600px;
   margin: 0 auto;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.thread-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .thread-header {

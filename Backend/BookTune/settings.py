@@ -83,9 +83,9 @@ MIDDLEWARE = [
 # CORS 설정
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite
-    "http://127.0.0.1:5173",  # Vite
+    "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
-    "http://localhost:5174",
+    "http://localhost:5174",    # Vite
 ]
 CORS_ALLOW_CREDENTIALS = True
 # ngrok 도메인을 CORS 허용 출처에 자동 추가

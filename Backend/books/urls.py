@@ -10,6 +10,7 @@ urlpatterns = [
     path('threads/<int:thread_id>/like/', views.like_thread, name='like_thread'),
     path('threads/<int:thread_id>/like-status/', views.thread_like_status, name='thread_like_status'),
     path('threads/<int:thread_id>/comments/', views.thread_comments, name='thread_comments'),
+    path('threads/<int:thread_id>/comments/<int:comment_id>/delete/', views.delete_thread_comment, name='delete_thread_comment'),
     path('threads/<int:thread_id>/comments/create/', views.create_thread_comment, name='create_thread_comment'),
     path('threads/liked/', views.liked_threads, name='liked_threads'),
     path('recommendations/', views.get_word2vec_recommendations, name='get_word2vec_recommendations'),
@@ -18,4 +19,6 @@ urlpatterns = [
     path('<str:isbn>/like-status/', views.book_like_status, name='book_like_status'),
     path('<str:isbn>/threads/', views.book_threads, name='book_threads'),
     path('<str:isbn>/threads/create/', views.create_thread, name='create_thread'),
+    path('threads/<int:thread_id>/update/', views.update_thread, name='update_thread'),
+    path('threads/<int:thread_id>/delete/', views.delete_thread, name='delete_thread'),
 ]

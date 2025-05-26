@@ -26,6 +26,26 @@
         <div class="tab-content">
           <!-- 프로필 수정 탭 -->
           <div v-if="currentTab === 'profile'" class="tab-pane">
+            <!-- 프로필 이미지 업로드/미리보기 -->
+            <div class="profile-image-section">
+              <label for="profileImageInput" class="profile-image-label">
+                <img
+                  v-if="profileImageUrl"
+                  :src="profileImageUrl"
+                  alt="프로필 이미지"
+                  class="profile-image-preview"
+                />
+                <div v-else class="profile-image-placeholder">이미지 추가</div>
+                <input
+                  id="profileImageInput"
+                  type="file"
+                  accept="image/*"
+                  @change="onImageChange"
+                  style="display: none"
+                />
+              </label>
+            </div>
+
             <form @submit.prevent="updateProfile" class="profile-form">
               <div class="form-row">
                 <label for="nickname" class="form-label">닉네임</label>
@@ -64,7 +84,7 @@
           </div>
 
           <div v-if="currentTab === 'my-music'" class="tab-pane">
-            <MySongList v-if="mySongs.length" :songs="mySongs" />
+            <MusicList v-if="mySongs.length" :songs="mySongs" />
             <div v-else class="empty-message">만든 음악이 없습니다.</div>
           </div>
         </div>
@@ -79,7 +99,6 @@ import axios from 'axios'
 import BookList from '@/components/BookList.vue'
 import ThreadLikeList from '@/components/thread/ThreadLikeList.vue'
 import ThreadMyList from '@/components/thread/ThreadMyList.vue'
-import MySongList from '@/components/createmusic/MySongList.vue'
 import { useBookStore } from '@/stores/books'
 
 const genres = [
@@ -102,6 +121,16 @@ const likedThreads = ref([])
 const myThreads = ref([])
 const mySongs = ref([])
 const store = useBookStore()
+const profileImage = ref(null)
+const profileImageUrl = ref('')
+
+const onImageChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    profileImage.value = file
+    profileImageUrl.value = URL.createObjectURL(file)
+  }
+}
 
 onMounted(async () => {
   const access = localStorage.getItem('access')
@@ -113,6 +142,17 @@ onMounted(async () => {
   })
   nickname.value = res.data.nickname
   selectedGenres.value = res.data.favorite_genres || []
+
+  // 프로필 이미지 경로 처리
+  if (res.data.profile_image) {
+    if (res.data.profile_image.startsWith('http')) {
+      profileImageUrl.value = res.data.profile_image
+    } else {
+      profileImageUrl.value = 'http://localhost:8000' + res.data.profile_image
+    }
+  } else {
+    profileImageUrl.value = ''
+  }
 
   // 좋아요한 책
   const resBooks = await axios.get('http://localhost:8000/api/books/liked/', {
@@ -131,22 +171,21 @@ onMounted(async () => {
     headers: { Authorization: `Bearer ${access}` }
   })
   myThreads.value = resMyThreads.data.filter(thread => thread.user.id === res.data.id)
-
-  // 내가 만든 음악
-  const resMySongs = await axios.get('http://localhost:8000/api/songs/song_list/', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  mySongs.value = resMySongs.data
-  console.log(mySongs.value)
 })
 
 const updateProfile = async () => {
   const access = localStorage.getItem('access')
-  await axios.put('http://localhost:8000/api/auth/profile/', {
-    nickname: nickname.value,
-    favorite_genres: selectedGenres.value
-  }, {
-    headers: { Authorization: `Bearer ${access}` }
+  const formData = new FormData()
+  formData.append('nickname', nickname.value)
+  formData.append('favorite_genres', JSON.stringify(selectedGenres.value))
+  if (profileImage.value) {
+    formData.append('profile_image', profileImage.value)
+  }
+  await axios.put('http://localhost:8000/api/auth/profile/', formData, {
+    headers: {
+      Authorization: `Bearer ${access}`,
+      'Content-Type': 'multipart/form-data'
+    }
   })
   alert('프로필이 저장되었습니다!')
 }
@@ -365,5 +404,41 @@ const updateProfile = async () => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.profile-image-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-image-label {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  margin-bottom: 0.5rem;
+}
+
+.profile-image-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1rem;
+  border: 2px dashed #ddd;
+  margin-bottom: 0.5rem;
 }
 </style>
