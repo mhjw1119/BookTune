@@ -12,6 +12,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from .utils import get_or_create_social_user, generate_jwt_for_user
 from decouple import config
+from django.shortcuts import get_object_or_404
 
 KAKAO_CLIENT_ID = config('KAKAO_CLIENT_ID')
 KAKAO_SECRET = config('KAKAO_SECRET')
@@ -79,6 +80,19 @@ def user_profile(request):
                 request.user.save()
             serializer.save()
             return Response(serializer.data)
+        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.user in user.followers.all():
+        user.followers.remove(request.user)
+        return Response({'status': 'unfollowed'}, status=status.HTTP_200_OK)
+    else:
+        user.followers.add(request.user)
+        return Response({'status': 'followed'}, status=status.HTTP_200_OK)
+
+
 
 class KakaoLoginView(APIView):
     def post(self, request):
