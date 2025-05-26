@@ -551,11 +551,29 @@ const getTabName = (tabId) => {
 
 .tab-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2rem;
   border-bottom: none;
   background: none;
   padding: 1rem 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #bbb #eee;
+  white-space: nowrap;
+}
+
+.tab-buttons::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tab-buttons::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 5px;
+}
+
+.tab-buttons::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 5px;
 }
 
 .tab-button {

@@ -3,7 +3,15 @@
     <div v-if="loading" class="loading">로딩 중...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else-if="threads.length === 0" class="empty">좋아요한 스레드가 없습니다.</div>
-    <div v-else class="thread-grid">
+    <div
+      v-else
+      class="thread-grid"
+      ref="scrollContainer"
+      @mousedown="onMouseDown"
+      @mousemove="onMouseMove"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseUp"
+    >
       <ThreadItem
         v-for="thread in threads"
         :key="thread.id"
@@ -34,6 +42,28 @@ const props = defineProps({
 const loading = ref(false)
 const error = ref(null)
 const emit = defineEmits(['refresh-threads'])
+
+// 마우스 드래그 스크롤 관련
+const scrollContainer = ref(null)
+let isDown = false
+let startX = 0
+let scrollLeft = 0
+
+const onMouseDown = (e) => {
+  isDown = true
+  startX = e.pageX - scrollContainer.value.offsetLeft
+  scrollLeft = scrollContainer.value.scrollLeft
+}
+const onMouseMove = (e) => {
+  if (!isDown) return
+  e.preventDefault()
+  const x = e.pageX - scrollContainer.value.offsetLeft
+  const walk = (x - startX)
+  scrollContainer.value.scrollLeft = scrollLeft - walk
+}
+const onMouseUp = () => {
+  isDown = false
+}
 
 const handleLikeToggle = async ({ threadId, isLiked, likeCount }) => {
   try {
@@ -83,12 +113,29 @@ const handleLikeToggle = async ({ threadId, isLiked, likeCount }) => {
 
 .thread-grid {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
+  flex-direction: row;
+  gap: 2rem;
+  overflow-x: auto;
+  padding: 1rem;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: #bbb #eee;
 }
-
-.loading, .error, .empty {
+.thread-grid:active {
+  cursor: grabbing;
+}
+.thread-grid::-webkit-scrollbar {
+  height: 10px;
+}
+.thread-grid::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 5px;
+}
+.thread-grid::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 5px;
+}
+.loading {
   text-align: center;
   padding: 1.5rem;
   color: #666;
