@@ -1,16 +1,19 @@
 <template>
   <div v-if="$route.meta.layout !== 'none'" class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <header class="w-full flex items-center justify-between px-8 py-6 bg-white">
-      <div class="flex items-center gap-8 ">
-        <a href="#" class="nav-link text-gray-800">
-          <RouterLink :to="{ name: 'home'}">Home</RouterLink>
-        </a>
-        <span class="text-gray-300 mx-4"> | </span>
+    <header class="w-full flex items-center justify-between px-8 py-6 bg-white relative">
+      <!-- 햄버거 버튼 (모바일) -->
+      <button class="hamburger" @click="showMenu = !showMenu">
+        <span :class="{ open: showMenu }"></span>
+        <span :class="{ open: showMenu }"></span>
+        <span :class="{ open: showMenu }"></span>
+      </button>
+      <!-- 메뉴 (데스크탑/모바일) -->
+      <nav :class="['main-nav', { open: showMenu }]">
+        <RouterLink :to="{ name: 'home'}" class="nav-link text-gray-800">Home</RouterLink>
         <RouterLink :to="{ name: 'BookList'}" class="nav-link text-gray-800">Book List</RouterLink>
-        <span class="text-gray-300 mx-4"> | </span>
         <RouterLink :to="{ name: 'threads'}" class="nav-link text-gray-800">Community</RouterLink>
-      </div>
+      </nav>
       <div class="flex items-center gap-8">
         <div v-if="!isLoggedIn">
           <a href="#" class="nav-link text-gray-800" @click.prevent="openLoginPopup">Login</a>
@@ -94,6 +97,8 @@ const route = useRoute();
 
 // 생성중 상태 composable 사용
 const { isGenerating, stopGenerating } = useGenerating();
+
+const showMenu = ref(false)
 
 function openLoginPopup() {
   isLoginPopupVisible.value = true;
@@ -326,5 +331,47 @@ a {
 
 .english-font {
   font-family: 'Indie Flower', cursive;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 20;
+  margin-right: 1rem;
+}
+.hamburger span {
+  display: block;
+  height: 4px;
+  width: 28px;
+  background: #222;
+  margin: 5px 0;
+  border-radius: 2px;
+  transition: 0.3s;
+}
+.hamburger span.open:nth-child(1) { transform: translateY(9px) rotate(45deg);}
+.hamburger span.open:nth-child(2) { opacity: 0;}
+.hamburger span.open:nth-child(3) { transform: translateY(-9px) rotate(-45deg);}
+
+.main-nav {
+  display: none;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: #fff;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  z-index: 10;
+}
+.main-nav.open {
+  display: flex;
 }
 </style>
