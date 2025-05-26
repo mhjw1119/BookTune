@@ -294,3 +294,23 @@ def reset_all_recommended_songs():
         book.recommended_song = ""
         book.save()
     print(f"총 {books.count()}권의 도서 추천 음악 링크를 초기화했습니다.")
+
+def update_main_category():
+    # category_name이 '만화'인 모든 책 조회
+    manga_books = Books.objects.filter(category_name='만화')
+    
+    # 업데이트할 책 수 카운트
+    count = 0
+    
+    # 각 책의 main_category를 '만화'로 업데이트
+    for book in manga_books:
+        if book.main_category != '만화':
+            book.main_category = '만화'
+            book.save()
+            count += 1
+            print(f"업데이트된 책: {book.title}")
+    
+    print(f"\n총 {count}개의 책이 업데이트되었습니다.")
+
+if __name__ == '__main__':
+    update_main_category() 

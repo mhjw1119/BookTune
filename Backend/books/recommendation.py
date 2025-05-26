@@ -30,8 +30,8 @@ def get_genre_similarity(user_genres, book_genres):
     total_genres = len(set(user_genres) | set(book_genres))
     return matching_genres / total_genres if total_genres > 0 else 0.0
 
-def recommend_books(user, top_n=5):
-    model = Word2Vec.load("word2vec_books.model")
+def recommend_books(user, top_n=10):
+    model = Word2Vec.load("./ml/word2vec_books.model")
     
     # 사용자의 찜한 책들 가져오기
     liked_books = user.liked_books.all()

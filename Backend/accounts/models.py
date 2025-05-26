@@ -15,6 +15,7 @@ GENRE_CHOICES = [
 ]
 
 class User(AbstractUser):
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     provider = models.CharField(max_length=20, null=True, blank=True)
     social_id = models.CharField(max_length=100, null=True, blank=True)
     nickname = models.CharField(max_length=20, default='콩콩이든')

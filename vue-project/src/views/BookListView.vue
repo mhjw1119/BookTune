@@ -27,7 +27,7 @@ const store = useBookStore()
 const booklist = ref([])
 
 const genres = [
-  '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년'
+  '문학', '인문/사회', '자기계발/실용', '예술/문화', '학습/교육', '아동/청소년', '만화'
 ]
 
 function sleep(ms) {
