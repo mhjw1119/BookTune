@@ -114,6 +114,8 @@ onMounted(() => {
   -webkit-backdrop-filter: var(--glass-blur);
   padding: 1px;
   background-color: aliceblue;
+  animation: shake 0.5s ease-in-out;
+  animation-play-state: paused;
 }
 
 .book-card:hover {
@@ -121,6 +123,7 @@ onMounted(() => {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
               inset 0 0 0 1px rgba(255, 255, 255, 0.4);
   border-color: rgba(255, 255, 255, 0.9);
+  animation-play-state: running;
 }
 
 .rank-badge {
@@ -260,5 +263,17 @@ onMounted(() => {
   75% { transform: scale(1.2) rotate(-5deg); }
   90% { transform: scale(1.1) rotate(0deg); }
   100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px) rotate(1deg);
+  }
 }
 </style>
