@@ -197,6 +197,8 @@ onMounted(() => {
   margin: 0 auto;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+
 }
 
 .thread-card:hover {

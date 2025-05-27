@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-box flex flex-col items-center justify-center p-6 min-h-[340px]">
     <span class="section-title mb-2 text-lg"></span>
-    <img :src="cover || 'https://placehold.co/220x300?text=Book+Cover'" :alt="title" class="rounded-lg shadow-md border border-gray-200 mt-2 cover-img">
+    <img :src="cover || 'https://placehold.co/220x300?text=Book+Cover'" :alt="title" class="rounded-lg shadow-md mt-2 cover-img">
   </div>
 </template>
 

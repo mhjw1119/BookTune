@@ -29,7 +29,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BookListItem from './BookListItem.vue'
+import BestBookItem from './bestbook/BestBookItem.vue'
 
 const props = defineProps({
   books: {
