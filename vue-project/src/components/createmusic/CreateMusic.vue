@@ -7,7 +7,8 @@
       id="music-desc"
       v-model="prompt"
       rows="6"
-      placeholder="음악 생성을 위한 프롬프트를 입력하세요..."
+      placeholder="음악 생성을 위한 프롬프트를 입력하세요...
+ex) 차분하면서 피아노 선율이 돋보이는 음악을 만들어줘."
       class="edit-textarea w-full mb-8"
       aria-label="원하는 ai 음악 설명 입력"
       :disabled="isGenerating"

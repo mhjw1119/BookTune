@@ -55,9 +55,17 @@
                 @generate="handleGenerateMusic" 
                 class="AI-section"
               />
-
             </div>
           </div>
+        </div>
+        <!-- Thread List Section -->
+        <div class="thread-list-section">
+          <h2 class="section-title">이 책에 대한 스레드</h2>
+          <ThreadList 
+            v-if="book && book.id"
+            :book-id="book.id"
+            :isbn="props.isbn"
+          />
         </div>
       </template>
     </main>
@@ -76,6 +84,7 @@ import BookYoutubePlayer from '@/components/bookdetail/BookYoutubePlayer.vue'
 import AIGenerateButton from '@/components/bookdetail/AIGenerateButton.vue'
 import ThreadButton from '@/components/bookdetail/ThreadButton.vue'
 import LikeButton from '@/components/bookdetail/LikeButton.vue'
+import ThreadList from '@/components/thread/ThreadList.vue'
 
 const props = defineProps({
   isbn: {
@@ -257,5 +266,21 @@ const generateAIMusic = (data) => {
   left: auto;
   transform: none;
   z-index: 10;
+}
+
+.thread-list-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 3rem;
+  padding: 0 1rem;
+}
+
+.section-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  text-align: left;
 }
 </style>
