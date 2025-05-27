@@ -24,7 +24,9 @@ defineProps({
 
 <style scoped>
 .best-books-container {
+  margin-top: 1rem;
   padding: 2rem;
+  background-color: rgb(229, 250, 250);
 }
 
 .section-title {

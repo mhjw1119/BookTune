@@ -114,6 +114,7 @@ onMounted(() => {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   padding: 1px;
+  background-color: aliceblue;
 }
 
 .book-card:hover {

@@ -1,4 +1,5 @@
 <template>
+
   <div class="book-list-view">
     <div class="tab-bar">
       <RouterLink
@@ -54,6 +55,12 @@ watch(() => route.query.genre, fetchBooks)
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+body {
+  background: linear-gradient(to bottom, #6f8dc7, #d0e1ff);
+}
+
+
 
 .tab-bar {
   display: flex;

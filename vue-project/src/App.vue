@@ -14,7 +14,7 @@
         <RouterLink :to="{ name: 'BookList'}" class="nav-link text-gray-800">Book List</RouterLink>
         <RouterLink :to="{ name: 'threads'}" class="nav-link text-gray-800">Community</RouterLink>
       </nav>
-      <div class="flex items-center gap-8">
+      <div class="flex items-center gap-8 righttebvar">
         <div v-if="!isLoggedIn">
           <a href="#" class="nav-link text-gray-800" @click.prevent="openLoginPopup">Login</a>
           <span> | </span>
@@ -63,7 +63,7 @@
         </button>
       </form>
       <!-- 구분선 -->
-      <div class="w-full border-t my-8" style="border-color: rgba(0,0,0,0.1);"></div>
+      <div class="w-[92%] border-t my-8" style="border-color: rgba(0,0,0,0.13);"></div>
     </div>
     <Notification />
     <RouterView />
@@ -212,11 +212,20 @@ const nicknameClass = computed(() => {
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&family=Gaegu:wght@400;700&display=swap');
 
 header {
-  font-family: 'Indie Flower', cursive;
-  margin-top: 1rem;
-  margin-left: 1rem;
+  position: fixed;
+  margin-top: 2rem;
+  margin-left: 2rem;
   margin-right: 1rem;
   margin-bottom: 1rem;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 9999;
+  font-family: 'Indie Flower', cursive;
+  margin: 0;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 선택사항: 그림자 */
 }
 
 body {
@@ -242,8 +251,10 @@ a {
   background: #fff;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
   padding: 0.5rem 1.5rem;
-  border-radius: 9999px;
+  border-radius: 9999px ;
   gap: 0.75rem;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 60px;
 }
 
 .search-icon {
@@ -254,6 +265,7 @@ a {
 }
 
 .search-input {
+  
   flex: 1;
   border: none;
   outline: none;
@@ -286,7 +298,7 @@ a {
   font-family: 'Indie Flower', cursive;
   font-size: 6rem;
   letter-spacing: 0.05em;
-  margin-top: 4.5rem;
+  margin-top: 10rem;
   margin-bottom: -1rem;
 }
 
@@ -310,8 +322,12 @@ a {
   color: #000000;
   margin-right: 1.5rem;
   margin-left: 1.5rem;
-
 }
+
+.nav-link:last-child {
+  margin-right: 4rem;  /* 마지막 nav-link에 더 큰 오른쪽 여백 추가 */
+}
+
 .nav-link:hover {
   color: #6366f1;
 }
@@ -382,6 +398,10 @@ a {
   }
   .hamburger {
     display: flex;
+  }
+  .righttebvar{
+    margin-right: 10px;
+    padding-right: 2rem;
   }
 }
 </style>

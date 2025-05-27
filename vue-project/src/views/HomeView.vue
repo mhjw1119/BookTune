@@ -43,13 +43,21 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
 
+body {
+  background: linear-gradient(to bottom, #6f8dc7, #d0e1ff);
+}
+
+
+
+
 .tab-bar {
   display: flex;
   justify-content: center;
   gap: 2rem;
   /* border-bottom: 1px solid #e5e7eb; */
-  margin-bottom: 2.5rem;
+  margin-bottom: -1rem;
   position: relative;
+  margin-top: 1.2rem;
 }
 
 .tab-btn {
@@ -78,7 +86,7 @@ onMounted(async () => {
   margin-top: 0.2rem;
   width: 60%;
   height: 2px;
-  background: #e5e7eb;
+  background: #949596;
   border-radius: 1px;
 }
 
