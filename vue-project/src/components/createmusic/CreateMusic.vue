@@ -1,4 +1,5 @@
 <template>
+  <div v-if="isVisible" class="popup-overlay"></div>
   <main class="modal-content music-modal-content">
     <label for="music-desc" class="block mb-6 text-2xl font-indie text-gray-900 leading-snug">
       원하는 <span class="font-pacifico text-blue-400 text-2xl align-middle"></span> AI 음악을 설명해주세요.
@@ -176,5 +177,18 @@ const handleGenerateMusic = async () => {
 
 h3 {
   font-family: 'Indie Flower', cursive;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 </style> 

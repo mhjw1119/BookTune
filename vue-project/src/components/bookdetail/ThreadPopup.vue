@@ -2,7 +2,7 @@
   <div v-if="isVisible" class="popup-overlay">
     <div class="popup-content">
       <div class="popup-header">
-        <h2>Create Thread</h2>
+        <h2>느낀 점 공유하기</h2>
         <button class="close-button" @click="closePopup">&times;</button>
       </div>
       <div class="popup-body">
@@ -11,7 +11,7 @@
           <textarea 
             v-model="content" 
             class="content-input"
-            placeholder="Write your thoughts about this book..."
+            placeholder=" 책을 읽고 느낀 점을 자유롭게 공유해보세요."
             rows="5"
           ></textarea>
         </div>
@@ -174,6 +174,7 @@ const submitThread = async () => {
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
+  text-align: center;
   align-items: center;
 }
 
