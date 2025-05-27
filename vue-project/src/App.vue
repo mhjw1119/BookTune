@@ -146,11 +146,33 @@ async function goProfile() {
     console.error('프로필 정보를 가져오는데 실패했습니다:', error);
   }
 }
-function logout() {
-  localStorage.removeItem('access');
-  isLoggedIn.value = false;
-  nickname.value = '';
-  router.push({ name: 'home' });
+async function logout() {
+  try {
+    const access = localStorage.getItem('access');
+    const refresh = localStorage.getItem('refresh');
+    
+    if (!access || !refresh) {
+      console.error('토큰이 없습니다.');
+      return;
+    }
+
+    await axios.post(`${store.API_URL}/api/auth/logout/`, {
+      refresh: refresh
+    }, {
+      headers: { 
+        'Authorization': `Bearer ${access}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (error) {
+    console.error('로그아웃 중 오류 발생:', error.response?.data || error);
+  } finally {
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    isLoggedIn.value = false;
+    nickname.value = '';
+    router.push({ name: 'home' });
+  }
 }
 
 onMounted(async () => {

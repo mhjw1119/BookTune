@@ -13,6 +13,8 @@ from .serializers import UserSerializer, CustomTokenObtainPairSerializer, Profil
 from .utils import get_or_create_social_user, generate_jwt_for_user
 from decouple import config
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 KAKAO_CLIENT_ID = config('KAKAO_CLIENT_ID')
 KAKAO_SECRET = config('KAKAO_SECRET')
@@ -54,10 +56,20 @@ def signup(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
-    response = Response({
-        "message": "로그아웃되었습니다."
-    }, status=status.HTTP_200_OK)
-    return response
+    try:
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({"message": "refresh 토큰이 필요합니다."}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+            
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        
+        return Response({"message": "로그아웃되었습니다."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(f"로그아웃 에러: {str(e)}")  # 디버깅을 위한 로그 추가
+        return Response({"message": "로그아웃 처리 중 오류가 발생했습니다."}, 
+                       status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])

@@ -26,9 +26,7 @@
   </template>
   
   <script setup>
-  import { defineProps } from 'vue'
-  
-  const props = defineProps({ 
+  const props = defineProps({
     songs: {
       type: Array,
       required: true
