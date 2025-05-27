@@ -3,6 +3,7 @@
     <div class="best-books-container">
       <h2 class="section-title"></h2>
       <div v-if="!books.length" class="loading-state">
+        <div class="loading-spinner"></div>
         <p>도서를 불러오는 중...</p>
       </div>
       <div v-else class="books-grid">
@@ -150,5 +151,27 @@ watch(
   padding: 2rem;
   color: #666;
   font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #0078c8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
