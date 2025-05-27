@@ -63,6 +63,7 @@ body {
 
 
 .tab-bar {
+  margin-top: 1rem;
   display: flex;
   justify-content: center;
   gap: 3rem;
@@ -73,6 +74,7 @@ body {
 
 .tab-btn {
   margin-top: 1rem;
+  margin-bottom: -3rem;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
@@ -95,10 +97,10 @@ body {
   content: '';
   display: block;
   margin: 0 auto;
-  margin-top: 0.2rem;
+  margin-top: 0.4rem;
   width: 60%;
   height: 2px;
-  background: #e5e7eb;
+  background: #9f9fa0;
   border-radius: 1px;
 }
 </style> 

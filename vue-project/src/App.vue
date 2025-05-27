@@ -50,7 +50,7 @@
         </span>
         <input
           type="text"
-          placeholder="책, 저자, 음악 검색..."
+          placeholder="책, 저자 검색..."
           class="search-input"
           v-model="searchKeyword"
         />

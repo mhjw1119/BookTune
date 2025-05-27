@@ -1,6 +1,5 @@
 <template>
   <div class="recommended-books">
-    <h2 class="section-title">맞춤 도서 추천</h2>
     
     <!-- 로딩 상태 -->
     <div v-if="store.loading" class="loading-state">
@@ -84,7 +83,10 @@ onMounted(async () => {
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  justify-content: center; /* 그리드를 가운데 정렬 */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2rem;
+  max-width: 1280px; /* 최대 너비 제한 */
+  margin: 0 auto;     /* 수평 중앙 정렬 */
 }
 </style>

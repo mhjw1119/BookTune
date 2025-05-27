@@ -113,8 +113,9 @@ onMounted(() => {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  padding: 1px;
-  background-color: aliceblue;
+  padding: 0px;
+  border: 1.8px solid rgb(211, 211, 211);
+
 }
 
 .book-card:hover {
@@ -153,6 +154,13 @@ onMounted(() => {
 
 .book-info {
   padding: 16px;
+  /* border-left: 1.8px solid rgb(211, 211, 211);
+  border-right: 1.8px solid rgb(211, 211, 211);
+  border-bottom: 1.8px solid rgb(211, 211, 211); */
+  /* 위쪽(border-top)은 없음 */
+  border-radius: 0 0 16px 16px;
+  background-color: white;
+  margin-top: -1px;
 }
 
 .book-title {

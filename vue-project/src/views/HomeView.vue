@@ -43,13 +43,6 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
 
-body {
-  background: linear-gradient(to bottom, #6f8dc7, #d0e1ff);
-}
-
-
-
-
 .tab-bar {
   display: flex;
   justify-content: center;
