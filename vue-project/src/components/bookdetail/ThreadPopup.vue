@@ -197,23 +197,25 @@ const submitThread = async () => {
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
+  font-weight: 600;
   margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #374151;
+  color: #333;
 }
 
 .content-input {
   width: 100%;
+  max-width: 500px;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-family: inherit;
-  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  resize: none;
 }
 
 input.content-input {
@@ -221,7 +223,7 @@ input.content-input {
 }
 
 textarea.content-input {
-  resize: vertical;
+  resize: none;
   min-height: 100px;
 }
 

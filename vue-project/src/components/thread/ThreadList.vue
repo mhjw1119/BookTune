@@ -1,10 +1,20 @@
 <template>
-  <div class="thread-list">
+  <div 
+    class="thread-list"
+    ref="scrollContainer"
+    @mousedown="onMouseDown"
+    @mousemove="onMouseMove"
+    @mouseup="onMouseUp"
+    @mouseleave="onMouseUp"
+  >
     <div v-if="loading" class="loading">
       로딩 중...
     </div>
     <div v-else-if="error" class="error">
       {{ error }}
+    </div>
+    <div v-else-if="threads.length === 0" class="empty">
+      아직 작성된 스레드가 없습니다.
     </div>
     <div v-else class="threads-container">
       <ThreadItem
@@ -26,11 +36,48 @@ import axios from 'axios'
 import { useBookStore } from '@/stores/books'
 import ThreadItem from './ThreadItem.vue'
 
+const props = defineProps({
+  bookId: {
+    type: [String, Number],
+    required: true
+  },
+  isbn: {
+    type: String,
+    required: true
+  }
+})
+
 const store = useBookStore()
 const threads = ref([])
 const loading = ref(true)
 const error = ref(null)
 const isOwnProfile = computed(() => true)
+
+// 마우스 드래그 스크롤 관련
+const scrollContainer = ref(null)
+let isDown = false
+let startX = 0
+let scrollLeft = 0
+
+const onMouseDown = (e) => {
+  isDown = true
+  scrollContainer.value.style.cursor = 'grabbing'
+  startX = e.pageX - scrollContainer.value.offsetLeft
+  scrollLeft = scrollContainer.value.scrollLeft
+}
+
+const onMouseMove = (e) => {
+  if (!isDown) return
+  e.preventDefault()
+  const x = e.pageX - scrollContainer.value.offsetLeft
+  const walk = (x - startX) * 2 // 스크롤 속도 조절
+  scrollContainer.value.scrollLeft = scrollLeft - walk
+}
+
+const onMouseUp = () => {
+  isDown = false
+  scrollContainer.value.style.cursor = 'grab'
+}
 
 const fetchThreads = async () => {
   try {
@@ -41,7 +88,7 @@ const fetchThreads = async () => {
       return
     }
 
-    const response = await axios.get(`${store.API_URL}/api/books/threads/`, {
+    const response = await axios.get(`${store.API_URL}/api/books/${props.isbn}/threads/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
     threads.value = response.data
@@ -69,7 +116,6 @@ const handleThreadUpdated = ({ threadId, content }) => {
   const thread = threads.value.find(t => t.id === threadId)
   if (thread) {
     thread.content = content
-    thread.updated_at = new Date().toISOString()
   }
 }
 
@@ -80,24 +126,21 @@ onMounted(() => {
 
 <style scoped>
 .thread-list {
-  padding: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  cursor: grab;
+  user-select: none; /* 텍스트 선택 방지 */
 }
 
-.thread-list-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  color: #333;
+.thread-list:active {
+  cursor: grabbing;
 }
 
-.loading, .error {
+.loading, .error, .empty {
   text-align: center;
   padding: 2rem;
-  font-size: 1.2rem;
-  color: #ffffff;
+  color: #666;
 }
 
 .error {
@@ -105,9 +148,29 @@ onMounted(() => {
 }
 
 .threads-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 1.5rem;
-  justify-items: center;
+  padding: 0.5rem;
+  min-width: min-content;
+}
+
+/* 스크롤바 스타일링 */
+.thread-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.thread-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.thread-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.thread-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style> 

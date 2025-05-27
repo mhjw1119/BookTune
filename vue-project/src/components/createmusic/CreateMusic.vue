@@ -7,7 +7,8 @@
       id="music-desc"
       v-model="prompt"
       rows="6"
-      placeholder="음악 생성을 위한 프롬프트를 입력하세요..."
+      placeholder="음악 생성을 위한 프롬프트를 입력하세요...
+ex) 차분하면서 피아노 선율이 돋보이는 음악을 만들어줘."
       class="edit-textarea w-full mb-8"
       aria-label="원하는 ai 음악 설명 입력"
       :disabled="isGenerating"
@@ -131,7 +132,7 @@ const handleGenerateMusic = async () => {
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
-  resize: vertical;
+  resize: none;
   font-size: 1.05rem;
   font-family: 'Noto Sans KR', 'Indie Flower', cursive;
   transition: box-shadow 0.2s, border 0.2s;

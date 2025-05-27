@@ -186,37 +186,33 @@ onMounted(() => {
 
 <style scoped>
 .thread-card {
-  background: rgb(255, 255, 255);
-  border-radius: 12px;
+  background: white;
+  border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 600px;
-  max-width: 600px;
-  min-width: 600px;
-  flex-shrink: 0;
-  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 400px; /* 최소 너비 설정 */
+  max-width: 400px; /* 최대 너비 설정 */
+  flex-shrink: 0; /* 카드가 압축되지 않도록 설정 */
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-
 }
 
 .thread-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .thread-header {
   display: flex;
   justify-content: space-between;
-  align-itms: center;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .profile-thumb {
@@ -224,7 +220,6 @@ onMounted(() => {
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 0.5rem;
   border: 1px solid #eee;
 }
 
@@ -266,13 +261,12 @@ onMounted(() => {
 
 .thread-body {
   display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
+  gap: 1rem;
 }
 
 .book-cover {
-  width: 120px;
-  height: 180px;
+  width: 80px;
+  height: 120px;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -282,18 +276,23 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .book-title {
   font-weight: 600;
   color: #444;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .thread-text {
   color: #333;
   line-height: 1.6;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .audio-player {
@@ -302,7 +301,7 @@ onMounted(() => {
 
 .audio-player audio {
   width: 100%;
-  max-width: 300px;
+  max-width: 250px;
 }
 
 .like-btn.disabled {
