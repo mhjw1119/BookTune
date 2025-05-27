@@ -1,33 +1,38 @@
 <template>
   <div class="popup-overlay" @click.self="closePopup">
-    <div class="popup-content w-full max-w-md mx-auto">
-      <h1 class="logo-font text-6xl font-bold text-gray-800 mb-12 select-none">BookTune</h1>
+    <div class="popup-content">
+      <h1 class="logo">BookTune</h1>
+      <p class="subtitle">음악과 함께 즐기는 독서</p>
 
-      <form class="w-full flex flex-col gap-4 mb-8" @submit.prevent="handleLogin">
-        <input
-          type="text"
-          placeholder="id"
-          class="handwriting w-full px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 transition placeholder:text-gray-400"
-          autocomplete="username"
-          v-model="loginId"
-        />
-        <input
-          type="password"
-          placeholder="password"
-          class="handwriting mb-4 w-full px-5 py-3 border-2 border-gray-400 rounded-lg text-lg focus:outline-none focus:border-blue-500 transition placeholder:text-gray-400"
-          autocomplete="current-password"
-          v-model="loginPw"
-        />
-        <button
-          type="submit"
-          class="handwriting w-full py-3 mt-2 border-2 border-gray-400 rounded-lg text-lg font-bold bg-gray-400 hover:bg-blue-50 transition"
-        >
-          login
+      <form class="login-form" @submit.prevent="handleLogin">
+        <div class="input-group">
+          <input
+            type="text"
+            placeholder="아이디"
+            class="input-field"
+            autocomplete="username"
+            v-model="loginId"
+          />
+        </div>
+        <div class="input-group">
+          <input
+            type="password"
+            placeholder="비밀번호"
+            class="input-field"
+            autocomplete="current-password"
+            v-model="loginPw"
+          />
+        </div>
+        <button type="submit" class="login-button">
+          로그인
         </button>
       </form>
 
-      <div class="w-full bg-white rounded-lg py-5 px-4 flex flex-col items-center mb-10">
-        <div class="social-login-buttons w-full">
+      <div class="social-login">
+        <div class="divider">
+          <span>또는</span>
+        </div>
+        <div class="social-buttons">
           <button type="button" class="social-button google" @click="handleGoogleLogin">
             <img src="/google_logo.png" alt="google" />
             <span>구글 계정으로 로그인</span>
@@ -37,13 +42,15 @@
             <span>카카오톡 계정으로 로그인</span>
           </button>
         </div>
-        <p class="text-xs text-gray-500 text-center leading-tight mt-4">
-          개인정보 보호를 위해 공용 PC에서 사용 시 SNS계정의 로그아웃<br>
-          상태를 꼭 확인해 주세요.
+        <p class="privacy-notice">
+          개인정보 보호를 위해 공용 PC에서 사용 시<br>
+          SNS계정의 로그아웃 상태를 꼭 확인해 주세요.
         </p>
       </div>
 
-      <button @click="closePopup" class="mt-6 w-full py-3 mt-4 border-2 border-gray-400 rounded-lg text-lg font-bold bg-white hover:bg-gray-100 transition">close</button>
+      <button @click="closePopup" class="close-button">
+        닫기
+      </button>
     </div>
   </div>
 </template>
@@ -116,68 +123,153 @@ export default {
 </script>
 
 <style scoped>
-/* 폰트 임포트 */
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Nunito:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
-/* 팝업 오버레이 스타일 */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* 팝업 내용 */
 .popup-content {
   background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  margin: 1rem;
+}
+
+.logo {
+  /* font-family: 'Noto Sans KR', sans-serif; */
+  font-family: 'Indie Flower', cursive;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #1a1a1a;
   text-align: center;
-  width: 20%;
-  height: 50%;
+  margin-bottom: 0.5rem;
 }
 
-/* 폰트 스타일 */
-.logo-font {
-  font-family: 'Indie Flower', cursive;
-  letter-spacing: 0.02em;
-}
-.handwriting {
-  font-family: 'Indie Flower', cursive;
+.subtitle {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* 소셜 로그인 버튼 스타일 */
-.social-login-buttons {
+.login-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-field {
+  width: 90%;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #1a1a1a;
+  background: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #4a90e2;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+}
+
+.input-field::placeholder {
+  color: #999;
+}
+
+.login-button {
   width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background: #4a90e2;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-button:hover {
+  background: #357abd;
+  transform: translateY(-1px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.social-login {
+  margin: 2rem 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .social-button {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.875rem 1.25rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .social-button img {
   width: 24px;
   height: 24px;
-  margin-right: 12px;
+  margin-right: 0.75rem;
 }
 
 .social-button span {
@@ -186,38 +278,63 @@ export default {
 }
 
 .social-button.google {
-  background-color: white;
   color: #757575;
-  border: 1px solid #ddd;
 }
 
 .social-button.google:hover {
-  background-color: #f8f8f8;
+  background: #f8f9fa;
+  border-color: #d0d0d0;
 }
 
 .social-button.kakao {
-  background-color: #FEE500;
+  background: #FEE500;
+  border-color: #FEE500;
   color: #000000;
 }
 
 .social-button.kakao:hover {
-  background-color: #FDD835;
+  background: #FDD835;
+  border-color: #FDD835;
 }
 
-/* 간격 조절용 추가 스타일 */
-form {
-  margin-bottom: 2rem;
-}
-
-.popup-content > div {
-  margin-bottom: 2rem;
-}
-
-.popup-content > button:last-child {
+.privacy-notice {
   margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.5;
 }
 
-.handwriting {
-  margin-bottom: 1rem;
+.close-button {
+  width: 100%;
+  padding: 0.875rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  color: #666;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: #f8f9fa;
+  border-color: #d0d0d0;
+}
+
+@media (max-width: 480px) {
+  .popup-content {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .logo {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
 }
 </style>
