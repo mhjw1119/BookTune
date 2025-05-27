@@ -146,14 +146,30 @@ const generateAIMusic = (data) => {
 }
 
 .book-title {
-  font-family: 'Noto Sans KR', cursive;
-  font-size: 2.8rem;
-  letter-spacing: 0.1em;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 2.2rem;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   font-weight: 700;
   margin-bottom: 2.5rem;
   text-align: center;
-  margin-right: 150px;
-  margin-left: 150px;
+  padding: 0 2rem;
+  max-width: 800px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  color: #1a1a1a;
+  position: relative;
+  display: inline-block;
+}
+
+.book-title::after {
+  content: '';
+  display: block;
+  width: 800px;
+  height: 1px;
+  background: linear-gradient(90deg, #c7c7ca, #d3d4d4);
+  margin: 1rem auto 0;
+  border-radius: 2px;
 }
 
 .content-container {
@@ -196,6 +212,12 @@ const generateAIMusic = (data) => {
 }
 
 @media (max-width: 768px) {
+  .book-title {
+    font-size: 1.8rem;
+    padding: 0 1rem;
+    width: 90%;
+  }
+  
   .content-container {
     grid-template-columns: 1fr;
   }
@@ -203,9 +225,7 @@ const generateAIMusic = (data) => {
   .book-cover {
     max-width: 400px;
     margin: 0 auto;
-    
   }
-
 }
 
 .youtube-ai-container {
@@ -226,11 +246,16 @@ const generateAIMusic = (data) => {
   width: auto;
   min-width: 200px;
   min-height: 100px;
+  margin-top: 3rem;
 }
 
 .like-button-container {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
+  top: 15px;
+  right: 15px;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  z-index: 10;
 }
 </style>

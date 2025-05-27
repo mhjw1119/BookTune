@@ -70,6 +70,7 @@ export default {
       script.onload = () => {
         if (window.Kakao && !window.Kakao.isInitialized()) {
           window.Kakao.init(KAKAO_JS_KEY);
+          window.Kakao.Auth.setAccessToken(null); // 기존 토큰 초기화
           console.log('✅ Kakao SDK Initialized:', window.Kakao.isInitialized());
         }
       };
@@ -104,6 +105,7 @@ export default {
       if (window.Kakao) {
         window.Kakao.Auth.authorize({
           redirectUri: `${window.location.origin}/auth/kakao/callback`,
+          throughTalk: false
         });
       } else {
         console.error('❌ Kakao SDK not available');

@@ -1,7 +1,18 @@
 <template>
-  <button class="like-button" @click="toggleLike" :class="{ 'is-liked': isLiked }">
-    <span class="heart-icon">♥</span>
-    <span class="like-text">{{ isLiked ? '좋아요 취소' : '좋아요' }}</span>
+  <button class="heart-btn" @click="toggleLike">
+    <span
+      class="insta-heart"
+      :class="{ liked: isLiked, animate: animateHeart, hovered: isHeartHovered }"
+      @mouseenter="isHeartHovered = true"
+      @mouseleave="isHeartHovered = false"
+    >
+      <svg viewBox="0 0 48 48" width="80" height="80">
+        <path
+          :fill="isLiked || isHeartHovered ? '#ff3b5c' : '#ddd'"
+          d="M34.6 6c-3.4 0-6.4 1.7-8.6 4.3C23.8 7.7 20.8 6 17.4 6 11.6 6 7 10.6 7 16.4c0 9.1 10.2 15.7 16.2 20.7.5.4 1.2.4 1.7 0C30.8 32.1 41 25.5 41 16.4 41 10.6 36.4 6 34.6 6z"
+        />
+      </svg>
+    </span>
   </button>
 </template>
 
@@ -19,6 +30,8 @@ const props = defineProps({
 
 const store = useBookStore()
 const isLiked = ref(false)
+const animateHeart = ref(false)
+const isHeartHovered = ref(false)
 
 const checkLikeStatus = async () => {
   try {
@@ -48,6 +61,13 @@ const toggleLike = async () => {
 
     const result = await store.toggleLike(props.isbn)
     isLiked.value = result.status === 'liked'
+    
+    animateHeart.value = false;
+    setTimeout(() => {
+      animateHeart.value = true;
+      setTimeout(() => animateHeart.value = false, 400);
+    }, 0);
+
   } catch (e) {
     if (e.response?.status === 401) {
       alert('로그인이 필요합니다.')
@@ -63,36 +83,36 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.like-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border: 2px solid #ff6b81;
-  border-radius: 50px;
-  background: white;
+.heart-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
-  font-weight: 600;
+  outline: none;
+  font-size: 2.3rem;
+  z-index: 2;
+  padding: 0;
 }
 
-.like-button:hover {
-  background: #fff0f2;
-  transform: scale(1.05);
+.insta-heart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
 }
 
-.like-button.is-liked {
-  background: #ff6b81;
-  color: white;
+.insta-heart.animate {
+  animation: heart-bounce 0.4s;
 }
 
-.heart-icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.like-text {
-  font-family: 'Noto Sans KR', sans-serif;
+@keyframes heart-bounce {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.3); }
+  40% { transform: scale(0.95); }
+  60% { transform: scale(1.1); }
+  80% { transform: scale(0.98); }
+  100% { transform: scale(1); }
 }
 </style> 

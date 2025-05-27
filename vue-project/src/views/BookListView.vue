@@ -16,13 +16,13 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch, onBeforeMount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/books'
 import BookList from '@/components/BookList.vue'
-import { onMounted } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const store = useBookStore()
 const booklist = ref([])
 
@@ -35,21 +35,32 @@ function sleep(ms) {
 }
 
 const fetchBooks = async () => {
-  if (route.query.genre) {
-    const result = await store.genreBooks(route.query.genre)
-    booklist.value = result.filter(book => book.main_category === route.query.genre)
-  } else {
-    await sleep(3)
-    await store.getBooks()
-    booklist.value = store.books
+  try {
+    if (route.query.genre) {
+      const result = await store.genreBooks(route.query.genre)
+      booklist.value = result.filter(book => book.main_category === route.query.genre)
+    } else {
+      const result = await store.getBooks()
+      booklist.value = result
+    }
+  } catch (error) {
+    console.error('Error fetching books:', error)
   }
 }
 
-onMounted(() => {
-  fetchBooks()
+// 컴포넌트가 마운트되기 전에 데이터 로드
+onBeforeMount(async () => {
+  await fetchBooks()
 })
 
-watch(() => route.query.genre, fetchBooks)
+// 라우트 변경 감지
+watch(
+  () => route.query.genre,
+  async () => {
+    await fetchBooks()
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

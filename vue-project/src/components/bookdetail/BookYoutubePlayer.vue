@@ -1,7 +1,7 @@
 <template>
-  <div class="rounded-box px-6 py-6 flex flex-col items-center min-h-[120px]">
+  <div class="rounded-box px-6 py-6 flex flex-col items-left min-h-[120px]">
     <span class="section-title mb-2">AI 추천 음악</span>
-    <div class="w-full flex justify-center">
+    <div class="w-full flex justify-left">
       <iframe 
         v-if="videoUrl"
         class="rounded-lg shadow border border-gray-200" 
@@ -51,5 +51,6 @@ const getYoutubeEmbedUrl = (url) => {
   font-weight: 700;
   font-size: 1.1rem;
   color: #222;
+  margin-bottom: 7px;
 }
 </style> 

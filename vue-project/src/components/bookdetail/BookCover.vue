@@ -37,5 +37,11 @@ defineProps({
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 20px;
+  transition: transform 0.2s ease;
+}
+
+.cover-img:hover {
+  transform: scale(1.02);
 }
 </style> 
