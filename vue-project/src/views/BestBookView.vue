@@ -11,6 +11,6 @@ const store = useBookStore()
 
 // 상위 5개의 베스트셀러만 선택
 const bestBooks = computed(() => {
-  return store.books.slice(0, 28)
+  return store.books.slice(0, 30)
 })
 </script> 

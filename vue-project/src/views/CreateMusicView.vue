@@ -6,7 +6,6 @@
   >
     <div class="bg-white rounded-lg shadow-lg p-8 md:p-12 w-[95vw] max-w-xl mx-auto">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold font-noto">AI 음악 생성</h2>
       </div>
       <CreateMusic 
         :book-id="bookId" 

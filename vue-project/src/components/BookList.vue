@@ -3,7 +3,7 @@
     <div class="best-books-container">
       <h2 class="section-title"></h2>
       <div class="books-grid">
-        <BestBookItem 
+        <BookListItem 
           v-for="book in pagedBooks" 
           :key="book.isbn" 
           :book="book"
@@ -26,7 +26,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BestBookItem from './bestbook/BestBookItem.vue'
+import BookListItem from './BookListItem.vue'
 
 const props = defineProps({
   books: {
