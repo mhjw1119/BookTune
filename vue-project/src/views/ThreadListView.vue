@@ -1,11 +1,11 @@
 <template>
   <div class="thread-list-view">
-    <ThreadList />
+    <ThreadGridList />
   </div>
 </template>
 
 <script setup>
-import ThreadList from '@/components/thread/ThreadList.vue'
+import ThreadGridList from '@/components/thread/ThreadGridList.vue'
 </script>
 
 <style scoped>
