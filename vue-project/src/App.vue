@@ -39,7 +39,7 @@
     <!-- 로고/검색바: 모든 페이지에서 항상 보이게 -->
     <div class="flex flex-col items-center text-center pt-12">
       <span class="logo text-gray-900">BookTune</span>
-      <span class="text-gray-500 mt-1 mb-16 text-base tracking-wide my-custom-span">음악과 함께 즐기는 독서</span>
+      <span class="my-custom-span text-gray-500 mt-1 mb-16 text-base tracking-wide ">음악과 함께 즐기는 독서</span>
       <form class="search-bar-container" @submit.prevent="onSearch">
         <span class="search-icon">
           <!-- Search icon (left) -->
@@ -210,6 +210,7 @@ const nicknameClass = computed(() => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&family=Gaegu:wght@400;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107-2@1.0/Cafe24Ssurround.woff2');
 
 header {
   position: fixed;
@@ -303,6 +304,8 @@ a {
 }
 
 .my-custom-span {
+    font-family: 'Cafe24 Ssurround', sans-serif;
+
     display: block;
     margin-bottom: 5px;
     font-size: 1.5rem;

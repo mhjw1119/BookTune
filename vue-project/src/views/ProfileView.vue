@@ -10,6 +10,8 @@
     <div class="flex flex-col items-center text-center pt-32">
       <span class="logo text-gray-900">PROFILE</span>
     </div>
+    <div class="w-[60%] border-t my-8 mx-auto" style="border-color: rgba(0,0,0,0.13);"></div>
+
     <div class="profile-content">
       <div class="profile-tabs">
         <!-- 프로필 헤더 섹션 추가 -->
@@ -35,6 +37,19 @@
                 <span class="stat-label">팔로잉</span>
               </div>
             </div>
+            <div class="profile-genres-section">
+              <h3 class="profile-detail-title text-left">좋아하는 장르</h3>
+              <div class="profile-genres">
+                <span 
+                  v-for="genre in selectedGenres" 
+                  :key="genre" 
+                  class="genre-tag"
+                >
+                  {{ genre }}
+                </span>
+                <span v-if="!selectedGenres.length" class="no-genres">선택된 장르가 없습니다</span>
+              </div>
+            </div>
             <button 
               v-if="!isOwnProfile" 
               @click="toggleFollow" 
@@ -43,7 +58,9 @@
               {{ isFollowing ? '언팔로우' : '팔로우' }}
             </button>
           </div>
+
         </div>
+
 
         <div class="tab-buttons">
           <button 
@@ -55,40 +72,12 @@
             {{ getTabName(tab.id) }}
           </button>
         </div>
+        <div class="w-[70%] border-t my-8 mx-auto" style="border-color: rgba(0,0,0,0.15);"></div>
+
 
         <div class="tab-content">
           <!-- 프로필 조회 탭 -->
-          <div v-if="currentTab === 'profile-view'" class="tab-pane">
-            <div class="profile-view-content">
-              <div class="profile-info-section">
-                <div class="profile-image-section">
-                  <img
-                    v-if="profileImageUrl"
-                    :src="profileImageUrl"
-                    alt="프로필 이미지"
-                    class="profile-image-preview"
-                  />
-                  <div v-else class="profile-image-placeholder">이미지 없음</div>
-                </div>
-                <div class="profile-details">
-                  <h3 class="profile-detail-title">닉네임</h3>
-                  <p class="profile-detail-content">{{ nickname }}</p>
-                  
-                  <h3 class="profile-detail-title">좋아하는 장르</h3>
-                  <div class="profile-genres">
-                    <span 
-                      v-for="genre in selectedGenres" 
-                      :key="genre" 
-                      class="genre-tag"
-                    >
-                      {{ genre }}
-                    </span>
-                    <span v-if="!selectedGenres.length" class="no-genres">선택된 장르가 없습니다</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           <!-- 프로필 수정 탭 -->
           <div v-if="currentTab === 'profile-edit' && isOwnProfile" class="tab-pane">
@@ -179,7 +168,6 @@ const genres = [
 ]
 
 const tabs = [
-  { id: 'profile-view', name: '프로필 조회' },
   { id: 'profile-edit', name: '프로필 수정' },
   { id: 'liked-books', name: '좋아요한 책' },
   { id: 'liked-threads', name: '좋아요한 스레드' },
@@ -418,18 +406,24 @@ const getTabName = (tabId) => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Noto+Sans+KR:wght@400;700&family=Pacifico&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 .profile-layout {
   min-height: 100vh;
   background: #f7f7f7;
   padding-bottom: 3rem;
+  font-family: 'Pretendard', sans-serif;
+  border-bottom: 1px solid var ;
+
 }
 
 .logo {
   font-family: 'Indie Flower', cursive;
   font-size: 6rem;
   letter-spacing: 0.05em;
+  font-weight: 700;
+  margin-top: 5rem;
+  margin-bottom: 2.5rem;
 }
 
 .nav-bar {
@@ -476,6 +470,8 @@ const getTabName = (tabId) => {
 .profile-content {
   margin-top: 3rem;
   padding: 0 2rem;
+  border-radius: 1rem;
+
 }
 
 .profile-tabs {
@@ -489,28 +485,36 @@ const getTabName = (tabId) => {
 
 .profile-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 2rem;
   border-bottom: 1px solid #eee;
   gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .profile-info {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
 }
 
 .profile-nickname {
   font-size: 2rem;
   font-weight: 700;
   color: #333;
+  font-family: 'Pretendard', sans-serif;
+  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
 .profile-stats {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
+  gap: 3rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 
 .stat-item {
@@ -521,13 +525,15 @@ const getTabName = (tabId) => {
 
 .stat-value {
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #333;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .stat-label {
   font-size: 0.9rem;
   color: #666;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .follow-button {
@@ -535,33 +541,76 @@ const getTabName = (tabId) => {
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   background: #0078c8;
   color: white;
   border: none;
+  align-self: center;
+  margin-top: 0.5rem;
+  font-family: 'Pretendard', sans-serif;
 }
 
-.follow-button:hover {
-    background-color: #005fa3;
+.profile-genres-section {
+  margin: 0.5rem 0;
+  width: 100%;
 }
 
-.follow-button.following {
-  background: #eee;
-  color: #333;
-  border: 1px solid #ccc;
+.profile-detail-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.8rem;
+  font-family: 'Pretendard', sans-serif;
 }
 
-.follow-button.following:hover {
-    background-color: #ddd;
+.profile-detail-title.text-left {
+  text-align: left;
+  padding-left: 0.5rem;
+}
+
+.profile-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-start;
+  padding: 0 0.5rem;
+}
+
+.genre-tag {
+  background: #e0e7ef;
+  color: #4a5568;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.genre-tag:hover {
+  background: #d1e0f0;
+  transform: translateY(-1px);
+}
+
+.no-genres {
+  font-style: italic;
+  color: #888;
+  font-size: 0.9rem;
+  font-family: 'Pretendard', sans-serif;
+  padding-left: 0.5rem;
 }
 
 .tab-buttons {
   display: flex;
+  justify-content: center;
   gap: 2rem;
   border-bottom: 1px solid #eee;
   padding: 0 2rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .tab-button {
@@ -574,6 +623,8 @@ const getTabName = (tabId) => {
   color: #666;
   transition: color 0.2s, border-bottom 0.2s;
   white-space: nowrap;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 500;
 }
 
 .tab-button.active {
@@ -588,6 +639,8 @@ const getTabName = (tabId) => {
 
 .tab-content {
   padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .tab-pane {
@@ -606,6 +659,7 @@ const getTabName = (tabId) => {
 }
 
 .profile-image-section {
+  flex-shrink: 0;
 }
 
 .profile-details {
@@ -614,102 +668,32 @@ const getTabName = (tabId) => {
   gap: 1.5rem;
 }
 
-.profile-detail-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #555;
-  margin-bottom: 0.5rem;
-}
-
 .profile-detail-content {
   font-size: 1.1rem;
   color: #333;
   margin-bottom: 1.5rem;
+  font-family: 'Pretendard', sans-serif;
 }
 
-.profile-genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+.profile-image-preview {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
 }
 
-.genre-tag {
-  background: #e0e7ef;
-  color: #4a5568;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.9rem;
-}
-
-.no-genres {
-  font-style: italic;
-  color: #888;
-}
-
-.profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #555;
-}
-
-.input-box {
-  padding: 0.8rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-}
-
-.input-box:focus {
-  outline: none;
-  border-color: #0078c8;
-  box-shadow: 0 0 0 2px #0078c833;
-}
-
-.form-button {
-  padding: 0.8rem 1.5rem;
-  background: #0078c8;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s;
-  align-self: flex-start;
-  margin-top: 1rem;
-}
-
-.form-button:hover {
-  background-color: #005fa3;
-}
-
-.genre-checkboxes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.checkbox-label {
+.profile-image-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #f3f4f6;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
+  color: #aaa;
   font-size: 1rem;
-  color: #333;
-}
-
-.checkbox-label input[type="checkbox"] {
-  /* Custom checkbox styling if needed */
+  border: 2px dashed #ddd;
 }
 
 .empty-message {
@@ -721,6 +705,7 @@ const getTabName = (tabId) => {
   border-radius: 0.5rem;
   margin-top: 1.5rem;
   border: 1px solid #eee;
+  font-family: 'Pretendard', sans-serif;
 }
 
 @keyframes fadeIn {
@@ -747,26 +732,117 @@ const getTabName = (tabId) => {
   align-items: center;
 }
 
-.profile-image-preview {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #ddd;
-  margin-bottom: 0.5rem;
-}
-
-.profile-image-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #f3f4f6;
+.profile-form {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
   justify-content: center;
-  color: #aaa;
+
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;        /* 세로 가운데 */
+  justify-content: center;    /* 가로 가운데 */
+  text-align: center;
   font-size: 1rem;
-  border: 2px dashed #ddd;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Pretendard', sans-serif;
+}
+
+
+.input-box {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.input-box:focus {
+  outline: none;
+  border-color: #0078c8;
+  box-shadow: 0 0 0 2px #0078c833;
+}
+
+.form-button {
+  padding: 0.8rem 1.5rem;
+  background: #0078c8;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  margin: 1rem auto 0 auto; /* 가운데 정렬 핵심 */
+  font-family: 'Pretendard', sans-serif;
+  display: block; /* 필요 시 추가 */
+}
+
+
+.form-button:hover {
+  background-color: #005fa3;
+}
+
+.genre-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 1rem;
+  color: #333;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.checkbox-label input[type="checkbox"] {
+  /* Custom checkbox styling if needed */
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .profile-info {
+    align-items: center;
+  }
+
+  .profile-stats {
+    gap: 2rem;
+  }
+
+  .profile-genres {
+    justify-content: center;
+  }
+
+  .profile-detail-title.text-left {
+    text-align: center;
+    padding-left: 0;
+  }
+
+  .tab-buttons {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
 }
 </style>
