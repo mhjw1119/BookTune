@@ -84,3 +84,4 @@ tzdata==2024.2
 urllib3==2.2.3
 wrapt==1.17.2
 zope.interface==7.2
+yt-dlp==2025.5.22

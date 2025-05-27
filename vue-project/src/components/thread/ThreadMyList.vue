@@ -59,7 +59,7 @@ const onMouseUp = () => {
   isDown = false
 }
 
-const handleLikeToggle = async (threadId, isLiked) => {
+const handleLikeToggle = async (data) => {
   try {
     const access = localStorage.getItem('access')
     if (!access) {
@@ -67,9 +67,15 @@ const handleLikeToggle = async (threadId, isLiked) => {
       return
     }
 
-    await axios.post(`http://localhost:8000/api/books/threads/${threadId}/like/`, {}, {
-      headers: { Authorization: `Bearer ${access}` }
-    })
+    const { threadId, isLiked, likeCount } = data
+    
+    // 스레드 목록에서 해당 스레드 찾기
+    const threadIndex = props.threads.findIndex(t => t.id === threadId)
+    if (threadIndex !== -1) {
+      // 스레드의 좋아요 상태와 카운트 업데이트
+      props.threads[threadIndex].is_liked = isLiked
+      props.threads[threadIndex].like_count = likeCount
+    }
   } catch (err) {
     console.error('좋아요 토글 실패:', err)
     error.value = '좋아요 상태 변경에 실패했습니다.'

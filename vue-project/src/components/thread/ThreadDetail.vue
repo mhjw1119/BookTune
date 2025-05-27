@@ -5,7 +5,7 @@
       <button class="close-button" @click="closeModal">&times;</button>
       
       <div class="thread-header">
-        <div class="user-info" @click="goToProfile" style="cursor: pointer;">
+        <div class="user-info" @click="goToProfile(props.thread.user?.id)" style="cursor: pointer;">
           <img
             v-if="props.thread.user?.profile_image"
             :src="getProfileImageUrl(props.thread.user.profile_image)"
@@ -47,7 +47,7 @@
           </div>
           <div v-if="props.thread.audio_file" class="audio-player">
             <audio controls>
-              <source :src="props.thread.audio_file" type="audio/mpeg">
+              <source :src="getAudioFileUrl(props.thread.audio_file)" type="audio/mpeg">
               브라우저가 오디오 재생을 지원하지 않습니다.
             </audio>
           </div>
@@ -131,6 +131,15 @@ const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
   if (profileImage.startsWith('http')) return profileImage
   return 'http://localhost:8000' + profileImage
+}
+
+const getAudioFileUrl = (audioFile) => {
+  if (!audioFile) return ''
+  console.log('Original audio file path:', audioFile)
+  if (audioFile.startsWith('http')) return audioFile
+  const fullUrl = 'http://localhost:8000' + audioFile
+  console.log('Full audio file URL:', fullUrl)
+  return fullUrl
 }
 
 const formatDate = (dateString) => {
@@ -233,9 +242,6 @@ const isAuthor = computed(() => {
 
 const closeModal = () => {
   emit('close')
-  if (!props.isOwnProfile) {
-    router.back()
-  }
 }
 
 const isCommentAuthor = (comment) => {
@@ -349,10 +355,10 @@ const deleteThread = async () => {
   }
 }
 
-// 프로필 페이지 이동 함수 수정
-const goToProfile = () => {
-  if (props.thread?.user?.id) {
-    router.push({ name: 'profile', params: { userId: props.thread.user.id } })
+// 프로필 페이지로 이동하는 함수 추가
+const goToProfile = (userId) => {
+  if (userId) {
+    router.push({ name: 'profile', params: { userId: userId } })
   }
 }
 
