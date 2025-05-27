@@ -110,43 +110,55 @@ class KakaoLoginView(APIView):
         token_res = requests.post("https://kauth.kakao.com/oauth/token", data={
             "grant_type": "authorization_code",
             "client_id": KAKAO_CLIENT_ID,
+            "client_secret": KAKAO_SECRET,
             "redirect_uri": redirect_uri,
             "code": code
         })
 
         print("🔴 Kakao Token Response:", token_res.text)
 
+        if token_res.status_code != 200:
+            return Response({"error": "카카오 토큰 요청 실패", "details": token_res.text}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+
         token_data = token_res.json()
         access_token = token_data.get("access_token")
 
         if not access_token:
-            return Response({"error": "Token request failed"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "액세스 토큰을 받지 못했습니다."}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
         # 2. 사용자 정보 요청
-        user_res = requests.get("https://kapi.kakao.com/v2/user/me", headers={
-            "Authorization": f"Bearer {access_token}"
-        })
-        user_data = user_res.json()
+        user_res = requests.get("https://kapi.kakao.com/v2/user/me", 
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            }
+        )
 
+        if user_res.status_code != 200:
+            return Response({"error": "사용자 정보 요청 실패", "details": user_res.text}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+
+        user_data = user_res.json()
         print("🔵 Kakao User Info:", user_data)
 
         kakao_id = user_data.get("id")
-        email = user_data.get("kakao_account", {}).get("email")
+        if not kakao_id:
+            return Response({"error": "카카오 ID를 받지 못했습니다."}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
-        if not email:
-            return Response({"error": "이메일 제공에 동의해야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        # 임시 이메일 생성
+        email = f"kakao_{kakao_id}@booktune.com"
+        print("⚠️ 임시 이메일 사용:", email)
 
-        # # 카카오 설정에서 진짜 이메일 받아오는 거 해야할 듯 -> 유찬 사업자등록..
-        # ### 이메일이 없으면 임시 이메일 생성
-        # if not email:
-        #     email = f"kakao_{kakao_id}@example.com"
-        #     print("⚠️ 이메일이 없어 임시 이메일 사용:", email)
-        # ###
-
-        user = get_or_create_social_user("kakao", kakao_id, email)
-        tokens = generate_jwt_for_user(user)
-
-        return Response(tokens, status=200)
+        try:
+            user = get_or_create_social_user("kakao", kakao_id, email)
+            tokens = generate_jwt_for_user(user)
+            return Response(tokens, status=status.HTTP_200_OK)
+        except Exception as e:
+            print("❌ User creation error:", str(e))
+            return Response({"error": "사용자 생성 실패"}, 
+                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # 구글 로그인 관련
