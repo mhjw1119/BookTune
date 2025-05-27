@@ -301,6 +301,7 @@ a {
   letter-spacing: 0.05em;
   margin-top: 10rem;
   margin-bottom: -1rem;
+  font-weight: bold;
 }
 
 .my-custom-span {
