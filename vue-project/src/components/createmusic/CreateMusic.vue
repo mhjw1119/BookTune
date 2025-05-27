@@ -131,7 +131,7 @@ const handleGenerateMusic = async () => {
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
-  resize: vertical;
+  resize: none;
   font-size: 1.05rem;
   font-family: 'Noto Sans KR', 'Indie Flower', cursive;
   transition: box-shadow 0.2s, border 0.2s;
