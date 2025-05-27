@@ -71,7 +71,7 @@ export default {
         this.$emit('close-popup');
       } catch (error) {
         if (error.response && error.response.data) {
-          alert('회원가입 실패: ' + JSON.stringify(error.response.data));
+          alert('회원가입 실패: 올바른 정보를 입력해주세요');
         } else {
           alert('회원가입 중 오류가 발생했습니다.');
         }
