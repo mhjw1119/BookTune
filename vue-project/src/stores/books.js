@@ -9,16 +9,18 @@ export const useBookStore = defineStore('book', () => {
   const error = ref(null)
   const API_URL = 'http://127.0.0.1:8000'
 
-  const getBooks = function () {
-    axios({
-      method: 'get',
-      url: `${API_URL}/api/books/`
-    })
-    .then( res => {
-      books.value = res.data
-      console.log(books.value)
-    })
-    .catch( err => console.log(err))
+  const getBooks = async function () {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${API_URL}/api/books/`
+      })
+      books.value = response.data
+      return response.data
+    } catch (error) {
+      console.error('Error fetching books:', error)
+      throw error
+    }
   }
 
   const searchBooks = async function (query) {

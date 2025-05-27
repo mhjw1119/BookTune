@@ -29,22 +29,22 @@ defineProps({
 <style scoped>
 .book-info {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
 }
 
 .info-container {
   display: flex;
-  justify-content: center;
-  gap: 4rem;
-  padding: 1rem;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0;
+  width: 100%;
 }
 
 .info-item {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .section-title {
@@ -52,11 +52,13 @@ defineProps({
   font-weight: 700;
   font-size: 1.1rem;
   color: #222;
+  min-width: 70px;
 }
 
 .info-text {
   font-family: 'Noto Sans KR', sans-serif;
   color: #374151;
   font-weight: 500;
+  flex-grow: 1;
 }
 </style> 

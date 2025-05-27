@@ -41,10 +41,13 @@ defineProps({
 
 .cover-img {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border: 1px solid #ddd;
-  margin-top: 1rem;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+  transition: transform 0.2s ease;
+}
+
+.cover-img:hover {
+  transform: scale(1.02);
 }
 </style> 
