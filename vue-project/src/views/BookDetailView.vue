@@ -52,6 +52,7 @@
                 v-if="book && book.id"
                 :book-id="book.id" 
                 :isbn="props.isbn"
+                :book-title="book.title"
                 @generate="handleGenerateMusic" 
                 class="AI-section"
               />
@@ -65,6 +66,7 @@
             v-if="book && book.id"
             :book-id="book.id"
             :isbn="props.isbn"
+            :is-own-profile="true"
           />
         </div>
       </template>

@@ -13,7 +13,6 @@
         <span class="date">{{ formatDate(thread.created_at) }}</span>
       </div>
       <button 
-        v-if="isOwnProfile"
         class="like-btn" 
         @click.stop="toggleLike" 
         :class="{ 'is-liked': isLiked }"
@@ -21,10 +20,6 @@
         <span class="heart-icon">♥</span>
         <span class="like-count">{{ likeCount }}</span>
       </button>
-      <div v-else class="like-btn disabled">
-        <span class="heart-icon">♥</span>
-        <span class="like-count">{{ likeCount }}</span>
-      </div>
     </div>
     <div class="thread-body">
       <img :src="thread.book.cover" alt="책 커버" class="book-cover">
@@ -33,7 +28,7 @@
         <p class="thread-text">{{ thread.content }}</p>
         <div v-if="thread.audio_file" class="audio-player">
           <audio controls>
-            <source :src="thread.audio_file" type="audio/mpeg">
+            <source :src="getAudioFileUrl(thread.audio_file)" type="audio/mpeg">
             브라우저가 오디오 재생을 지원하지 않습니다.
           </audio>
         </div>
@@ -68,7 +63,7 @@ const props = defineProps({
   },
   isOwnProfile: {
     type: Boolean,
-    default: true
+    default: false
   }
 })
 
@@ -79,13 +74,23 @@ const isDetailOpen = ref(false)
 const emit = defineEmits(['like-toggled', 'thread-deleted', 'thread-updated'])
 
 // 좋아요 상태를 props의 thread에서 직접 사용
-const isLiked = computed(() => props.thread.is_liked)
+const isLiked = computed(() => {
+  console.log('Thread ID:', props.thread.id, 'Is Liked:', props.thread.is_liked)
+  return props.thread.is_liked
+})
+
 const likeCount = computed(() => props.thread.like_count || 0)
 
 const getProfileImageUrl = (profileImage) => {
   if (!profileImage) return ''
   if (profileImage.startsWith('http')) return profileImage
   return 'http://localhost:8000' + profileImage
+}
+
+const getAudioFileUrl = (audioFile) => {
+  if (!audioFile) return ''
+  if (audioFile.startsWith('http')) return audioFile
+  return 'http://localhost:8000' + audioFile
 }
 
 const checkLikeStatus = async () => {
@@ -98,8 +103,17 @@ const checkLikeStatus = async () => {
     const response = await axios.get(`${store.API_URL}/api/books/threads/${props.thread.id}/like-status/`, {
       headers: { Authorization: `Bearer ${access}` }
     })
-    // computed 값은 직접 변경하지 않음
-    // 필요하다면 emit 등으로 부모에게 알릴 수 있음
+    console.log('Like status response:', response.data)
+    // 서버에서 받은 좋아요 상태로 업데이트
+    if (response.data.is_liked !== props.thread.is_liked) {
+      props.thread.is_liked = response.data.is_liked
+      // 부모 컴포넌트에 상태 변경 알림
+      emit('like-toggled', {
+        threadId: props.thread.id,
+        isLiked: response.data.is_liked,
+        likeCount: props.thread.like_count
+      })
+    }
   } catch (error) {
     console.error('Error checking like status:', error)
   }
@@ -117,11 +131,10 @@ const toggleLike = async () => {
     const currentLikeCount = props.thread.like_count || 0
     const currentIsLiked = props.thread.is_liked
 
-    // 부모 컴포넌트에 상태 변경 알림
-    emit('like-toggled', {
+    console.log('Toggling like:', {
       threadId: props.thread.id,
-      isLiked: !currentIsLiked,
-      likeCount: currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+      currentIsLiked,
+      currentLikeCount
     })
 
     // 서버 요청
@@ -131,16 +144,24 @@ const toggleLike = async () => {
       { headers: { Authorization: `Bearer ${access}` } }
     )
 
-    // 서버 응답이 실패하면 원래 상태로 되돌림
-    if (response.data.status !== (!currentIsLiked ? 'liked' : 'unliked')) {
+    console.log('Like toggle response:', response.data)
+
+    // 서버 응답이 성공하면 상태 업데이트
+    if (response.data.status === 'liked' || response.data.status === 'unliked') {
+      const newIsLiked = response.data.status === 'liked'
+      props.thread.is_liked = newIsLiked
+      props.thread.like_count = newIsLiked ? currentLikeCount + 1 : currentLikeCount - 1
+      // 부모 컴포넌트에 상태 변경 알림
       emit('like-toggled', {
         threadId: props.thread.id,
-        isLiked: currentIsLiked,
-        likeCount: currentLikeCount
+        isLiked: newIsLiked,
+        likeCount: newIsLiked ? currentLikeCount + 1 : currentLikeCount - 1
       })
+    } else {
       throw new Error('좋아요 상태가 일치하지 않습니다.')
     }
   } catch (err) {
+    console.error('Like toggle error:', err)
     if (err.response?.status === 401) {
       alert('로그인이 필요합니다.')
     }

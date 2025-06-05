@@ -44,6 +44,10 @@ const props = defineProps({
   isbn: {
     type: String,
     required: false
+  },
+  isOwnProfile: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -51,7 +55,6 @@ const store = useBookStore()
 const threads = ref([])
 const loading = ref(true)
 const error = ref(null)
-const isOwnProfile = computed(() => true)
 
 // 마우스 드래그 스크롤 관련
 const scrollContainer = ref(null)

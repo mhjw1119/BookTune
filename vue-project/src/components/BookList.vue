@@ -7,7 +7,7 @@
         <p>도서를 불러오는 중...</p>
       </div>
       <div v-else class="books-grid">
-        <BestBookItem 
+        <BookItem 
           v-for="book in pagedBooks" 
           :key="book.isbn" 
           :book="book"
@@ -30,8 +30,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BestBookItem from './bestbook/BestBookItem.vue'
-
+import BookItem from './search/BookItem.vue'
 const props = defineProps({
   books: {
     type: Array,
